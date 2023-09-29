@@ -1,0 +1,32 @@
+.icons{
+  font-family: "Montserrat";
+}
+.sign-in1 {
+  align-items: center;
+  position: relative;
+  line-height: 1.75rem;
+  font-weight: 600;
+  display: inline-block;
+  width: 13.25rem;
+  flex-shrink: 0;
+}
+
+/* .input-group-append{
+  right: 0%;
+  z-index: 2;
+} */
+
+.signup-font{
+  font-family: "Manrope" ;
+}
+.form-check-label a{
+  color: rgb(0, 166, 255);
+  text-decoration : none;
+}
+
+.form-check-input[type="checkbox"]:checked{
+ background-color: #844646;
+}
+/* .signupAndImage{
+  display: contents;
+} */

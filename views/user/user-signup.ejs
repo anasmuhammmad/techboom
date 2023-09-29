@@ -1,0 +1,175 @@
+<%- include('../layouts/header') %>
+<link rel="stylesheet" href="/css/user-signup.css" />
+<header>
+  <nav class="navbar bg-body-tertiary p-0">
+    <div class="container-fluid d-flex justify-content-between align-items-middle" style="background-color: #f8eded;">
+        <!-- <div class="align-self-start"> <!-- Align the image to the left -->
+            <!-- <a class="navbar-brand">
+                <img src="/images/screenshot--272-removebgpreview-1@2x.png" style="max-height: 70px;" alt="">
+            </a>
+        </div> -->
+        <!-- <div class=" me-5"> 
+          <div class="d-flex gap-3 align-items-center">
+              <form class="d-flex" role="search">
+                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                <button class="btn btn-outline-success" type="submit">Search</button>
+              </form>
+              <div>
+                <a class="text-decoration-none text-dark" href="">
+                <i class="fa-solid fa-heart"></i><span> Wishlist</span>
+                </a>
+              </div>
+              <div>
+                <a class="text-decoration-none text-dark" href="">
+                <i class="fa-solid fa-cart-shopping"></i><span> Cart</span>
+                </a>
+              </div>
+              <div>
+                <a class="text-decoration-none text-dark" href="/signup">
+                <i class="fa-solid fa-user"></i><span>
+                      signup
+                  </span>
+                </a>
+              </div>
+            </div>
+        </div> -->
+    </div>
+  </nav>
+
+  </header>
+  <section class="mt-1">
+    <div class="container">
+      <div class="row ">
+        <div class="col-md-8 col-lg-12 d-flex justify-content-center">
+          <div class="card col-lg-8">
+            <div class="card-body col-lg-12 d-flex gap-2">
+              <div class="col-lg-6">
+                <form id="signupForm" action="/signup" method="post">
+                  <div class="form-group">
+                    <label for="name">Name</label>
+                    <input type="text" class="form-control mt-2" id="name" name="Username" placeholder="Enter your name" required/>
+                  </div>
+                  <div class="form-group mt-3">
+                    <label for="email">Email Address</label>
+                    <%if(error){%>
+                      <p class="text-danger text-center"><%= error %></p>
+                  <%}%>
+                    <input
+                      type="email"
+                      class="form-control mt-2"
+                      id="email"
+                      name="Email"
+                      placeholder="Enter your email address"
+                      required
+                    />
+                  </div>
+                  <div class="form-group mt-3">
+                    <label for="password">Password</label>
+                    <div class="input-group mt-2">
+                      <input
+                        type="password"
+                        class="form-control"
+                        name="Password"
+                        id="password"
+                        placeholder="Enter your password"
+                        required
+                      />
+                      <div class="input-group-append">
+                        <button
+                          class="btn btn-outline-none"
+                          type="button"
+                          id="showPasswordOne"
+                        >
+                          <i class="fas fa-eye"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="from-group mt-3">
+                    <label for="confirmPassword">Confirm Password</label>
+                    <div class="input-group mt-2">
+                      <input
+                        type="password"
+                        class="form-control"
+                        id="confirmPassword"
+                        name="confirmPassword"
+                        placeholder="Confirm your password"
+                        required/>
+                      <div class="input-group-append">
+                        <button
+                          class="btn btn-outline-none"
+                          type="button"
+                          id="showPasswordTwo"
+                        >
+                          <i class="fas fa-eye"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-check mt-3">
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      id="agreeTerms"
+                    />
+                    <label class="form-check-label text-muted" for="agreeTerms"
+                      >Do you agree to Ticker
+                      <a href="#" class="text-primary">Terms of Condition</a>
+                      and
+                      <a href="#" class="text-primary">Privacy Policy</a></label
+                    >
+                  </div>
+                  <div class="text-center mt-3">
+                    <button
+                      type="submit"
+                      class="btn text-center text-white sign-in1 btn-lg"
+                      style="
+                        background-color: #844646;
+                        width: -webkit-fill-available;
+                        border: none;
+                      "
+                    >
+                      Sign up
+                    </button>
+                  </div>
+                </form>
+                  <div class="mt-3">
+                    <p class="text-center">or</p>
+                  </div>
+                  <div class="d-flex position-relative align-items-center">
+                    <img
+                      src="/images/google@2x.png"
+                      alt=""
+                      class="position-absolute ms-2"
+                      style="height: 70%"
+                    />
+                    <button
+                      type="button"
+                      class="btn btn-white mr-3 text-center border"
+                      style="width: -webkit-fill-available"
+                    >
+                      Sign up with Google
+                    </button>
+                  </div>
+                  <div class="mt-3 text-center">
+                    <p class="text-center">
+                      Already have an account? <a href="user-login.ejs">Sign In</a>
+                    </p>
+                  </div>
+              </div>
+              <div class="col-lg-6 d-none d-xl-block">
+                <img
+                  class="img-fluid"
+                  src="/img/logo-signup.png"
+                  alt="logo"
+                  
+                />
+     
+              </div>          
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+<%- include('../layouts/footer') %>
