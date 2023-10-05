@@ -30,3 +30,13 @@ document.getElementById('showPasswordOne').addEventListener('click', function ()
 document.getElementById('showPasswordTwo').addEventListener('click', function () {
     togglePasswordVisibility('confirmPassword', 'showPasswordTwo');
 });
+
+// <!--  to handle auto redirection to next input field -->
+    const otpInputs = document.querySelectorAll('.otp-input');
+    otpInputs.forEach((input, index) => {
+        input.addEventListener('input', (event) => {
+            if (event.target.value.length === 1 && index < otpInputs.length - 1) {
+                otpInputs[index + 1].focus();
+            }
+        });
+    });

@@ -43,7 +43,10 @@ app.post('/signup',async (req, res) => {
         }
       }
 );
-
+app.get('/otp',async (req, res) => {
+ res.render('user/user-otpveri')
+}
+);
 app.get('/usershop', function (req, res) {
     // Replace this with the actual product list data
     const productList = [
