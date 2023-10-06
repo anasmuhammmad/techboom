@@ -36,7 +36,7 @@ app.set("views", path.join(__dirname, "views"));
 
 app.use('/', userRouter);
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 6000;
 
 // Connect to MongoDB before starting the server
 

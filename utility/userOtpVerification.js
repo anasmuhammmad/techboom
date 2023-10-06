@@ -15,7 +15,7 @@ module.exports = {
                 host: "smtp.gmail.com",
                 auth: {
                     user: 'techboompage@gmail.com',
-                    pass: 'vfte pvyn gvat uylk'
+                    pass: 'process.env.PASSWORD'
                 },
                 secure: true,
             });
@@ -35,7 +35,7 @@ module.exports = {
         const message = "Enter This OTP to Continue";
         const mailData = {
             from: 'techboompage@gmail.com',
-            to: Email,
+            to: anasmuhammed444@gmail.com,
             subject: 'OTP FROM TechBoom',
             html: `<p>${message}</p> <p style="color: tomato; font-size: 25px; letter-spacing: 2px;"><b>${otpToBeSent}</b></p><p>This Code <b>expires in ${duration} minutes(s)</b>.</p>`,
         }
@@ -60,7 +60,7 @@ module.exports = {
                 host: "smtp.gmail.com",
                 auth: {
                     user: 'techboompage@gmail.com',
-                    pass: 'vfte pvyn gvat uylk'
+                    pass: 'process.env.PASSWORD'
                 },
                 secure: true,
             });

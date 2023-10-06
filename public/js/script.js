@@ -1,16 +1,16 @@
 
 // JavaScript to toggle the OTP input when the "Verify" button is clicked
-document.getElementById('verifyEmailButton').addEventListener('click', function () {
-  const otpInputContainer = document.getElementById('otpInputContainer');
-  const otpSentMessage = document.getElementById('otpSentMessage');
-  otpInputContainer.style.display = 'block'; // Show the OTP input
-  otpSentMessage.style.display = 'block';
+// document.getElementById('verifyEmailButton').addEventListener('click', function () {
+//   const otpInputContainer = document.getElementById('otpInputContainer');
+//   const otpSentMessage = document.getElementById('otpSentMessage');
+//   otpInputContainer.style.display = 'block'; // Show the OTP input
+//   otpSentMessage.style.display = 'block';
   
-});
+// });
 
 
-function togglePasswordVisibility(inputId, buttonId) {
-    const passwordInput = document.getElementById(inputId);
+function togglePasswordVisibility(passwordInputId, buttonId) {
+    const passwordInput = document.getElementById(passwordInputId);
     const passwordButton = document.getElementById(buttonId);
 
     if (passwordInput.type === "password") {
@@ -31,12 +31,14 @@ document.getElementById('showPasswordTwo').addEventListener('click', function ()
     togglePasswordVisibility('confirmPassword', 'showPasswordTwo');
 });
 
+
 // <!--  to handle auto redirection to next input field -->
-    const otpInputs = document.querySelectorAll('.otp-input');
-    otpInputs.forEach((input, index) => {
-        input.addEventListener('input', (event) => {
-            if (event.target.value.length === 1 && index < otpInputs.length - 1) {
-                otpInputs[index + 1].focus();
-            }
-        });
-    });
+function moveToNextInput(input, nextInputID) {
+    const maxLength = input.getAttribute('maxlength');
+    if (input.value.length === parseInt(maxLength)) {
+        const nextInput = document.getElementById(nextInputID);
+        if (nextInput) {
+            nextInput.focus();
+        }
+    }
+}

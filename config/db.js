@@ -18,10 +18,10 @@ const connectToDatabase = async () => {
     // db.on("error",console.error.bind(console, "connection error:"));
     // db
 };
-const userSchema = new mongoose.Schema({
-    name:String,
-    age:Number
-})
-const userModel = new mongoose.model("User",userSchema)
+// const userSchema = new mongoose.Schema({
+//     name:String,
+//     age:Number
+// })
+// const userModel = new mongoose.model("User",userSchema)
 
-module.exports = {connectToDatabase,userModel};
+module.exports = {connectToDatabase};
