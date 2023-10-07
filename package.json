@@ -19,6 +19,7 @@
     "express-session": "^1.17.3",
     "mailgen": "^2.0.27",
     "mongoose": "^7.5.3",
+    "mongoose-beautiful-unique-validation": "^7.1.1",
     "nodemailer": "^6.9.5",
     "nodemon": "^3.0.1",
     "two-step-auth": "^1.1.2",

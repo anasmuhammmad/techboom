@@ -77,6 +77,9 @@ body{
     font-size: 20px;
     font-weight: 600;
 }
+.long-input{
+    width:600px !important;
+}
 
 @media (max-width:1200px){
     .wrapper .otp_input input{ 

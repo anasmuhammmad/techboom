@@ -32,13 +32,42 @@ document.getElementById('showPasswordTwo').addEventListener('click', function ()
 });
 
 
-// <!--  to handle auto redirection to next input field -->
-function moveToNextInput(input, nextInputID) {
-    const maxLength = input.getAttribute('maxlength');
-    if (input.value.length === parseInt(maxLength)) {
-        const nextInput = document.getElementById(nextInputID);
-        if (nextInput) {
-            nextInput.focus();
+        // JavaScript function to handle the countdown timer and resend functionality
+        function startCountdown() {
+            let countdown = 60; // Set the initial countdown time in seconds
+
+            const countdownTimer = document.getElementById('countdown');
+            const resendLink = document.getElementById('resendLink');
+
+            // Function to update the countdown timer
+            function updateCountdown() {
+                countdown--;
+                countdownTimer.textContent = countdown;
+
+                if (countdown <= 0) {
+                    clearInterval(timerInterval);
+                    resendLink.style.display = 'inline'; // Show the "Resend" link
+                    countdownTimer.style.display = 'none'; // Hide the countdown timer
+                }
+            }
+
+            // Start the countdown timer
+            let timerInterval = setInterval(updateCountdown, 1000);
+
+            // Add an event listener to the "Resend" link
+            resendLink.addEventListener('click', function (event) {
+                event.preventDefault(); // Prevent the link from navigating
+
+                // Add code here to resend the OTP
+                // You can make an AJAX request to your server to resend the OTP
+
+                // Reset the countdown and show the timer
+                countdown = 60;
+                countdownTimer.style.display = 'inline';
+                resendLink.style.display = 'none';
+                timerInterval = setInterval(updateCountdown, 1000); // Restart the timer
+            });
         }
-    }
-}
+
+        // Call the startCountdown function to initialize the countdown timer
+        startCountdown();

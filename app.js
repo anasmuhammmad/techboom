@@ -21,6 +21,7 @@ app.use(session({
     saveUninitialized: true
 }));
 
+app.use(flash());
 
 // mongodb
 

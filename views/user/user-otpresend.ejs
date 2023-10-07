@@ -56,44 +56,88 @@
                         </svg>
                         <span>@gmail.com</span>
                     </div>
+                   
+                        <div class="otp_input text-start mb-2">
+                           
+                            <label for="otp">Type your 4 digit security code</label>
+                            <div class="d-flex align-items-center justify-content-between mt-2">
+                                <input type="text" class="form-control long-input" id="otp" name="typedOTP"
+                                    placeholder="" required maxlength="4" inputmode="numeric">
 
-                    <div class="otp_input text-start mb-2">
 
-                        <label for="otp">Type your 4 digit security code</label>
-                        <div class="d-flex align-items-center justify-content-between mt-2">
-                            <input type="text" class="form-control long-input" id="otp" name="typedOTP" placeholder=""
-                                required maxlength="4" inputmode="numeric">
-
-                            <!-- Add a countdown timer  -->
-                            <div id="countdownTimer" class="d-none">
-                                Resend code in <span id="countdown">60</span> seconds
                             </div>
-
-
-
+                            <% if (errorMessages.length > 0) { %>
+                                <div class="alert alert-danger">
+                                  <%= errorMessages[0] %>
+                                </div>
+                              <% } %>
                         </div>
-                        <% if (errorMessages.length> 0) { %>
-                            <div class="alert alert-danger">
-                                <%= errorMessages[0] %>
-                            </div>
-                            <% } %>
-                    </div>
 
-                    <button type="submit" class="btn btn-primary submit_btn my-4">Submit</button>
-
-                                                <!--  "Resend" link -->
-                                                <div class="text-center mt-3">
-                                                    <a href="#" class="text-primary fw-bold text-decoration-none" id="resendLink">Resend
-                                                        Code</a>
-                                                </div>
-                    <!-- <div class="fw-normal text-muted mb-2">
+                        <button type="submit" class="btn btn-primary submit_btn my-4">Submit</button>
+                    
+                    <div class="fw-normal text-muted mb-2">
                         Didn’t get the code ? <a href="#" class="text-primary fw-bold text-decoration-none">Resend</a>
-                    </div> -->
+                    </div>
+                    <div id="countdown-timer" style="display: none;">Time Left: <span id="timer">00:00</span></div>
                 </form>
             </div>
         </div>
     </section>
+    <script>
+        let countdown; // Variable to store the countdown interval
+        const timerElement = document.getElementById('timer');
+        const resendLink = document.getElementById('resend-link');
 
+        // Function to start the countdown
+        function startCountdown(seconds) {
+            resendLink.style.display = 'none';
+            document.getElementById('countdown-timer').style.display = 'block';
+
+            clearInterval(countdown);
+            let remainingTime = seconds;
+
+            countdown = setInterval(() => {
+                const minutes = Math.floor(remainingTime / 60);
+                const seconds = remainingTime % 60;
+
+                timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+                if (remainingTime <= 0) {
+                    clearInterval(countdown);
+                    resendLink.style.display = 'block';
+                    document.getElementById('countdown-timer').style.display = 'none';
+                    timerElement.textContent = '00:00';
+                } else {
+                    remainingTime--;
+                }
+            }, 1000);
+        }
+
+        // Function to resend OTP
+        function resendOTP() {
+            // Make an AJAX request to your server to trigger OTP resend
+            fetch('/resend-otp', {
+                method: 'POST',
+                // You can add headers and data as needed
+            })
+                .then((response) => {
+                    if (response.ok) {
+                        // OTP resend successful, start the countdown
+                        startCountdown(120); // 2 minutes (adjust as needed)
+                    } else {
+                        // Handle errors here
+                        console.error('OTP resend failed');
+                    }
+                })
+                .catch((error) => {
+                    // Handle network errors here
+                    console.error('Network error:', error);
+                });
+        }
+
+        // Attach the click event handler for the resend link
+        resendLink.addEventListener('click', resendOTP);
+    </script>
 
 </body>
 
