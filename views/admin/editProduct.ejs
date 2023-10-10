@@ -1,0 +1,236 @@
+<%-include('../layouts/header')%>
+<%- include('../partials/admin-header')%>
+
+<div class="container-fluid">
+    <div class="row  border-start">
+        <main class="px-md-4 icons " style="margin-left: 18%;width: 80%; margin-top: 6%;">
+            <div class="row d-flex justify-content-between">
+                <div class="col-md-8">
+                    <h1 class="mt-5">EDIT PRODUCT</h1>
+                    <br>
+                    <form action="/admin/editproduct/<%=product._id%>" method="post" enctype="multipart/form-data" class="bg-white">
+                        <div class="form-group">
+                            <label for="productName">Product Name:</label>
+                            <input
+                                type="text"
+                                value="<%=product.ProductName%>"
+                                name="ProductName"
+                                class="form-control bg-light"
+                                id="productName"
+                                placeholder="Enter product name"
+                                required
+                            />
+                        </div><br>
+
+                        <div class="form-group">
+                            <label for="productDescription">Product Description:</label>
+                            <input
+                                type="text"
+                                value="<%=product.Description%>"
+                                class="form-control bg-light"
+                                name="Description"
+                                id="productDescription"
+                                rows="4"
+                                placeholder="Enter product description"
+                                required
+                            >
+                        </div>
+                        <br >
+                        <div class="form-group">
+                            <label for="productSpecification">Product Specification:</label>
+                            <input
+                                type="text"
+                                value="<%=product.Specification1%>"
+                                class="form-control bg-light"
+                                name="Specification1"
+                                id="productSpecification1"
+                                placeholder="Enter product Specification"
+                                required
+                            ><br>
+                            <label for="productSpecification2">Product Specification:</label>
+                            <input
+                                type="text"
+                                value="<%=product.Specification2%>"
+                                class="form-control bg-light"
+                                name="Specification2"
+                                id="productSpecification"
+                                placeholder="Enter product Specification"
+                                required
+                            ><br>
+                            <label for="productSpecification3">Product Specification:</label>
+                            <input
+                                type="text"
+                                value="<%=product.Specification3%>"
+                                class="form-control bg-light"
+                                name="Specification3"
+                                id="productSpecification"
+                                placeholder="Enter product Specification"
+                                required
+                            ><br>
+                            <label for="productSpecification4">Product Specification:</label>
+                            <input
+                                type="text"
+                                value="<%=product.Specification4%>"
+                                class="form-control bg-light"
+                                name="Specification4"
+                                id="productSpecification"
+                                placeholder="Enter product Specification"
+                                required
+                            >
+                        </div>
+                        <br>
+
+                        <div class="border p-3 mb-3 bg-light "> <!-- Added bg-light and text-center classes -->
+                            <h3>Media</h3>
+                            <div class="form-group text-center">
+                                <label for="productImage">Drag and drop or click to upload an image:</label>
+                                <br><br><br><br>
+                                <input
+                                type="file"
+                                name="images"
+                                class="form-control-file"
+                                id="productImage"
+                                accept="image/*"
+                                multiple
+                                style="display: none;"
+                                required
+                            />
+                            </div>
+                            <!-- uploaded images -->
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="uploaded-image">
+                                        <img src="/uploads/<%=product.images[0]%>" alt="Uploaded Image 1" id="uploadedImage1" class="img-fluid" data-index="1">
+                                        <button onclick="return confirm('Are you sure you want to delete the image')" class="btn btn-danger btn-sm delete-image"  data-index="1">Delete</button>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="uploaded-image">
+                                        <img src="/uploads/<%=product.images[1]%>" alt="Uploaded Image 2" id="uploadedImage2" class="img-fluid" data-index="2">
+                                        <button onclick="return confirm('Are you sure you want to delete the image')" class="btn btn-danger btn-sm delete-image"  data-index="2">Delete</button>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="uploaded-image">
+                                        <img src="/uploads/<%=product.images[2]%>" alt="Uploaded Image 3" id="uploadedImage3" class="img-fluid" data-index="3">
+                                        <button onclick="return confirm('Are you sure you want to delete the image')" class="btn btn-danger btn-sm delete-image"  data-index="3">Delete</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="border p-3 mb-3">
+                            <h2>Pricing</h2>
+                            <div class="form-group">
+                                <label for="basePrice">Base Price:</label>
+                                <input
+                                    value="<%=product.Price%>"
+                                    type="number"
+                                    name="Price"
+                                    class="form-control bg-light"
+                                    id="basePrice"
+                                    placeholder="Enter base price"
+                                    required
+                                />
+                            </div>
+                            <br>
+                            <div class="form-group">
+                                <label for="discountAmount">Discount Amount:</label>
+                                <input
+                                    value="<%=product.DiscountAmount%>"
+                                    type="number"
+                                    name="DiscountAmount"
+                                    class="form-control bg-light"
+                                    id="discountAmount"
+                                    placeholder="Enter discount amount"
+                                    required
+                                />
+                            </div>
+                        </div>
+
+
+                        <div class="border p-3 mb-3">
+                            <h2>Variations</h2>
+                            <div>
+                                <input type="radio" name="productType" id="watchesRadio" value="watches"> Graphics Card
+                                <input type="radio" name="productType" id="perfumesRadio" value="perfumes"> Processors
+                            </div>
+                            <div id="watchColorInput" style="display: none;">
+                                <label for="watchColors">Enter Watch Colors:</label>
+                                <input type="text" name="watches" id="watchColors">
+                            </div>
+                            <div id="perfumeQuantityDropdown" style="display: none;">
+                                <label for="perfumeQuantity">Select Perfume Quantity:</label>
+                                <select id="perfumeQuantity" name="perfumes">
+                                    <option value="50 ML">50ML</option>
+                                    <option value="100 ML">100ML</option>
+                                    <option value="150 ML">150ML</option>
+                                    <!-- Add more options as needed -->
+                                </select>
+                            </div>
+                        </div>
+
+
+
+                        <div class="border p-3 mb-3">
+                            <h2>Stock</h2>
+                            
+                            <div class="form-group">
+                                <label for="quantity">Quantity:</label>
+                                <input
+                                    type="number"
+                                    value="<%=product.AvailableQuantity%>"
+                                    name="AvailableQuantity"
+                                    class="form-control bg-light"
+                                    id="quantity"
+                                    placeholder="Enter quantity"
+                                    required
+                                />
+                            </div>
+                        </div>
+                </div>
+
+                <div class="col-md-4 my-5">
+                    <div class="bg-white p-3">
+                        <div class="form-group">
+                            <label for="category">Category:</label>
+                            <select class="form-control bg-light" id="category" name="Category" required>
+                                <option value="MEN'S WATCHES" <%= product.Category === "MEN'S WATCHES" ? 'selected' : '' %>>MEN'S WATCHES</option>
+                                <option value="KID'S WATCHES" <%= product.Category === "KID'S WATCHES" ? 'selected' : '' %>>KID'S WATCHES</option>
+                                <option value="WOMEN'S WATCHES" <%= product.Category === "WOMEN'S WATCHES" ? 'selected' : '' %>>WOMEN'S WATCHES</option>
+                                <option value="PERFUMES" <%= product.Category === "PERFUMES" ? 'selected' : '' %>>PERFUMES</option>
+                                <option value="WALLETS" <%= product.Category === "WALLETS" ? 'selected' : '' %>>WALLETS</option>
+                            </select>
+                        </div><br>
+                        <div class="form-group">
+                            <br>
+                            <label for="brandName">Brand Name:</label>
+                            <select name="BrandName" class="form-select bg-light" id="brand" required>
+                                <option value="FASTRACK" <%= product.BrandName === "FASTRACK" ? 'selected' : '' %>>FASTRACK</option>
+                                <option value="TITAN" <%= product.BrandName === "TITAN" ? 'selected' : '' %>>TITAN</option>
+                                <option value="ROLEX" <%= product.BrandName === "ROLEX" ? 'selected' : '' %>>ROLEX</option>
+                                <option value="FOGG"<%= product.BrandName === "FOGG" ? 'selected' : '' %>>FOGG</option>
+                            </select>
+                        </div><br>
+                        <div class="form-group">
+                            <label for="tags">Tags:</label>
+                            <input
+                                type="text"
+                                value="<%=product.Tags%>"
+                                class="form-control bg-light"
+                                name="Tags"
+                                id="tags"
+                                placeholder="Enter tags"
+                                required
+                            />
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary ms-3">Edit Product</button>
+                </div>
+                </form>
+            </div>
+        </main>
+    </div>
+</div>
+<%- include('../layouts/footer') %>

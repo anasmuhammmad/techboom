@@ -1,28 +1,29 @@
-// nodemailer
-// const sendOTPVerificationEmail = async (req, res) => {
-//   try {
-
-//     const otp = `${Math.floor(1000 + Math.random() * 9000)}`;
-//     const duration = "  14 minutes";
-//     const message = "Enter This OTP to Continue";
-//     const mailOptions = {
-//       from: 'techboompage@gmail.com',
-//       to: 'anasmuhammed444@gmail.com',
-//       subject: 'verify your email',
-//       text: otp,
-//       html: `<p>${message}</p> <p style="color: tomato; font-size: 25px; letter-spacing: 2px;"><b>${otp}</b></p><p>This Code <b>expires in ${duration} minutes(s)</b>.</p>`,
-//     };
-//     console.log('Generated OTP', otp);
-//     transporter.sendMail(mailOptions, (error, info) => {
-//       if (error) {
-//         console.error('Error sending email:', error);
-//         res.status(500).json({ error: 'Error sending email' });
-//       } else {
-//         console.log('Email sent successfully:', info.response);
-//         res.status(200).json({ message: 'Email sent successfully' });
-//       }
-//     });
-//   } catch (error) {
-//     res.status(500).json({ error: error.message });
-//   }
-// };
+    //   // generateAndSendOTP(email);
+    //   const saltRounds = 10;
+    //   const hashedPassword = await bcrypt.hash(password, saltRounds);
+    //   const newUser = await UserModel.create({ username, email, password: hashedPassword });
+  
+    //   const otp = `${Math.floor(1000 + Math.random() * 9000)}`;
+    //   const hashedOTP = await bcrypt.hash(otp, saltRounds);
+    //   const newOTP = await otpModel.create({ email, otp: hashedOTP });
+  
+    //   const duration = '  14 minutes';
+    //   const message = 'Enter This OTP to Continue';
+    //   const mailOptions = {
+    //     from: 'techboompage@gmail.com',
+    //     to: req.body.email,
+    //     subject: 'verify your email',
+    //     text: otp,
+    //     html: `<p>${message}</p> <p style="color: tomato; font-size: 25px; letter-spacing: 2px;"><b>${otp}</b></p><p>This Code <b>expires in ${duration} minutes(s)</b>.</p>`,
+    //   };
+  
+    //   console.log('Generated OTP', otp);
+    //   transporter.sendMail(mailOptions, (error, info) => {
+    //     if (error) {
+    //       console.error('Error sending email:', error);
+    //       res.status(500).json({ error: 'Error sending email' });
+    //     } else {
+    //       console.log('Email sent successfully:', info.response);
+    //       res.redirect('/otp');
+    //     }
+    //   });

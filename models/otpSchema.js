@@ -1,15 +1,18 @@
 const mongoose = require('mongoose');
-const beautifyUnique = require('mongoose-beautiful-unique-validation');
+// const beautifyUnique = require('mongoose-beautiful-unique-validation');
 const Schema = mongoose.Schema;
-
+const fiveMinutesFromNow = new Date();
+fiveMinutesFromNow.setMinutes(fiveMinutesFromNow.getMinutes() + 5);
 const OTPSchema = new Schema({
-    mail: {type: String,
+    createdAt: { type: Date, default: Date.now },
+    email: {type: String,
          },
     otp: String,
-    createdAt : Date,
-    expiresAt : Date,     
+
+    
+    expiresAt: { type: Date, default:fiveMinutesFromNow },
 });
-OTPSchema.plugin(beautifyUnique);
+// OTPSchema.plugin(beautifyUnique);
 const OTP = mongoose.model("OTP", OTPSchema);
 
 module.exports = OTP;

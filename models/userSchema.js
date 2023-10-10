@@ -7,17 +7,30 @@ const schema = mongoose.Schema({
     username: {
       type: String,
       required: true,
-      unique: true
+      
     },
     email: {
       type: String,
       required: true,
-      unique: true
+      
     },
     password: {
       type: String,
       required: true
     },
+    Status: { type: String ,default:"Active"},
+  
+    Orders: [{
+       ObjectId: { type: String},
+    }],
+    Address: [{
+       AddressLane: { type: String },
+       Country: { type: String },
+       Pincode: { type: String },
+       State: { type: String },
+    }],
+    Cart: [{
+    }],
 
   
 

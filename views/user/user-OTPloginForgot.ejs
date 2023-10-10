@@ -25,7 +25,7 @@
                     <h3 class="text-dark fw-bolder fs-4 mb-2">Two Step Verification</h3>
 
                     <div class="fw-normal text-muted mb-4">
-                        Enter the verification code we sent to
+                        Enter the OTP code we sent to
                     </div>
 
                     <div class="d-flex align-items-center justify-content-center fw-bold mb-4">
@@ -80,17 +80,22 @@
                     </div>
 
                     <button type="submit" class="btn btn-primary submit_btn my-4">Submit</button>
-                </form>
-                <form class="rounded bg-white shadow p-5" id="resend-otp" action="resend-otp" method="post">         <!--  "Resend" link -->
+
+                                                <!--  "Resend" link -->
                                                 <div class="text-center mt-3">
-                                                    <a href='/resend-otp' class="text-primary fw-bold text-decoration-none" id="resendOtpButton">Resend
+                                                    <a href="/resend-otp" class="text-primary fw-bold text-decoration-none" id="resendOtpButton">Resend
                                                         Code</a>
                                                 </div>
+                    <!-- <div class="fw-normal text-muted mb-2">
+                        Didn’t get the code ? <a href="#" class="text-primary fw-bold text-decoration-none">Resend</a>
+                    </div> -->
+                    <!-- <div class="text-center mt-3">
+                        <button type="button" class="btn btn-primary" id="resendButton">Resend Code</button>
+                        <div id="countdown-timer" style="display: none;">Time Left: <span id="timer">00:00</span></div>
+                    </div> -->
 
+                 </form>
 
-                    <div id="countdown-timer" style="display: none;">Time Left: <span id="timer">00:00</span></div>
-                
-              </form>
 
             </div>
         </div>
@@ -101,77 +106,8 @@
 </body>
 
 <script>
-    // Function to start the countdown timer
-    // function startCountdown(durationInSeconds) {
-    //     const countdownTimer = document.getElementById('countdown-timer');
-    //     const timerSpan = document.getElementById('timer');
-    //     let timer = durationInSeconds;
 
-    //     countdownTimer.style.display = 'block';
-
-    //     const countdownInterval = setInterval(function () {
-    //         const minutes = Math.floor(timer / 60);
-    //         const seconds = timer % 60;
-
-    //         timerSpan.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-
-    //         if (--timer < 0) {
-    //             clearInterval(countdownInterval);
-    //             countdownTimer.style.display = 'none'; // Hide the timer
-    //         }
-    //     }, 1000);
-    // }
-
-    // // Function to start the countdown timer...
-
-    // const resendOtpButton = document.getElementById('resendOtpButton');
-    // resendOtpButton.addEventListener('click', function () {
-    //     // Trigger the countdown when the "Resend Code" link is clicked
-    //     startCountdown(300); // Start a 5-minute (300 seconds) countdown
-    //     // Add logic to resend OTP here
-    // });
-
-
-    function startCountdown(durationInSeconds) {
-    const countdownTimer = document.getElementById('countdown-timer');
-    const timerSpan = document.getElementById('timer');
-    let timer = durationInSeconds;
-
-    countdownTimer.style.display = 'block';
-
-    const countdownInterval = setInterval(function () {
-        const minutes = Math.floor(timer / 60);
-        const seconds = timer % 60;
-
-        timerSpan.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-
-        if (--timer < 0) {
-            clearInterval(countdownInterval);
-            countdownTimer.style.display = 'none'; // Hide the timer
-        }
-    }, 1000);
-}
-
-// Function to cancel the countdown timer
-function cancelCountdown() {
-    const countdownTimer = document.getElementById('countdown-timer');
-    countdownTimer.style.display = 'none'; // Hide the timer
-    clearInterval(countdownInterval); // Clear the existing countdown interval
-}
-
-const resendOtpButton = document.getElementById('resendOtpButton');
-resendOtpButton.addEventListener('click', function () {
-    // Cancel the existing countdown (if any) and start a new one for 2 seconds
-    cancelCountdown();
-    startCountdown(2); // Start a 2-second countdown
-    // Add logic to resend OTP here
-});
-
-// Start the countdown when the page loads
-window.addEventListener('load', function () {
-    startCountdown(300); // Start a 5-minute (300 seconds) countdown when the page loads
-});
-</script>
+    </script>
 </html>
 
 <!-- </body>

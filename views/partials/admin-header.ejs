@@ -1,0 +1,76 @@
+<header>
+    <nav class="navbar justify-content-between border-bottom fixed-top" style="background-color:bisque;">
+        <div class="container-fluid d-flex justify-content-between align-items-center">
+          <div>
+            <a class="navbar-brand mx-5" href="#">
+              <img style="max-height: 70px;" src="/img/logo-admin.png" alt="Icon" />
+            </a>
+          </div>
+          <div class="dropdown mx-5">
+              <button class="btn bg-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fa-regular fa-circle-user fa-lg"></i>
+              </button>
+              <ul class="dropdown-menu">
+                <li><a href="/admin/logout" class="dropdown-item">logout</a></li>
+              </ul>
+          </div>
+        </div>
+      </nav>
+</header>
+<aside id="sidebar" class="sidebar col-md-2 position-fixed" style="top:6rem;">
+    <div class="list-group vh-100 border-end icons" style="border-radius: 0; ">
+      <a href="/admin/dashboard" class="list-group-item border-0">
+        <i class="fas fa-house"></i>
+        <span class="m-2 d-none d-lg-inline">Dashboard</span>
+      </a>
+      <a href="/admin/product" class="list-group-item border-0" >
+        <i class="fas fa-bag-shopping"></i>
+        <span class="m-2 d-none d-lg-inline">Products</span>
+      </a>
+      <a href="" class="list-group-item border-0" >
+        <!-- {{!-- /admin/orders --}} -->
+        <i class="fas fa-cart-shopping"></i>
+        <span class="m-2 d-none d-lg-inline">Orders</span>
+      </a>
+      <a href="/admin/userslist" class="list-group-item border-0" >
+        <i class="fas fa-users"></i>
+        <span class="m-2 d-none d-lg-inline">Customers</span>
+      </a>
+      <a href="" class="list-group-item border-0 pt-2" >
+        <!-- {{!-- /admin/coupons --}} -->
+        <i class="fas fa-id-card"></i>
+        <span class="m-2 d-none d-lg-inline">Coupons</span>
+      </a>
+      <a href="" class="list-group-item border-0 pt-2" >
+        <!-- {{!-- /admin/banners --}} -->
+        <i class="fas fa-flag"></i>
+        <span class="m-2 d-none d-lg-inline">Banners</span>
+      </a>
+      <a href="/admin/sub-admins" class="list-group-item border-0 pt-2" >
+        <i class="fas fa-user-plus"></i>
+        <span class="m-2 d-none d-lg-inline">Sub-Admins</span>
+      </a>
+      <a href="/admin/categoriesandbrands" class="list-group-item border-0 pt-2" >
+        <i class="fas fa-list"></i>
+        <span class="m-2 d-none d-lg-inline">Categories And Brands</span>
+      </a>
+      <a href="/admin/payments" class="list-group-item border-0 pt-2" >
+        <i class="fas fa-money-bill"></i>
+        <span class="m-2 d-none d-lg-inline">Payments</span>
+      </a>
+    </div>
+</aside>
+<style>
+    #sidebar {
+      float: left;
+    }
+    .list-group-item:hover {
+  background-color: #007bff; 
+}
+
+.list-group-item.active,
+.list-group-item:focus {
+  background-color: #00449e; 
+  color: white; 
+}
+</style>
