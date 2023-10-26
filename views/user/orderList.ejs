@@ -1,0 +1,97 @@
+<%- include('../layouts/header') %>
+<%- include('../partials/user-header') %>
+
+<style>
+  /* Style for the table rows */
+  table.table.table-bordered tbody tr {
+    border-radius: 0.5rem; /* Increase border radius for each row */
+    margin-bottom: 0.5rem; /* Add a gap between rows */
+  }
+</style>
+
+<div class="container mt-5">
+  <h2>Your Order List</h2>
+  <% if (order && order.length > 0) { %>
+    <table class="table table-bordered table-info">
+      <thead>
+        <tr>
+          <th>Order ID</th>
+          <th>Payment Method</th>
+          <th>Order Status</th>
+          <th>Date</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <% order.forEach(function (order) { %>
+      <tbody >
+          <tr>
+            <td><%= order._id %></td>
+            <td><%= order.PaymentMethod %></td>
+            <td><%= order.Status %></td>
+            <td><%= order.OrderDate %></td>
+            <td>
+                <% if (order.Status === 'Delivered') { %>
+                    <a href="/order/details/<%= order._id %>" class="btn btn-primary">View Details</a>
+                    <a href="/order/return/<%= order._id %>" class="btn btn-danger">Return</a>
+                  <% } else if (order.Status === 'Order Placed' || order.Status === 'Shipped') { %>
+                    <a href="/order/details/<%= order._id %>" class="btn btn-primary">View Details</a>
+                   
+                  
+                      <button id="cancelOrderButton<%= order._id %>" class="btn btn-warning" onclick="confirmCancellation('<%= order._id %>')">Cancel Order</button>
+                  <% } %>
+            </td>
+          </tr>
+        </tbody>
+        <% }); %>
+    </table>
+  <% } else { %>
+    <p>You have no orders yet.</p>
+  <% } %>
+</div>
+
+
+<script>
+      function confirmCancellation(orderId) {
+      const confirmation = confirm('Are you sure you want to cancel this order?');
+      if (confirmation) {
+        window.location.href = '/order/cancel/' + orderId;
+      }
+    }
+
+
+</script>
+<%- include('../layouts/footer') %>
+
+
+<!-- // Function to handle order cancellation
+function cancelOrder(orderId) {
+ const confirmation = confirm('Are you sure you want to cancel this order?');
+ if (confirmation) {
+   // Make a GET request to cancel the order
+   fetch('/order/cancel/' + orderId)
+     .then((response) => response.json())
+     .then((data) => {
+       if (data.success) {
+         // Order has been successfully canceled
+         alert('Order has been successfully canceled');
+         // You can also update the UI or remove the cancel button here
+       } else {
+         // Order cannot be canceled
+         alert('Order cannot be canceled');
+       }
+     })
+     .catch((error) => {
+       console.error('Error canceling the order:', error);
+       alert('An error occurred while canceling the order');
+     });
+ }
+}
+
+// Attach click event listeners to cancel buttons<% order.forEach(function (order) { %>
+const cancelOrderButton<%= order._id %> = document.getElementById('cancelOrderButton<%= order._id %>');
+if (cancelOrderButton<%= order._id %>) {
+ cancelOrderButton<%= order._id %>.addEventListener('click', () => {
+   cancelOrder('<%= order._id %>');
+ });
+}
+<% }); %> -->

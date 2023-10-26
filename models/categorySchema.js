@@ -6,13 +6,13 @@ const CategoriesSchema =new mongoose.Schema({
         required: true
     },
     image:{
-        type: String,
-        required: true
+        type:String,
+        required: true, 
     }
 })
 
 
-const Categories = mongoose.model('Categories', CategoriesSchema);
+const Category = mongoose.model('Categories', CategoriesSchema);
 
-module.exports = Categories
+module.exports = Category
 

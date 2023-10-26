@@ -1,10 +1,14 @@
 <%-include('../layouts/header')%>
 <%- include('../partials/admin-header')%>
 
+<div class="header" style="margin-top: 80px;">
+  <h1>Categories And Brands</h1>
+</div>
+<%- include('../partials/admin-canvas')%>
 <div class="container" style="margin-left: 18%;width: 80%; margin-top: 8%;">
     <div class="d-flex justify-content-between">
         <h1 class="icons">Categories</h1>
-        <a href="/admin/addcategory"><button class="btn btn-success">ADD CATEGORY</button></a>
+        <a href="/admin/addcategory" ><button class="btn btn-success">ADD CATEGORY</button></a>
 
     </div>
     <div class="container">
@@ -32,7 +36,7 @@
         <a href="/admin/addbrand"><button class="btn btn-success">ADD BRAND</button></a>
 
     </div>
-    <div class="container">
+     <div class="container">
         <div class="row">
           <% brands.forEach(function(brand) { %>
             <div class="col-md-2">
@@ -48,8 +52,8 @@
               </div>
             </div>
           <% }); %>
-        </div>
-      </div>
+        </div> 
+      </div> 
       
 </div>
 

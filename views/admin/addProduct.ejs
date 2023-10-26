@@ -1,6 +1,9 @@
 <%-include('../layouts/header')%>
 <%- include('../partials/admin-header')%>
-
+<div class="header" style="margin-top: 80px;">
+    <h1>Add Product</h1>
+  </div>
+  <%- include('../partials/admin-canvas')%>
 <div class="container-fluid">
     <div class="row  border-start">
         <main class="px-md-4 icons " style="margin-left: 18%;width: 80%; margin-top: 6%;">
@@ -76,13 +79,13 @@
                                 <br><br><br><br>
                                 <input
                                     type="file"
-                                    name="images"
+                                    name="image"
                                     class="form-control-file"
                                     id="productImage"
                                     accept="image/*"
                                     multiple
                                     style="display: none;"
-                                    required
+                                    
                                 />
                             </div>
                             <!-- uploaded images -->
@@ -140,19 +143,19 @@
                         <div class="border p-3 mb-3">
                             <h2>Variations</h2>
                             <div>
-                                <input type="radio" name="productType" id="watchesRadio" value="watches"> Graphics Cards
-                                <input type="radio" name="productType" id="perfumesRadio" value="perfumes"> Perfumes
+                                <input type="radio" name="productType" id="storageRadio" value="Storage Devices"> Storage Devices
+                                <input type="radio" name="productType" id="graphicscardRadio" value="Graphics Card"> Graphics Card
                             </div>
-                            <div id="watchColorInput" style="display: none;">
-                                <label for="watchColors">Enter Watch Colors:</label>
-                                <input type="text"  name="watches" id="watchColors">
+                            <div id="storagedevices" style="display: none;">
+                                <label for="storagesize">Enter Storage size:</label>
+                                <input type="text" name="storagesize" id="storagesize">
                             </div>
-                            <div id="perfumeQuantityDropdown" style="display: none;">
-                                <label for="perfumeQuantity">Select Perfume Quantity:</label>
-                                <select id="perfumeQuantity" name="perfumes">
-                                    <option value="50 ML">50ML</option>
-                                    <option value="100 ML">100ML</option>
-                                    <option value="150 ML">150ML</option>
+                            <div id="graphicscards" style="display: none;">
+                                <label for="gpumodel">Enter the GPU model</label>
+                                <select id="gpumodel" name="graphicscard">
+                                      <option value="Ge30">GeForce RTX 30 Series</option>
+                                    <option value="Ge16">GeForce GTX 16 Series</option>
+                                    <option value="Ge10">GeForce GTX 10 Series</option>
                                     <!-- Add more options as needed -->
                                 </select>
                             </div>
@@ -194,9 +197,9 @@
                         <div class="form-group">
                             <br>
                             <label for="brandName">Brand Name:</label>
-                            <select name="BrandName" class="form-select bg-light" id="brand" required>
+                            <select name="BrandName" class="form-select bg-light" id="brand" >
                                 <option value="" selected disabled>Select a Brand</option>
-                                <% brands.forEach(function(brand) { %>
+                                <% brand.forEach(function(brand) { %>
                                 <option value="<%=brand.Name%>"><%=brand.Name%></option>
                                 <% }); %>
                             </select>
@@ -209,7 +212,7 @@
                                 name="Tags"
                                 id="tags"
                                 placeholder="Enter tags"
-                                required
+                              
                             />
                         </div>
                     </div>
@@ -220,4 +223,85 @@
         </main>
     </div>
 </div>
+<script>
+    // document.addEventListener('DOMContentLoaded', function () {
+    //     const storageRadio = document.getElementById('storageRadio');
+    //     const graphicscardRadio = document.getElementById('graphicscardRadio');
+    //     const storagesizeInput = document.getElementById('storagesize');
+    //     const gpuModelSelect = document.getElementById('gpumodel');
+
+    //     // Function to handle radio button change
+    //     function handleProductTypeChange() {
+    //         if (storageRadio.checked) {
+    //             storagesizeInput.style.display = 'block';
+    //             gpuModelSelect.style.display = 'none';
+    //         } else if (graphicscardRadio.checked) {
+    //             storagesizeInput.style.display = 'none';
+    //             gpuModelSelect.style.display = 'block';
+    //         }
+    //     }
+
+    //     // Attach change event listener to radio buttons
+    //     storageRadio.addEventListener('change', handleProductTypeChange);
+    //     graphicscardRadio.addEventListener('change', handleProductTypeChange);
+
+    //     // Trigger the change event initially to set the initial state
+    //     handleProductTypeChange();
+    // });
+    $(document).ready(function () {
+    $('input[name="productType"]').change(function () {
+        const selectedProductType = $('input[name="productType"]:checked').val();
+        if (selectedProductType === "Storage Devices") {
+            $('#storagesizeInput').show();
+            $('#graphicscardInput').hide();
+        } else if (selectedProductType === "Graphics Card") {
+            $('#storagesizeInput').hide();
+            $('#graphicscardInput').show();
+        }
+    });
+});
+</script>
+
+<!-- <script>
+    const dropZone = document.getElementById('drop-zone');
+    const fileInput = document.getElementById('productImage');
+  
+    // Prevent the default drag behaviors
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach((eventName) => {
+      dropZone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+      });
+    });
+  
+    // Highlight the drop zone when a file is dragged over it
+    ['dragenter', 'dragover'].forEach((eventName) => {
+      dropZone.addEventListener(eventName, () => {
+        dropZone.classList.add('hover');
+      });
+    });
+  
+    // Unhighlight the drop zone when a file is dragged away from it
+    ['dragleave', 'drop'].forEach((eventName) => {
+      dropZone.addEventListener(eventName, () => {
+        dropZone.classList.remove('hover');
+      });
+    });
+  
+    // Handle dropped files
+    dropZone.addEventListener('drop', (e) => {
+      dropZone.classList.remove('hover');
+      const files = e.dataTransfer.files;
+  
+      if (files.length > 0) {
+        fileInput.files = files;
+      }
+    });
+  
+    // Open the file input dialog when the drop zone is clicked
+    dropZone.addEventListener('click', () => {
+      fileInput.click();
+    });
+  </script> -->
+  
 <%- include('../layouts/footer') %>

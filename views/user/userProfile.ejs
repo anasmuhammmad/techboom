@@ -1,0 +1,219 @@
+<%- include('../layouts/header') %>
+<%- include('../partials/user-header') %>
+<div class="modal fade tickerTimes" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="changePasswordModalLabel">Change password</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div id="flashMessage" class="alert alert-danger" style="display: none;"></div>
+          <div class="modal-body">
+            <form id="passwordChangeForm">
+                <div class="form-group">
+                    <label for="currentPassword">Current Password:</label>
+                    <input type="password" class="form-control" id="currentPassword" name="currentPassword" required>
+                </div>
+                <div class="form-group">
+                    <label for="newPassword">New Password:</label>
+                    <input type="password" class="form-control" id="password" name="newPassword" required>
+                </div>
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm Password:</label>
+                    <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
+                </div>
+                <br>
+                <button type="submit" class="btn btn-primary" id="changePasswordButton">Save</button>
+            </form>
+          </div>
+        </div>
+    </div>
+</div>
+<div class="container tickerTimes">
+  <h6>Your Profile</h6>
+  <div class="row mb-4 mt-3">
+    <div class="col-lg-2">
+      <div class="profile-picture d-flex flex-column">
+        <div class="profile-image">
+        </div>
+        <input type="file" id="profile-picture" accept="image/*" style="display: none;">
+        <div class="text-start">
+          <label for="profile-picture" class="profile-upload-btn">
+            <i class="fas fa-camera"></i> Upload Picture
+          </label>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-10">
+      <div class="form-group">
+        <label for="name">Name:</label>
+        <input type="text" id="name" class="form-control" value="<%= user.username %>" readonly>
+      </div>
+      <div class="form-group">
+        <label for="email">Email:</label>
+        <input type="email" id="email" class="form-control" value="<%= user.email %>" readonly>
+      </div>
+      <br>
+      <button  class="btn btn-info" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
+        <i class="fas fa-plus-circle"></i> Change password
+       </button>
+    </div>
+  </div>
+  <div class="row justify-content-center">
+    <div class="col-lg-12 col-md-6 col-sm-6  col-12">
+        <a class="text-decoration-none" href="/orderList">
+            <div class="card text-center  mb-3" style=" background: linear-gradient(to right, rgba(255,0,0,0), rgb(196, 255, 245));; height: 30vh;">
+                <div class="card-header">
+                    <img src="/images/order-box-removebg-preview.png" class="img-fluid" style="width: 10vh;"
+                        alt="">
+                </div>
+                <div class="card-body ">
+                    <h2 class="tickerTimes text-dark" style="font-family: 'Times New Roman', Times, serif;">
+                        Orders History
+                       
+                    </h2>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-lg-12 col-md-6 col-sm-6 col-12">
+        <a class="text-decoration-none" href="/cart">
+            <div class="card text-center mb-3" style=" background: linear-gradient(to right, rgba(255,0,0,0), rgb(196, 255, 245));; height: 30vh;">
+                <div class="card-header">
+                    <img src="/images/cart-card-removebg-preview.png" class="img-fluid" style="width: 10vh;"
+                        alt="">
+                </div>
+                <div class="card-body">
+                    <h2 class="tickerTimes text-dark" style="font-family: 'Times New Roman', Times, serif;">
+                        Cart
+                        
+                    </h2>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-lg-12 col-md-6 col-sm-6 col-12">
+        <a class="text-decoration-none" href="/editAddress">
+            <div class="card text-center  mb-3" style=" background: linear-gradient(to right, rgba(255,0,0,0), rgb(196, 255, 245));; height: 30vh;">
+                <div class="card-header">
+                    <img src="/images/address-removebg-preview.png" class="img-fluid" style="width: 10vh;"
+                        alt="">
+                </div>
+                <div class="card-body">
+                    <h2 class="tickerTimes text-dark" style="font-family: 'Times New Roman', Times, serif;">
+                        Address 
+                    </h2>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-lg-12 col-md-6 col-sm-6  col-12">
+        <a class="text-decoration-none" href="">
+            <div class="card text-center mb-3" style=" background: linear-gradient(to right, rgba(255,0,0,0), rgb(196, 255, 245));; height: 30vh;">
+                <div class="card-header">
+                    <img src="/images/wishlist-card-removebg-preview.png" class="img-fluid" style="width: 10vh;"
+                        alt="">
+                </div>
+                <div class="card-body">
+                    <h2 class="tickerTimes text-dark" style="font-family: 'Times New Roman', Times, serif;">
+                        Wishlist
+                       
+                    </h2>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-lg-12 col-md-6 col-sm-6  col-12">
+        <a class="text-decoration-none" href="">
+            <div class="card text-center mb-3" style=" background: linear-gradient(to right, rgba(255,0,0,0), rgb(196, 255, 245));; height: 30vh;">
+                <div class="card-header">
+                    <img src="/images/review-removebg-preview.png" class="img-fluid" style="width: 10vh;"
+                        alt="">
+                </div>
+                <div class="card-body">
+                    <h2 class="tickerTimes text-dark" style="font-family: 'Times New Roman', Times, serif;">
+                      My ReviewS 
+                        
+                    </h2>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-lg-12 col-md-6 col-sm-6  col-12">
+        <a class="text-decoration-none" href="">
+            <div class="card text-center mb-3" style=" background: linear-gradient(to right, rgba(255,0,0,0), rgb(196, 255, 245));; height: 30vh;">
+                <div class="card-header">
+                    <img src="/images/account-removebg-preview.png" class="img-fluid" style="width: 10vh;"
+                        alt="">
+                </div>
+                <div class="card-body">
+                    <h2 class="tickerTimes text-dark" style="font-family: 'Times New Roman', Times, serif;">
+                       Account Settings
+                    </h2>
+                </div>
+            </div>
+        </a>
+    </div>
+</div>
+</div>
+
+
+<style>
+  .card {
+    border-radius: 1rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 6px 0 rgb(218 218 253 / 65%),
+      0 2px 6px 0 rgb(206 206 238 / 54%);
+  }
+  .profile-picture {
+    text-align: center;
+  }
+  .profile-image {
+    width: 150px;
+    height: 150px;
+    background-color: #ccc; /* Default background color */
+    border-radius: 50%; /* Creates a circle */
+    display: inline-block;
+  }
+  .profile-upload-btn {
+    margin-top: 8px;
+    display: inline-block;
+    padding: 8px 16px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+</style>
+<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+<script>
+    $("#passwordChangeForm").submit((e) => {
+  e.preventDefault();
+  $.ajax({
+    url: '/changePassword',
+    method: 'post',
+    data: $('#passwordChangeForm').serialize(),
+    success: (response) => {
+      if (response.success) {
+        console.log('Password changed successfully');
+        // Close the modal
+        $('#changePasswordModal').modal('hide');
+        // Show a success message
+        // You can replace this with your preferred success message display logic
+        alert('Password changed successfully');
+      } else {
+        // Show a flash message
+        $('#flashMessage').text(response.error).show();
+      }
+    },
+    error: (xhr, status, error) => {
+      // Handle the AJAX error
+      console.log('Error:', error);
+      // Show a flash message
+      $('#flashMessage').text('An error occurred. Please try again.').show();
+    }
+  });
+});
+</script>
+<%- include('../layouts/footer') %>

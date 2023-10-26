@@ -1,5 +1,9 @@
 <%- include('../layouts/header')%>
 <%- include('../partials/admin-header')%>
+<div class="header" style="margin-top: 80px;">
+    <h1>Edit Category</h1>
+  </div>
+  <%- include('../partials/admin-canvas')%>
 <div class="container-fluid">
     <div class="row  border-start">
         <main class="px-md-4 icons " style="margin-left: 18%;width: 80%; margin-top: 6%;">
@@ -33,15 +37,16 @@
                                 accept="image/*"
                                 style="display: none;"
                                 multiple
-                                
                                 required
+                                
                             />
                             </div>
                             <!-- uploaded images -->
                             <div class="row justify-content-center">
                                 <div class="col-md-4 ">
                                     <div class="uploaded-image">
-                                        <img src="/uploads/<%=category.image%>" alt="Uploaded Image 1" id="uploadedImage" class="img-fluid" data-index="1">
+                                        <!-- <img src="/uploads/<%=category.image%>" alt="Uploaded Image 1" id="uploadedImage" class="img-fluid" data-index="1"> -->
+                                        <img src="/uploads/<%= category.image || 'placeholder.jpg' %>" alt="Uploaded Image" id="uploadedImage" class="img-fluid" style="max-height: 200px;">
                                         <button onclick="return confirm('Are you sure you want to delete the image')" class="btn btn-danger btn-sm delete-image"  data-index="1">Delete</button>
                                     </div>
                                 </div>

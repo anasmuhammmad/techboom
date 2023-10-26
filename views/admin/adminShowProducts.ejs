@@ -1,15 +1,22 @@
 <%-include('../layouts/header')%>
 <%- include('../partials/admin-header')%>
-<div class="container" style="margin-left: 17%;width: 82%; margin-top: 6%;">
+<div class="header" style="margin-top: 80px;">
+  <h1>Product List</h1>
+</div>
+<%- include('../partials/admin-canvas')%>
+<div class="container" >
+<!-- <div class="container" style="margin-left: 17%;width: 82%; margin-top: 6%;"> -->
     <div class="d-flex justify-content-between align-items-center">
         <h2>PRODUCT LIST</h2>
+        <a href="/admin/addproduct">
         <button class="btn btn-primary" id="addProduct">Add Product</button>
+        </a>
     </div>
 
     <div class="table-responsive mt-4">
         <div class="d-flex justify-content-end align-items-center">
             <div class="form-group me-2">
-                <input type="text" class="form-control" placeholder="Search">
+                <input type="text" class="form-control" placeholder="Search" id="searchInput">
             </div>
             <button class="btn btn-secondary me-2">Select Date</button>
             <button class="btn btn-primary me-2">Filter</button>
@@ -24,32 +31,32 @@
               <th>Discount Price</th>
               <th>Status</th>
               <th>Updated Date</th>
-              <th>Availability</th>
+              <th>Edit</th>
               <th>Action</th>
             </tr>
           </thead>
           <tbody>
             <% products.forEach(product => { %>
             <tr>
-              <td><%= product.ProductName %></td>
-              <td><%= product.AvailableQuantity %></td>
-              <td><%= product.Price %></td>
-              <td><%= product.DiscountAmount %></td>
-              <td><%= product.Status %></td>
-              <td><%= product.UpdatedOn %></td>
+              <td><%= product.name %></td>
+              <td><%= product.stock %></td>
+              <td><%= product.price %></td>
+              <td><%= product.discountPrice %></td>
+              <td><%= product.status %></td>
+              <td><%= product.updatedDate ? product.updatedDate.toLocaleDateString() : '' %></td>
               <td>
                 <a href="/admin/editproduct/<%=product._id%>">
                   <button class="btn btn-primary btn-sm text-light">EDIT</button>
                 </a>
               </td>
               <td>
-                <% if (product.Display === 'Active') { %>
+                <% if (product.status === 'Active') { %>
                 <a href="/admin/product/<%=product._id%>">
                   <button  onclick="return confirm('are you sure to block??')" class="btn btn-success">Block</button>
                 </a>
-                <% } else if (product.Display === 'Inactive') { %>
+                <% } else if (product.status === 'Inactive') { %>
                 <a href="/admin/product/<%=product._id%>">
-                  <button onclick="return confirm('Are you sure. You are going to unblock the user')" class="btn btn-danger">Unblock</button>
+                  <button onclick="return confirm('Are you sure. You are going to unblock the product')" class="btn btn-danger">Unblock</button>
                 </a>
                 <% } %>
               </td>
@@ -76,6 +83,19 @@
         <p>No results found.</p>
       <% } %>
 </div>
-
+<script>
+  document.getElementById('searchInput').addEventListener('input', function () {
+      const searchKeyword = this.value.toLowerCase();
+      const rows = document.querySelectorAll('tbody tr');
+      rows.forEach(row => {
+          const product = row.querySelector('td:first-child').textContent.toLowerCase();
+          if (product.includes(searchKeyword)) {
+              row.style.display = '';
+          } else {
+              row.style.display = 'none';
+          }
+      });
+  });
+</script>
 <%- include('../layouts/footer') %>
 

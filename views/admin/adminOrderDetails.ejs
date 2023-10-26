@@ -1,0 +1,78 @@
+<%-include('../layouts/header')%>
+<%- include('../partials/admin-header')%>
+<link rel="stylesheet" href="/stylesheet/orderDetials.css"> 
+ <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+
+<style>
+    .fixed-image {
+        width: 250px;
+        height: 250px;
+        object-fit: fill;
+    }
+
+    .progress-bar.order-placed {
+        background-color: #007bff;
+    }
+
+    .progress-bar.shipped {
+        background-color: #ffc107;
+    }
+
+    .progress-bar.delivered {
+        background-color: #28a745;
+    }
+
+    .progress-bar.rejected {
+        background-color: #dc3545;
+    }
+</style>
+<div class="header" style="margin-top: 80px;">
+    <h1>Order Details</h1>
+  </div>
+  <%- include('../partials/admin-canvas')%>
+<div class="container-fluid gradient-custom-2">
+    <div class="row justify-content-center align-items-center h-100">
+        <% if(order && order.Items.length > 0){ %>
+            <% order.Items.forEach((product, index)=> { %>
+                <div class="col-12 col-md-6 col-lg-4 mb-4">
+                    <div class="card" style="border-radius: 16px;">
+                        <div class="card-body">
+                            <h5 class="card-title">Order ID: <%= order._id %></h5>
+                            <p class="card-text">Placed On: <%= order.OrderDate %></p>
+                            <img src="/uploads/<%=product.ProductId.images[0]%>"
+                                class="card-img-top fixed-image img-fluid pl-3 ml-5" alt="Product Image">
+                            <h6 class="card-subtitle mb-2 text-muted"><%= product.ProductId.Name %></h6>
+                            <p class="card-text">Quantity: <%= product.Quantity %></p>
+                            <p class="card-text">Price: ₹ <%= product.ProductId.discountPrice %> /-</p>
+                            <p class="card-text">Via: <%= order.PaymentMethod %></p>
+                            <p class="card-text">Status: <%= order.Status %></p>
+
+                            <div class="progress">
+                                <div class="progress-bar
+                                    <% if (order.Status.toLowerCase() === 'order placed') { %> order-placed <% } %>
+                                    <% if (order.Status.toLowerCase() === 'shipped') { %> shipped <% } %>
+                                    <% if (order.Status.toLowerCase() === 'delivered') { %> delivered <% } %>
+                                    <% if (order.Status.toLowerCase() === 'rejected' || order.Status.toLowerCase() === 'canceled') { %> rejected <% } %>"
+                                    role="progressbar" aria-valuenow="<%=
+                                    order.Status.toLowerCase() === 'order placed' ? 10 :  /* 10% for " order placed" */
+                                    order.Status.toLowerCase() === 'shipped' ? 50 :
+                                    order.Status.toLowerCase() === 'rejected' ? 100 : 0 %>"
+                                    aria-valuemin="0" aria-valuemax="100" style="width: <%= order.Status.toLowerCase() === 'order placed' ? 10 :
+                                    order.Status.toLowerCase() === 'shipped' ? 50 :
+                                    order.Status.toLowerCase() === 'delivered' ? 100 :
+                                    order.Status.toLowerCase() === 'rejected' ? 100 : 0 %>%;">
+                                    <%= order.Status.toLowerCase() === 'order placed' ? '10%' :
+                                    order.Status.toLowerCase() === 'shipped' ? '50%' :
+                                    order.Status.toLowerCase() === 'delivered' ? '100%' :
+                                    order.Status.toLowerCase() === 'rejected' ? '0%' : '' %>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <% }) %>
+        <% } %>
+    </div>
+</div>
+
+<%- include('../layouts/footer') %>

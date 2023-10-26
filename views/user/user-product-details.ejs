@@ -1,90 +1,125 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Product Page</title>
     <!-- Include Bootstrap CSS and any other necessary stylesheets -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <script src="https://unpkg.com/js-image-zoom@0.4.1/js-image-zoom.js" type="application/javascript"></script>
-    <link href="/css/productDetails.css" rel="stylesheet" type="text/css">
-</head>
-<body>
-<nav class="navbar navbar-expand-lg navbar-light bg-light" style="padding-top:20px;">
-    <div class="container">
-        <a class="navbar-brand custom-text-shadow" style="font-family: 'Arial', sans-serif;font-weight:bold;" href="#">TechBoom</a>
-        <button class="navbar-toggler ml-auto" type="button" data-toggle="collapse" data-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item ml-auto">
-                    <a class="nav-link text-dark font-weight-bold" style="font-family: 'poppins', sans-serif;" href="#">HOME</a>
-                </li>
-                <li class="nav-item ml-auto">
-                    <a class="nav-link text-dark font-weight-bold" style="font-family: 'poppins', sans-serif;" href="#">SHOP</a>
-                </li>
-                <!-- Add more navigation items as needed -->
-            </ul>
-            <!-- Icons on larger screens -->
-            <div class="navbar-nav ml-auto d-none d-lg-flex">
-                <img class="images" src="/img/cart.jpeg">
-                <img class="images" src="/img/fav.jpeg">
-                <img class="images" src="/img/user.jpeg">
-            </div>
-            <!-- Text on smaller screens when collapsed -->
-            <div class="navbar-nav ml-auto d-lg-none">
-                <span class="nav-link ml-auto">Cart</span>
-                <span class="nav-link ml-auto">Favorites</span>
-                <span class="nav-link ml-auto">Profile</span>
-            </div>
-        </div>
-    </div>
-</nav>
 
-<div class="container">
-    <div class="row" style="margin-top:20px;">
-        <div class="col-md-6">
-            <div class="product-container">
-                <div id="productImagessss" class="product" >
-                    <img class="headphone" src="/img/product-1.webp" alt="GraphicCard">
+    <script src="https://unpkg.com/js-image-zoom@0.4.1/js-image-zoom.js" type="application/javascript"></script>
+
+    <link th:href="@{/css/User/productDetails.css}" rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light" style="padding-top:20px;">
+        <div class="container">
+            <a class="navbar-brand custom-text-shadow" style="font-family: 'Arial', sans-serif;font-weight:bold;"
+                href="#">TECHBOOM</a>
+
+            <!-- Align the toggle button to the right -->
+            <button class="navbar-toggler ml-auto" type="button" data-toggle="collapse" data-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item ml-auto">
+                        <a class="nav-link text-dark font-weight-bold" style="font-family: 'poppins', sans-serif;"
+                            href="#">HOME</a>
+                    </li>
+                    <li class="nav-item ml-auto">
+                        <a class="nav-link text-dark font-weight-bold" style="font-family: 'poppins', sans-serif;"
+                            href="#">SHOP</a>
+                    </li>
+                    <li class="nav-item ml-auto">
+                        <a class="nav-link text-dark font-weight-bold" style="font-family: 'poppins', sans-serif;"
+                            href="#">ABOUT</a>
+                    </li>
+
+                    <li class="nav-item ml-auto dropdown">
+                        <a class="nav-link text-dark font-weight-bold dropdown-toggle" href="#" id="categoriesDropdown"
+                            role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            CATEGORIES
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="categoriesDropdown">
+                            <a class="dropdown-item" href="#">Graphics Card</a>
+                            <a class="dropdown-item" href="#">SSD</a>
+                            <a class="dropdown-item" href="#">CPU Essentials</a>
+                            <!--                        <a class="dropdown-item" href="#">Second Hand Products</a>-->
+                        </div>
+                    </li>
+                    <li class="nav-item ml-auto">
+                        <a class="nav-link text-dark font-weight-bold" style="font-family: 'poppins', sans-serif;"
+                            href="#">CONTACT
+                            US</a>
+                    </li>
+                </ul>
+                <!-- Icons on larger screens -->
+                <div class="navbar-nav ml-auto d-none d-lg-flex">
+                    <img class="images" th:src="@{/image/cart.svg}">
+                    <img class="images" th:src="@{/image/love.png}">
+                    <img class="images" th:src="@{/image/profile.svg}">
                 </div>
-                <div class="row mt-3">
-                    <div class="col">
-                        <img class="thumbnail" src="/img/thumbnail.jpg" alt="">
-                    </div>
-                    <!-- Add more thumbnail images as needed -->
+                <!-- Text on smaller screens when collapsed -->
+                <div class="navbar-nav ml-auto d-lg-none">
+                    <span class="nav-link ml-auto">Cart</span>
+                    <span class="nav-link ml-auto">Favorites</span>
+                    <span class="nav-link ml-auto">Profile</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+
+
+ 
+<div class=" row" style="margin-top:20px;">
+        <div class="col-md-6">
+            <div id="productImages" class="product">
+                <img id="mainImage" class="headphone" src="/uploads/<%= product.images[0] %>" alt="Headphone"
+                    style="width: 100%">
+            </div>
+            <div class="row mt-4" style="margin-left: 5%;">
+                <div class="col">
+                    <img class="thumbnail" src="/uploads/<%= product.images[0] %>"
+                        data-image-src="/uploads/<%= product.images[0] %>" alt="Thumbnail 1"
+                        style="width: 80px; height: 50px">
+                </div>
+                <div class="col">
+                    <img class="thumbnail" src="/uploads/<%= product.images[0] %>"
+                        data-image-src="/uploads/<%= product.images[0] %>" alt="Thumbnail 2"
+                        style="width: 80px; height: 50px">
+                </div>
+                <div class="col">
+                    <img class="thumbnail" src="/uploads/<%= product.images[0] %>"
+                        data-image-src="/uploads/<%= product.images[0] %>" alt="Thumbnail 3"
+                        style="width: 80px; height: 50px">
                 </div>
             </div>
         </div>
         <div class="col-md-6">
-            <div class="product-details">
-                <h2>GeForce RTX 3050 Gaming OC 8G Graphics Card</h2>
-                <p style="font-family:'Jomhuria';font-weight:bold;font-size:20px;">GeForce RTX 3050 Gaming OC 8G Graphics Card, 3X WINDFORCE Fans, 8GB GDDR6 128-bit GDDR6, GV-N3050GAMING OC-8GD Video Card</p>
-                <!-- Add more product details as needed -->
-                <p style="font-family:'Montserrat';font-size:25px;font-weight:bold;">₹22,990</p>
-                <div class="about-item">
-                    <h3>About the Item</h3>
-                    <ul>
-                        <li>
-                            <p>VGA CUDA Cores 768 Dual Fan Cooling</p>
-                        </li>
-                        <li>
-                            <p>Core clock speed 1290MHz</p>
-                        </li>
-                        <li>
-                            <p>VGABoostClock 1392 MHz</p>
-                        </li>
-                    </ul>
-                </div>
+            <div class="product-details" style="margin-top: 10px;">
+                <h2>
+                    <%= product.name %>
+                </h2>
+                <p style="font-family:'Jomhuria';font-weight:bold;font-size:20px;">
+                    <%= product.description %>
+                </p>
+                <p style="font-family:'Inria Serif';font-weight:bold;font-size:15px;">
+                    Name: <span>
+                        <%= product.name %>
+                    </span> <br>
+                    Over Ear Connectivity Technology: Bluetooth 5.2
+                </p>
+                <p style="font-family:'Montserrat';font-size:25px;font-weight:bold;">
+                    <%= '₹' + product.price %>
+                </p>
                 <div class="d-flex align-items-center">
                     <button class="btn btn-primary" id="add-to-cart">Add to Cart</button>
-                    <div class="quantity-controls ml-3">
-                        <button class="btn btn-secondary" id="decrement">-</button>
-                        <span id="quantity-label">Quantity:</span>
-                        <span id="quantity">1</span>
-                        <button class="btn btn-secondary" id="increment">+</button>
-                    </div>
                 </div>
             </div>
         </div>
@@ -92,130 +127,127 @@
 
     <!-- Descriptions -->
     <div class="row mt-4">
-        <div class="col-md-12 text-center">
+        <div class="col-md-12 text-center ">
             <hr style="border-top: 1px solid #000;">
-            <p style="font-family: 'Your-Font'; font-size: 18px;">Description</p>
-            <!-- Add the description text below -->
-            <p style="font-family: 'Your-Font'; font-size: 16px; text-align: center;">
-                NVIDIA Ampere Streaming Multiprocessors 2nd Generation RT Cores 3rd Generation Tensor Cores Powered by GeForce RTX 3060 Integrated with 12GB GDDR6 192-bit memory interface WINDFORCE 3X Cooling System with alternate spinning fans RGB Fusion 2.0 Protection metal back plate 2x HDMI 2.1, 2x DisplayPort 1.4 Core Clock: 1837 MHz Limited Hash Rate version. Get the ultimate gaming performance with GIGABYTE RTX 3060 Graphics Cards. Powered by NVIDIA's 2nd gen RTX architecture and refined with WINDFORCE cooling technology, the GeForce RTX 3060 GAMING OC 12G (rev. 2.0) brings stunning visuals, amazingly fast frame rates, and AI acceleration to games and creative applications with its enhanced RT Cores and Tensor Cores.
-            </p>
+            <h1 class="mt-2">Related Products</h1>
         </div>
     </div>
 
     <!-- Related Products -->
-    <div class="row" style="margin-top:20px;">
-        <div class="col-md-4">
-            <!-- Related Product Card 1 -->
-            <div class="card" style="border: 1px solid #e0e0e0; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); width: 100%;">
-                <div class="bg-image hover-zoom ripple ripple-surface ripple-surface-light" data-mdb-ripple-color="light">
-                    <img src="/img/product-1.webp" style="width:300px;height:200px;" class="card-img-top" alt="Product Image" />
-                    <a href="#" style="position: absolute; top: 10px; right: 10px;"><img style="width: 24px; height: 24px;" src="/img/fav.jpeg" alt="Add to Favorites"></a>
-                </div>
-                <div class="card-body">
-                    <a href="#" class="text-reset">
-                        <h5 class="card-title" >Product name</h5>
-                    </a>
-                    <p class="card-text" style="font-family: 'Poppins'; font-size: 12px; margin-top: -5px; max-height: 40px; overflow: hidden; text-overflow: ellipsis;" >Product description</p>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h6 class="card-text" >Product price</h6>
-                        <button class="btn btn-primary">Add to Cart</button>
+    <div class="row" style="margin-top: 20px;">
+
+        <% relatedProducts.forEach(function(product, productIndex) { %>
+            <div class="col-lg-3 col-md-4 col-sm-6">
+                <!-- Related Product Card 1 -->
+                <div class="card"
+                    style="border: 1px solid #e0e0e0; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); width: 100%;">
+                    <div class="bg-image hover-zoom ripple ripple-surface ripple-surface-light"
+                        data-mdb-ripple-color="light">
+                        <img src="/uploads/<%= product.images[0] %>" style="width: 250px; height: 200px;"
+                            class="card-img-top" alt="Product Image" />
+                        <a href="#" style="position: absolute; top: 10px; right: 10px;"><img
+                                style="width: 24px; height: 24px;" src="/image/heart-regular.svg"
+                                alt="Add to Favorites"></a>
+                    </div>
+                    <div class="card-body">
+                        <a href="#" class="text-reset">
+                            <h5 class="card-title">
+                                <%= product.name %>
+                            </h5>
+                        </a>
+                        <p class="card-text"
+                            style="font-family: 'Poppins'; font-size: 12px; margin-top: -5px; max-height: 40px; overflow: hidden; text-overflow: ellipsis;">
+                            <%= product.description %>
+                        </p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h6 class="card-text">
+                                <%= '$' + product.price %>
+                            </h6>
+                            <button class="btn btn-primary">Add to Cart</button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <!-- Add more related product cards as needed -->
+            <% }); %>
     </div>
+
+    <footer class="container text-center text-lg-start bg-light text-muted">
+        <!-- Section: Links  -->
+        <section class="">
+            <div class="container text-center text-md-start mt-5">
+                <div class="row mt-3">
+                    <div class="col-md-3 col-lg-4 col-xl-3 mx-auto mb-4">
+                        <p>
+                            <!-- <img src="/img/.png"> -->
+                        </p>
+                        <h6 class="text-uppercase fw-bold mb-4">
+                            <i class="fas fa-gem me-3"></i>TechBoom
+                        </h6>
+                    </div>
+                    <div class="col-md-2 col-lg-2 col-xl-2 mx-auto mb-4">
+                        <h6 class="text-uppercase fw-bold mb-4" style="font-weight:bold;">
+                            Pages
+                        </h6>
+                        <p>
+                            <a href="#!" class="text-reset">Home</a>
+                        </p>
+                        <!-- Add more page links as needed -->
+                    </div>
+                    <div class="col-md-3 col-lg-2 col-xl-2 mx-auto mb-4">
+                        <h6 class="text-uppercase fw-bold mb-4" style="font-weight:bold;">
+                            Service
+                        </h6>
+                        <p>
+                            <a href="#!" class="text-reset">Product</a>
+                        </p>
+                        <!-- Add more service links as needed -->
+                    </div>
+                    <div class="col-md-4 col-lg-3 col-xl-3 mx-auto mb-md-0 mb-4">
+                        <h6 class="text-uppercase fw-bold mb-4" style="font-weight:bold;">
+                            Contact
+                        </h6>
+                        <p>
+                            <!-- <img src="/img/pho" class="align-middle"> 91+9961811304 -->
+                        </p>
+                        <p>
+                            <!-- <img src="/image/email.svg" class="align-middle"> techboompage@gmail.com -->
+                        </p>
+                        <p>
+                            <!-- <img src="/image/location.svg" class="align-middle">  Gurgaon, Haryana -->
+                        </p>
+                        <div class="text-center">
+                            <!-- <img src="/image/facebooks.svg">
+                        <img src="/image/linkedinlogo.svg" style="padding-left:20px;">
+                        <img src="/image/instagramlogo.svg" style="padding-left:20px;"> -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </footer>
+
 </div>
 
-<!-- Footer -->
-<footer class="container text-center text-lg-start bg-light text-muted">
-    <!-- Section: Links  -->
-    <section class="">
-        <div class="container text-center text-md-start mt-5">
-            <div class="row mt-3">
-                <div class="col-md-3 col-lg-4 col-xl-3 mx-auto mb-4">
-                    <p>
-                       <!-- <img src="/img/.png"> -->
-                    </p>
-                    <h6 class="text-uppercase fw-bold mb-4">
-                    <i class="fas fa-gem me-3"></i>TechBoom
-                </h6>
-                </div>
-                <div class="col-md-2 col-lg-2 col-xl-2 mx-auto mb-4">
-                    <h6 class="text-uppercase fw-bold mb-4"style="font-weight:bold;">
-                        Pages
-                    </h6>
-                    <p>
-                        <a href="#!" class="text-reset">Home</a>
-                    </p>
-                    <!-- Add more page links as needed -->
-                </div>
-                <div class="col-md-3 col-lg-2 col-xl-2 mx-auto mb-4">
-                    <h6 class="text-uppercase fw-bold mb-4" style="font-weight:bold;">
-                       Service
-                    </h6>
-                    <p>
-                        <a href="#!" class="text-reset">Product</a>
-                    </p>
-                    <!-- Add more service links as needed -->
-                </div>
-                <div class="col-md-4 col-lg-3 col-xl-3 mx-auto mb-md-0 mb-4">
-                    <h6 class="text-uppercase fw-bold mb-4" style="font-weight:bold;">
-                        Contact
-                    </h6>
-                    <p>
-                        <img src="/img/pho" class="align-middle"> 91+9961811304
-                    </p>
-                    <p>
-                        <img src="/image/email.svg" class="align-middle"> techboompage@gmail.com
-                    </p>
-                    <p>
-                        <img src="/image/location.svg" class="align-middle">  Gurgaon, Haryana
-                    </p>
-                    <div class="text-center">
-                        <img src="/image/facebooks.svg">
-                        <img src="/image/linkedinlogo.svg" style="padding-left:20px;">
-                        <img src="/image/instagramlogo.svg" style="padding-left:20px;">
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-</footer>
 
-<script>
-    const quantityElement = document.getElementById('quantity');
-    const decrementButton = document.getElementById('decrement');
-    const incrementButton = document.getElementById('increment');
+    <script>
 
-    let quantity = 1;
+        const options = {
+            width: 350,
+            height: 300,
+            zoomWidth: 500,
+            offset: { vertical: 0, horizontal: 0 },
+        };
+        const imageZoom = new ImageZoom(document.getElementById("productImages"), options);
+    </script>
 
-    function updateQuantity() {
-        quantityElement.textContent = quantity;
-    }
+    <!-- Footer -->
 
-    decrementButton.addEventListener('click', () => {
-        if (quantity > 1) {
-            quantity--;
-            updateQuantity();
-        }
-    });
 
-    incrementButton.addEventListener('click', () => {
-        quantity++;
-        updateQuantity();
-    });
 
-    var options = {
-        width: 250,
-        zoomWidth: 100,
-    };
-    new ImageZoom(document.getElementById("productImagessss"), options);
-</script>
-
-<!-- Include Bootstrap and any other necessary scripts -->
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Include Bootstrap and any other necessary scripts -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
+
 </html>

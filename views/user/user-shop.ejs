@@ -43,12 +43,13 @@
                         CATEGORIES
                     </a>
                     <div class="dropdown-menu" aria-labelledby="categoriesDropdown">
-                        <a class="dropdown-item" href="#">CPU</a>
-                        <a class="dropdown-item" href="#">Graphics Card</a>
-                        <a class="dropdown-item" href="#">Power Supplies</a>
+                        <% categories.forEach(function(category) { %>
+                        <a class="dropdown-item" href="#"><%= category.Name %></a>
+                        <% }); %>
+                            
                     </div>
                 </li>
-                <li class="nav-item ml-auto">
+                <li  class="nav-item ml-auto">
                     <a class="nav-link text-dark font-weight-bold"
                        style="font-family: 'poppins', sans-serif;" href="#">CONTACT US</a>
                 </li>
@@ -57,7 +58,7 @@
             <div class="navbar-nav ml-auto d-none d-lg-flex">
                 <img class="images" src="/img/cart.jpeg">
                 <img class="images" src="/img/fav.jpeg">
-                <img class="images" src="/img/user.jpeg">
+                <img class="images" src="/img/user.jpeg">   
             </div>
             <!-- Text on smaller screens when collapsed -->
             <div class="navbar-nav ml-auto d-lg-none">
@@ -82,6 +83,41 @@
 </div>
 <!--Product Listing-->
 <section>
+    <div class="container py-5">
+        <div class="row">
+            <% products.forEach(function(product, productIndex) { %>
+            <div class="col-lg-3 col-md-4 col-sm-12 mb-4">
+                <div class="card"
+                     style="border: 1px solid #e0e0e0; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); width: 100%;">
+                    <div class="bg-image hover-zoom ripple ripple-surface ripple-surface-light"
+                         data-mdb-ripple-color="light">
+                        <img src="/uploads/<%=product.images[0] %>" class="card-img-top" alt="<%= product.name %>"/>
+                        <a href="#"
+                           style="position: absolute; top: 10px; right: 10px;"><img
+                                    style="width: 24px; height: 24px;" src="/img/fav.jpeg"
+                                    alt="Add to Favorites"></a>
+                    </div>
+                    <div class="card-body">
+                        <a href="/productdetails/<%= product._id %>" class="text-reset">
+                            <h5 class="card-title"><%= product.name %></h5>
+                        </a>
+                        <p class="card-text"
+                           style="font-family: 'Poppins'; font-size: 12px; margin-top: -5px; max-height: 40px; overflow: hidden; text-overflow: ellipsis;">
+                            <%= product.description %></p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h6 class="card-text">Price: $<%= product.price %></h6>
+                            <a href="/addToCart/<%= product._id %>" class="btn btn-primary">Add to Cart</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <% }); %>
+        </div>
+    </div>
+</section>
+
+
+<!-- <section>
     <div class="container py-5">
         <div class="row">
             <% productList.forEach(function(product, productIndex) { %>
@@ -113,7 +149,7 @@
             <% }); %>
         </div>
     </div>
-</section>
+</section> -->
 
 <!-- Bootstrap JavaScript -->
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"

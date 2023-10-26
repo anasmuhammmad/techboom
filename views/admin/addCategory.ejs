@@ -1,5 +1,9 @@
 <%- include('../layouts/header')%>
 <%- include('../partials/admin-header')%>
+<div class="header" style="margin-top: 80px;">
+    <h1>Add Category</h1>
+  </div>
+  <%- include('../partials/admin-canvas')%>
 <div class="container-fluid">
     <div class="row  border-start">
         <main class="px-md-4 icons " style="margin-left: 18%;width: 80%; margin-top: 6%;">
@@ -32,7 +36,7 @@
                                 accept="image/*"
                                 multiple
                                 style="display: none;"
-                                required
+                             
                             />
                             </div>
                             <br>
@@ -50,6 +54,25 @@
     </div>
 </div>
 
-
+<script>
+    function previewImages(input) {
+        var preview = document.getElementById("uploadedImage");
+        preview.innerHTML = ""; // Clear any previously displayed images
+    
+        if (input.files) {
+            for (var i = 0; i < input.files.length; i++) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    var img = document.createElement("img");
+                    img.src = e.target.result;
+                    img.className = "img-fluid";
+                    img.style.maxHeight = "200px";
+                    preview.appendChild(img);
+                };
+                reader.readAsDataURL(input.files[i]);
+            }
+        }
+    }
+    </script>
 
 <%- include('../layouts/footer') %>
