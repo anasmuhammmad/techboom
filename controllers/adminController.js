@@ -6,9 +6,9 @@ const flash = require("express-flash");
 const Admin = require("../models/adminSchema");
 const adminAuth = require('../middlewares/adminAuth')
 const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-const Order = require("../models/orderSchema");
 
+const Order = require("../models/orderSchema");
+const Coupon = require("../models/couponSchema");
 module.exports = {
   // admin:async (req,res)=>{
   //   const Email = "anasmuhammed444@gmail"
@@ -23,7 +23,40 @@ module.exports = {
   // initial: (req, res) => {
   //     res.redirect("/admin/login");
   //   },
+  getCoupon: async (req, res) => {
+    try {
+      const coupons = await Coupon.find();
+      res.render("admin/showCoupon", { coupons });
+    } catch (error) {
+      console.log(error);
+    }
+  },
+  
+  getAddCoupon: async (req, res) => {
+    try {
+      res.render("admin/addCoupon");
+    } catch (error) {}
+  },
 
+  
+  postAddCoupon: async (req, res) => {
+    try {
+      console.log(req.body);
+      if (req.body.discountType === "fixed") {
+        req.body.amount = req.body.amount[1];
+      } else if (req.body.discountType === "percentage") {
+        req.body.amount = req.body.amount[0];
+      }
+      const coupon = await Coupon.create(req.body);
+      if (coupon) {
+        console.log("added to collection");
+      } else {
+        console.log("not added to collection");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  },
   getLogin: async (req, res) => {
     if (req.session.adminAuth) {
       res.redirect("/admin/product");

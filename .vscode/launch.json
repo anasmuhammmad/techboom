@@ -1,0 +1,10 @@
+{
+    "configurations": [
+        {
+            "type": "msedge",
+            "name": "http://localhost:5000/admin/addproduct",
+            "request": "launch",
+            "url": "http://localhost:5000/admin/addproduct"
+        }
+    ]
+}

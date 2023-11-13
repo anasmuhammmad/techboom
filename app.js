@@ -1,16 +1,18 @@
 
 
 const express = require('express');
-const flash = require('express-flash');
+
 const session = require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(session);
+const flash = require('connect-flash');
 const ejs = require('ejs');
 const app = express();
 const path = require('path');
 const jwt = require("jsonwebtoken");
 const cookieParser = require('cookie-parser');
 const userRouter = require('./routers/user');
-
+const Razorpay = require('razorpay');
+var instance = new Razorpay({ key_id: process.env.KEY_ID, key_secret: process.env.KEY_SECRET })
 const connectionString = 'mongodb://localhost:27017/your-database-name';
 const adminRouter = require('./routers/admin');
 // Import the database connection function
@@ -44,6 +46,7 @@ const store = new MongoDBStore({
     // cookie: { maxAge: 24 * 60 * 60 * 1000 },
   }));
 
+ 
   app.use(flash());
   app.use('/uploads', express.static('uploads'));
   app.use((req, res, next) => {

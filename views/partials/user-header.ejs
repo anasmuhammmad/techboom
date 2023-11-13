@@ -18,7 +18,7 @@
                 <span> Shop</span>
                 </a>
               </div>
-              <form class="d-flex" role="search">
+              <form class="d-flex" role="search" id="searchForm">
                 <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
                 <button class="btn btn-outline-success" type="submit">Search</button>
               </form>
@@ -57,5 +57,33 @@
           </div>
       </div>
     </nav>
+    <script>
+document.addEventListener("DOMContentLoaded", function () {
+  const searchForm = document.getElementById("searchForm");
+  const searchInput = document.getElementById("searchInput");
+  const searchResultsContainer = document.getElementById("searchResults");
+
+  searchForm.addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    const searchQuery = searchInput.value;
+
+    // Make an AJAX request to the server
+    fetch(`/search?q=${searchQuery}`)
+      .then((response) => response.json())
+      .then((data) => {
+        // Handle the search results, e.g., display them in the searchResultsContainer
+        const results = data.results;
+        displaySearchResults(results);
+      });
+  });
+
+  // Function to display search results (implement as needed)
+  function displaySearchResults(results) {
+    // Implement how you want to display search results on your web page
+    // You can append results to the searchResultsContainer, for example.
+  }
+});
+    </script>
     </header>
     

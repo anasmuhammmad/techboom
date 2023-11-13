@@ -1,268 +1,279 @@
 <%-include('../layouts/header')%>
-<%- include('../partials/admin-header')%>
-<div class="header" style="margin-top: 80px;">
-    <h1>Add Product</h1>
-  </div>
-  <%- include('../partials/admin-canvas')%>
-<div class="container-fluid">
-    <div class="row  border-start">
-        <main class="px-md-4 icons " style="margin-left: 18%;width: 80%; margin-top: 6%;">
-            <div class="row d-flex justify-content-between">
-                <div class="col-md-8">
-                    <h1 class="mt-5">Add Product</h1>
-                    <br>
-                    <form action="/admin/addproduct" method="post" enctype="multipart/form-data" class="bg-white">
-                        <div class="form-group">
-                            <label for="productName">Product Name:</label>
-                            <input
-                                type="text"
-                                name="ProductName"
-                                class="form-control bg-light"
-                                id="productName"
-                                placeholder="Enter product name"
-                                required
-                            />
-                        </div><br>
+    <%- include('../partials/admin-header')%>
 
-                        <div class="form-group">
-                            <label for="productDescription">Product Description:</label>
-                            <textarea
-                                class="form-control bg-light"
-                                name="Description"
-                                id="productDescription"
-                                rows="4"
-                                placeholder="Enter product description"
-                                required
-                            ></textarea>
-                        </div>
-                        <br >
-                        <div class="form-group">
-                            <label for="productSpecification">Product Specification:</label>
-                            <textarea
-                                class="form-control bg-light"
-                                name="Specification1"
-                                id="productSpecification1"
-                                placeholder="Enter product Specification"
-                                required
-                            ></textarea>
-                            <label for="productSpecification2">Product Specification:</label>
-                            <textarea
-                                class="form-control bg-light"
-                                name="Specification2"
-                                id="productSpecification"
-                                placeholder="Enter product Specification"
-                                required
-                            ></textarea>
-                            <label for="productSpecification3">Product Specification:</label>
-                            <textarea
-                                class="form-control bg-light"
-                                name="Specification3"
-                                id="productSpecification"
-                                placeholder="Enter product Specification"
-                                required
-                            ></textarea>
-                            <label for="productSpecification4">Product Specification:</label>
-                            <textarea
-                                class="form-control bg-light"
-                                name="Specification4"
-                                id="productSpecification"
-                                placeholder="Enter product Specification"
-                                required
-                            ></textarea>
-                        </div>
-                        <br>
+        <div class="header" style="margin-top: 80px;">
+            <h1>Add Product</h1>
+        </div>
+        <%- include('../partials/admin-canvas')%>
+            <div class="container-fluid">
+                <div class="row  border-start">
+                    <main class="px-md-4 icons " style="margin-left: 18%;width: 80%; margin-top: 6%;">
+                        <div class="row d-flex justify-content-between">
+                            <div class="col-md-8">
+                                <h1 class="mt-5">Add Product</h1>
+                                <br>
+                                <form action="/admin/addproduct" method="post" enctype="multipart/form-data"
+                                    class="bg-white" id="myForm">
+                                    <div class="form-group">
+                                        <label for="productName">Product Name:</label>
+                                        <input type="text" name="ProductName" class="form-control bg-light"
+                                            id="productName" placeholder="Enter product name" required />
+                                    </div><br>
 
-                        <div class="border p-3 mb-3 bg-light "> <!-- Added bg-light and text-center classes -->
-                            <h3>Media</h3>
-                            <div class="form-group text-center ">
-                                <label for="productImage">Drag and drop or click to upload an image:</label>
-                                <br><br><br><br>
-                                <input
-                                    type="file"
-                                    name="image"
-                                    class="form-control-file"
-                                    id="productImage"
-                                    accept="image/*"
-                                    multiple
-                                    style="display: none;"
-                                    
-                                />
+                                    <div class="form-group">
+                                        <label for="productDescription">Product Description:</label>
+                                        <textarea class="form-control bg-light" name="Description"
+                                            id="productDescription" rows="4" placeholder="Enter product description"
+                                            required></textarea>
+                                    </div>
+                                    <br>
+                                    <div class="form-group">
+                                        <label for="productSpecification">Product Specification:</label>
+                                        <textarea class="form-control bg-light" name="Specification1"
+                                            id="productSpecification1" placeholder="Enter product Specification"
+                                            required></textarea>
+                                        <label for="productSpecification2">Product Specification:</label>
+                                        <textarea class="form-control bg-light" name="Specification2"
+                                            id="productSpecification" placeholder="Enter product Specification"
+                                            required></textarea>
+                                        <label for="productSpecification3">Product Specification:</label>
+                                        <textarea class="form-control bg-light" name="Specification3"
+                                            id="productSpecification" placeholder="Enter product Specification"
+                                            required></textarea>
+                                        <label for="productSpecification4">Product Specification:</label>
+                                        <textarea class="form-control bg-light" name="Specification4"
+                                            id="productSpecification" placeholder="Enter product Specification"
+                                            required></textarea>
+                                    </div>
+                                    <br>
+
+                                    <div class="border p-3 mb-3 bg-light ">
+                                        <!-- Added bg-light and text-center classes -->
+                                        <h3>Media</h3>
+                                        <div class="form-group text-center ">
+                                            <label for="productImage">Drag and drop or click to upload an image:</label>
+                                            <br><br><br><br>
+                                            <input type="file" name="image" class="form-control-file" id="productImage"
+                                                accept="image/*" multiple style="display: none;" />
+                                        </div>
+                                        <!-- uploaded images -->
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div class="uploaded-image">
+                                                    <img src="" alt="Uploaded Image 1" id="uploadedImage1"
+                                                        class="img-fluid" data-index="1">
+                                                    <button class="btn btn-danger btn-sm delete-image"
+                                                        style="display: none;" data-index="1">Delete</button>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="uploaded-image">
+                                                    <img src="" alt="Uploaded Image 2" id="uploadedImage2"
+                                                        class="img-fluid" data-index="2">
+                                                    <button class="btn btn-danger btn-sm delete-image"
+                                                        style="display: none;" data-index="2">Delete</button>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="uploaded-image">
+                                                    <img src="" alt="Uploaded Image 3" id="uploadedImage3"
+                                                        class="img-fluid" data-index="3">
+                                                    <button class="btn btn-danger btn-sm delete-image"
+                                                        style="display: none;" data-index="3">Delete</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="border p-3 mb-3">
+                                        <h2>Pricing</h2>
+                                        <div class="form-group">
+                                            <label for="basePrice">Base Price:</label>
+                                            <input type="number" name="Price" class="form-control bg-light"
+                                                id="basePrice" placeholder="Enter base price" min="0" required />
+                                            <span id="basePrice-validation-message" class="validation-message"></span>
+                                        </div>
+                                        <br>
+                                        <div class="form-group">
+                                            <label for="discountAmount">Discount Amount:</label>
+                                            <input type="number" name="DiscountAmount" class="form-control bg-light"
+                                                id="discountAmount" placeholder="Enter discount amount" min="0"
+                                                required />
+                                            <span id="discountPrice-validation-message"
+                                                class="validation-message"></span>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="border p-3 mb-3">
+                                        <h2>Variations</h2>
+                                        <div>
+                                            <input type="radio" name="productType" id="storageRadio"
+                                                value="Storage Devices"> Storage Devices
+                                            <input type="radio" name="productType" id="graphicscardRadio"
+                                                value="Graphics Card"> Graphics Card
+                                        </div>
+                                        <div id="storagedevices" style="display: none;">
+                                            <label for="storagesize">Enter Storage size:</label>
+                                            <input type="text" name="storagesize" id="storagesize">
+                                        </div>
+                                        <div id="graphicscards" style="display: none;">
+                                            <label for="gpumodel">Enter the GPU model</label>
+                                            <select id="gpumodel" name="graphicscard">
+                                                <option value="Ge30">GeForce RTX 30 Series</option>
+                                                <option value="Ge16">GeForce GTX 16 Series</option>
+                                                <option value="Ge10">GeForce GTX 10 Series</option>
+                                                <!-- Add more options as needed -->
+                                            </select>
+                                        </div>
+                                    </div>
+
+
+
+                                    <div class="border p-3 mb-3">
+                                        <h2>Stock</h2>
+
+                                        <div class="form-group">
+                                            <label for="quantity">Quantity:</label>
+                                            <input type="number" name="AvailableQuantity" class="form-control bg-light"
+                                                id="quantity" placeholder="Enter quantity" required />
+                                        </div>
+                                    </div>
+
+
                             </div>
-                            <!-- uploaded images -->
-                            <div class="row">
-                                <div class="col-md-4">
-                                    <div class="uploaded-image">
-                                        <img src="" alt="Uploaded Image 1" id="uploadedImage1" class="img-fluid" data-index="1">
-                                        <button class="btn btn-danger btn-sm delete-image" style="display: none;" data-index="1">Delete</button>
+
+                            <div class="col-md-4 my-5">
+                                <div class="bg-white p-3">
+                                    <div class="form-group">
+                                        <br>
+                                        <label for="category">Category:</label>
+                                        <select class="form-select bg-light" id="category" name="Category" required>
+                                            <option value="" selected disabled>Select a category</option>
+                                            <% categories.forEach(function(category) { %>
+                                                <option value="<%=category.Name%>">
+                                                    <%=category.Name%>
+                                                </option>
+                                                <% }); %>
+                                        </select>
+                                    </div><br>
+                                    <div class="form-group">
+                                        <br>
+                                        <label for="brandName">Brand Name:</label>
+                                        <select name="BrandName" class="form-select bg-light" id="brand">
+                                            <option value="" selected disabled>Select a Brand</option>
+                                            <% brand.forEach(function(brand) { %>
+                                                <option value="<%=brand.Name%>">
+                                                    <%=brand.Name%>
+                                                </option>
+                                                <% }); %>
+                                        </select>
+                                    </div><br>
+                                    <div class="form-group">
+                                        <label for="tags">Tags:</label>
+                                        <input type="text" class="form-control bg-light" name="Tags" id="tags"
+                                            placeholder="Enter tags" />
                                     </div>
                                 </div>
-                                <div class="col-md-4">
-                                    <div class="uploaded-image">
-                                        <img src="" alt="Uploaded Image 2" id="uploadedImage2" class="img-fluid" data-index="2">
-                                        <button class="btn btn-danger btn-sm delete-image" style="display: none;" data-index="2">Delete</button>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="uploaded-image">
-                                        <img src="" alt="Uploaded Image 3" id="uploadedImage3" class="img-fluid" data-index="3">
-                                        <button class="btn btn-danger btn-sm delete-image" style="display: none;" data-index="3">Delete</button>
-                                    </div>
-                                </div>
+                                <button type="submit" class="btn btn-primary ms-3">Add Product</button>
                             </div>
+                            </form>
                         </div>
-
-
-                        <div class="border p-3 mb-3">
-                            <h2>Pricing</h2>
-                            <div class="form-group">
-                                <label for="basePrice">Base Price:</label>
-                                <input
-                                    type="number"
-                                    name="Price"
-                                    class="form-control bg-light"
-                                    id="basePrice"
-                                    placeholder="Enter base price"
-                                    required
-                                />
-                            </div>
-                            <br>
-                            <div class="form-group">
-                                <label for="discountAmount">Discount Amount:</label>
-                                <input
-                                    type="number"
-                                    name="DiscountAmount"
-                                    class="form-control bg-light"
-                                    id="discountAmount"
-                                    placeholder="Enter discount amount"
-                                    required
-                                />
-                            </div>
-                        </div>
-
-
-                        <div class="border p-3 mb-3">
-                            <h2>Variations</h2>
-                            <div>
-                                <input type="radio" name="productType" id="storageRadio" value="Storage Devices"> Storage Devices
-                                <input type="radio" name="productType" id="graphicscardRadio" value="Graphics Card"> Graphics Card
-                            </div>
-                            <div id="storagedevices" style="display: none;">
-                                <label for="storagesize">Enter Storage size:</label>
-                                <input type="text" name="storagesize" id="storagesize">
-                            </div>
-                            <div id="graphicscards" style="display: none;">
-                                <label for="gpumodel">Enter the GPU model</label>
-                                <select id="gpumodel" name="graphicscard">
-                                      <option value="Ge30">GeForce RTX 30 Series</option>
-                                    <option value="Ge16">GeForce GTX 16 Series</option>
-                                    <option value="Ge10">GeForce GTX 10 Series</option>
-                                    <!-- Add more options as needed -->
-                                </select>
-                            </div>
-                        </div>
-
-
-
-                        <div class="border p-3 mb-3">
-                            <h2>Stock</h2>
-                            
-                            <div class="form-group">
-                                <label for="quantity">Quantity:</label>
-                                <input
-                                    type="number"
-                                    name="AvailableQuantity"
-                                    class="form-control bg-light"
-                                    id="quantity"
-                                    placeholder="Enter quantity"
-                                    required
-                                />
-                            </div>
-                        </div>
-
-                    
+                    </main>
                 </div>
-
-                <div class="col-md-4 my-5">
-                    <div class="bg-white p-3">
-                        <div class="form-group">
-                            <br>
-                            <label for="category">Category:</label>
-                            <select class="form-select bg-light" id="category" name="Category" required>
-                                <option value="" selected disabled>Select a category</option>
-                                <% categories.forEach(function(category) { %>
-                                <option value="<%=category.Name%>"><%=category.Name%></option>
-                                <% }); %>
-                            </select>
-                        </div><br>
-                        <div class="form-group">
-                            <br>
-                            <label for="brandName">Brand Name:</label>
-                            <select name="BrandName" class="form-select bg-light" id="brand" >
-                                <option value="" selected disabled>Select a Brand</option>
-                                <% brand.forEach(function(brand) { %>
-                                <option value="<%=brand.Name%>"><%=brand.Name%></option>
-                                <% }); %>
-                            </select>
-                        </div><br>
-                        <div class="form-group">
-                            <label for="tags">Tags:</label>
-                            <input
-                                type="text"
-                                class="form-control bg-light"
-                                name="Tags"
-                                id="tags"
-                                placeholder="Enter tags"
-                              
-                            />
-                        </div>
-                    </div>
-                    <button type="submit" class="btn btn-primary ms-3">Add Product</button>
-                </div>
-                </form>
             </div>
-        </main>
-    </div>
-</div>
-<script>
-    // document.addEventListener('DOMContentLoaded', function () {
-    //     const storageRadio = document.getElementById('storageRadio');
-    //     const graphicscardRadio = document.getElementById('graphicscardRadio');
-    //     const storagesizeInput = document.getElementById('storagesize');
-    //     const gpuModelSelect = document.getElementById('gpumodel');
+            <script>
+                // document.addEventListener('DOMContentLoaded', function () {
+                //     const storageRadio = document.getElementById('storageRadio');
+                //     const graphicscardRadio = document.getElementById('graphicscardRadio');
+                //     const storagesizeInput = document.getElementById('storagesize');
+                //     const gpuModelSelect = document.getElementById('gpumodel');
 
-    //     // Function to handle radio button change
-    //     function handleProductTypeChange() {
-    //         if (storageRadio.checked) {
-    //             storagesizeInput.style.display = 'block';
-    //             gpuModelSelect.style.display = 'none';
-    //         } else if (graphicscardRadio.checked) {
-    //             storagesizeInput.style.display = 'none';
-    //             gpuModelSelect.style.display = 'block';
-    //         }
-    //     }
+                //     // Function to handle radio button change
+                //     function handleProductTypeChange() {
+                //         if (storageRadio.checked) {
+                //             storagesizeInput.style.display = 'block';
+                //             gpuModelSelect.style.display = 'none';
+                //         } else if (graphicscardRadio.checked) {
+                //             storagesizeInput.style.display = 'none';
+                //             gpuModelSelect.style.display = 'block';
+                //         }
+                //     }
 
-    //     // Attach change event listener to radio buttons
-    //     storageRadio.addEventListener('change', handleProductTypeChange);
-    //     graphicscardRadio.addEventListener('change', handleProductTypeChange);
+                //     // Attach change event listener to radio buttons
+                //     storageRadio.addEventListener('change', handleProductTypeChange);
+                //     graphicscardRadio.addEventListener('change', handleProductTypeChange);
 
-    //     // Trigger the change event initially to set the initial state
-    //     handleProductTypeChange();
-    // });
-    $(document).ready(function () {
-    $('input[name="productType"]').change(function () {
-        const selectedProductType = $('input[name="productType"]:checked').val();
-        if (selectedProductType === "Storage Devices") {
-            $('#storagesizeInput').show();
-            $('#graphicscardInput').hide();
-        } else if (selectedProductType === "Graphics Card") {
-            $('#storagesizeInput').hide();
-            $('#graphicscardInput').show();
+                //     // Trigger the change event initially to set the initial state
+                //     handleProductTypeChange();
+                // });
+                //     $(document).ready(function () {
+                //     $('input[name="productType"]').change(function () {
+                //         const selectedProductType = $('input[name="productType"]:checked').val();
+                //         if (selectedProductType === "Storage Devices") {
+                //             $('#storagesizeInput').show();
+                //             $('#graphicscardInput').hide();
+                //         } else if (selectedProductType === "Graphics Card") {
+                //             $('#storagesizeInput').hide();
+                //             $('#graphicscardInput').show();
+                //         }
+                //     });
+                // });
+
+                const basePriceInput = document.getElementById("basePrice");
+                const discountPriceInput = document.getElementById("discountAmount");
+                const basePriceValidationMessage = document.getElementById("basePrice-validation-message");
+                const discountPriceValidationMessage = document.getElementById("discountPrice-validation-message");
+               
+                const form = document.getElementById('myForm');
+                basePriceInput.addEventListener("input", () => {
+                    validatePriceInput(basePriceInput, basePriceValidationMessage);
+                });
+
+                discountPriceInput.addEventListener("input", () => {
+                    validatePriceInput(discountPriceInput, discountPriceValidationMessage);
+                });
+
+                function validatePriceInput(inputField, validationMessage) {
+                    const priceValue = parseFloat(inputField.value);
+
+                    if (isNaN(priceValue) || priceValue < 0) {
+                        validationMessage.textContent = "Amount should be a positive value";
+                    } else {
+                        validationMessage.textContent = ""; // Clear the validation message
+                    }
+                }
+
+      
+
+
+                form.addEventListener('submit', function (event) {
+      // Get all input elements with the "form-control bg-light" class
+      const inputs = document.querySelectorAll('.form-control.bg-light');
+
+      // Check each input value for only blank spaces
+      for (const input of inputs) {
+        if (input.value.trim() === '') {
+          // If an input contains only blank spaces, prevent form submission
+          event.preventDefault();
+          alert('Input fields cannot be empty or contain only blank spaces.');
+          return; // Stop further checking once a blank space is found
         }
-    });
-});
-</script>
+      }
 
-<!-- <script>
+         // Check if the discount amount is greater than or equal to the base price
+         if (parseFloat(discountPriceInput.value) >= parseFloat(basePriceInput.value)) {
+        // If the discount amount is not less than the base price, prevent form submission
+        event.preventDefault();
+        alert('Discount amount must be less than the base price.');
+        return;
+      }
+    });
+
+            </script>
+
+            <!-- <script>
     const dropZone = document.getElementById('drop-zone');
     const fileInput = document.getElementById('productImage');
   
@@ -303,5 +314,5 @@
       fileInput.click();
     });
   </script> -->
-  
-<%- include('../layouts/footer') %>
+
+            <%- include('../layouts/footer') %>

@@ -3,6 +3,7 @@ const router = express.Router();
 const userOtpVerification = require('../utility/otpFunctions');
 const adminController = require('../controllers/adminController');
 const userController = require('../controllers/userController');
+const productController = require('../controllers/productController');
 const auth = require('../middlewares/adminAuth');
 const Admin = require('../models/adminSchema');
 const Category = require('../models/categorySchema');
@@ -12,9 +13,9 @@ const jwt = require("jsonwebtoken");
 const flash = require("express-flash");
 const bcrypt = require("bcrypt");
 const { route } = require('./user');
+const couponController = require('../controllers/couponController');
 const mongoose = require('mongoose');
 const upload = require('../middlewares/upload')
-
 
 // const adminData = {
 //     Email: 'anasmuhammed444@gmail.com',
@@ -141,11 +142,11 @@ router.get('/admin/logout', adminController.logout);
 //     }
 // })
 // product-page
-router.get("/admin/product",auth.authMiddleware, adminController.getProduct)
-router.get("/admin/product/:_id",auth.authMiddleware,adminController.blockProduct)
+router.get("/admin/product",auth.authMiddleware, productController.getProduct)
+router.get("/admin/product/:_id",auth.authMiddleware,productController.blockProduct)
 
-router.get('/admin/editproduct/:_id',auth.authMiddleware, adminController.getEditProduct)
-    router.post('/admin/editproduct/:_id',auth.authMiddleware,upload.array('image',3),adminController.postEditProduct)
+router.get('/admin/editproduct/:_id',auth.authMiddleware, productController.getEditProduct)
+    router.post('/admin/editproduct/:_id',auth.authMiddleware,upload.array('image',3),productController.postEditProduct)
 
 
 router.get('/admin/userslist',auth.authMiddleware,adminController.getUser)
@@ -162,10 +163,12 @@ router.post('/admin/addbrand',adminController.postAddBrand)
 
 
 
+router.get('/admin/coupons',couponController.getCoupon)
+router.get('/admin/addCoupon',adminController.getAddCoupon)
+router.post('/admin/addCoupon',adminController.postAddCoupon)
 
-
-router.get('/admin/addproduct',adminController.getAddProduct)
-router.post('/admin/addproduct',upload.array('image',3),adminController.postAddProduct)
+router.get('/admin/addproduct',productController.getAddProduct)
+router.post('/admin/addproduct',upload.array('image',3),productController.postAddProduct)
 
 
 router.get('/admin/order',adminController.getOrders)

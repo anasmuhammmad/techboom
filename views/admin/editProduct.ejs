@@ -11,7 +11,7 @@
                 <div class="col-md-8">
                     <h1 class="mt-5">EDIT PRODUCT</h1>
                     <br>
-                    <form action="/admin/editproduct/<%=product._id%>" method="post" enctype="multipart/form-data" class="bg-white">
+                    <form action="/admin/editproduct/<%=product._id%>" method="post" enctype="multipart/form-data" class="bg-white" id="myForm">
                         <div class="form-group">
                             <label for="productName">Product Name:</label>
                             <input
@@ -236,4 +236,58 @@
         </main>
     </div>
 </div>
+<script>
+
+const basePriceInput = document.getElementById("basePrice");
+                const discountPriceInput = document.getElementById("discountAmount");
+                const basePriceValidationMessage = document.getElementById("basePrice-validation-message");
+                const discountPriceValidationMessage = document.getElementById("discountPrice-validation-message");
+               
+                const form = document.getElementById('myForm');
+                basePriceInput.addEventListener("input", () => {
+                    validatePriceInput(basePriceInput, basePriceValidationMessage);
+                });
+
+                discountPriceInput.addEventListener("input", () => {
+                    validatePriceInput(discountPriceInput, discountPriceValidationMessage);
+                });
+
+                function validatePriceInput(inputField, validationMessage) {
+                    const priceValue = parseFloat(inputField.value);
+
+                    if (isNaN(priceValue) || priceValue < 0) {
+                        validationMessage.textContent = "Amount should be a positive value";
+                    } else {
+                        validationMessage.textContent = ""; // Clear the validation message
+                    }
+                }
+
+      
+
+
+                form.addEventListener('submit', function (event) {
+      // Get all input elements with the "form-control bg-light" class
+      const inputs = document.querySelectorAll('.form-control.bg-light');
+
+      // Check each input value for only blank spaces
+      for (const input of inputs) {
+        if (input.value.trim() === '') {
+          // If an input contains only blank spaces, prevent form submission
+          event.preventDefault();
+          alert('Input fields cannot be empty or contain only blank spaces.');
+          return; // Stop further checking once a blank space is found
+        }
+      }
+
+         // Check if the discount amount is greater than or equal to the base price
+         if (parseFloat(discountPriceInput.value) >= parseFloat(basePriceInput.value)) {
+        // If the discount amount is not less than the base price, prevent form submission
+        event.preventDefault();
+        alert('Discount amount must be less than the base price.');
+        return;
+      }
+    });
+
+
+</script>
 <%- include('../layouts/footer') %>

@@ -38,6 +38,14 @@
                    
                   
                       <button id="cancelOrderButton<%= order._id %>" class="btn btn-warning" onclick="confirmCancellation('<%= order._id %>')">Cancel Order</button>
+                      <div id="cancellationModal" class="modal">
+                        <div class="modal-content">
+                          <span class="close" id="closeModal">&times;</span>
+                          <h2>Reason for Cancellation</h2>
+                          <input type="text" id="cancellationReason" placeholder="Enter your reason">
+                          <button id="submitReason">Submit</button>
+                        </div>
+                      </div>
                   <% } %>
             </td>
           </tr>
@@ -56,9 +64,41 @@
       if (confirmation) {
         window.location.href = '/order/cancel/' + orderId;
       }
-    }
+    } 
 
+    const submitReasonButton = document.getElementById('submitReason');
+const cancellationReasonInput = document.getElementById('cancellationReason');
+const cancellationModal = document.getElementById('cancellationModal');
 
+submitReasonButton.addEventListener('click', () => {
+  const reason = cancellationReasonInput.value;
+
+  // Create a data object to send as JSON
+  const data = { reason };
+
+  // Send an HTTP POST request to your server
+  fetch('/cancel-order', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  })
+    .then((response) => response.json())
+    .then((result) => {
+      // Handle the response from the server
+      if (result.success) {
+        // Order cancellation was successful; close the modal
+        cancellationModal.style.display = 'none';
+      } else {
+        // Handle any errors or display a message to the user
+        alert('Failed to cancel the order. Please try again.');
+      }
+    })
+    .catch((error) => {
+      console.error('Error while canceling the order:', error);
+    });
+});
 </script>
 <%- include('../layouts/footer') %>
 

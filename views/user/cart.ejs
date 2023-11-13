@@ -65,7 +65,8 @@
                             class="col-lg col-sm-6 d-flex justify-content-sm-center justify-content-md-start justify-content-lg-center justify-content-xl-end mb-2">
                             <div class="float-md-end">
                               <% if (cartItem.ProductId.outOfStock) { %>
-                                <strong class="card-text text-center text-danger"  id="outOfStockMessage_<%= cartItem.ProductId._id %>" >
+                                <strong class="card-text text-center text-danger"
+                                  id="outOfStockMessage_<%= cartItem.ProductId._id %>">
                                   Out of Stock
                                 </strong>
                                 <% } else { %>
@@ -102,47 +103,49 @@
                 <div class="card mb-3 border shadow-0">
                   <div class="card-body">
                     <div class="form-group">
-                      <label class="form-label">Have a coupon?</label>
+                      <label class="form-label">Have coupon?</label>
+                      <div id="flashMessage" class="alert alert-danger" style="display: none;"></div>
                       <div class="input-group">
-                        <input type="text" class="form-control border" name="" placeholder="Coupon code" />
-                        <button class="btn btn-light border">Apply</button>
+                        <input type="text" class="form-control border" id="coupon" name="couponCode"
+                          placeholder="Coupon code" />
+                        <button type="button" data-product-id="couponClaim" id="applyCoupon"
+                          class="btn btn-light border applyCoupon">Apply</button>
                       </div>
                     </div>
                   </div>
-                </div>
-                <div class="card shadow-0 border">
-                  <div class="card-body">
-                    <div class="d-flex justify-content-between">
-                      <p class="mb-2">Total price:</p>
-                      <div id="sub-total"></div>
-                    </div>
-                    <div class="d-flex justify-content-between">
-                      <p class="mb-2">Discount:</p>
-                      <p class="mb-2 text-success">--</p>
-                    </div>
-                    <div class="d-flex justify-content-between">
-                      <p class="mb-2">TAX:</p>
-                      <p class="mb-2">--</p>
-                    </div>
-                    <hr />
-                    <div class="d-flex justify-content-between">
-                      <p class="mb-2">Total price:</p>
-                      <input type="text" id="totalAmountCell" class="transparent-input" name="totalPrice" readonly>
-                    </div>
+                  <div class="card shadow-0 border">
+                    <div class="card-body">
+                      <div class="d-flex justify-content-between">
+                        <p class="mb-2" name="total">Total price:</p>
+                        <div id="sub-total"></div>
+                      </div>
+                      <div class="d-flex justify-content-between">
+                        <p class="mb-2">Discount:</p>
+                        <p id="discountCell"></p>
+                      </div>
+                      <div class="d-flex justify-content-between">
+                        <p class="mb-2">TAX:</p>
+                        <p class="mb-2">--</p>
+                      </div>
+                      <hr />
+                      <div class="d-flex justify-content-between">
+                        <p class="mb-2">Total price:</p>
+                        <input type="text" id="totalAmountCell" class="transparent-input" name="totalPrice" readonly>
+                      </div>
 
-                    <div class="mt-3">
-                      <button type="submit" class="btn btn-success w-100 shadow-0 mb-2">
-                        Make Purchase
-                      </button>
-                      <a href="/homepage" class="btn btn-light w-100 border mt-2">
-                        Back to shop
-                      </a>
+                      <div class="mt-3">
+                        <button type="submit" class="btn btn-success w-100 shadow-0 mb-2">
+                          Make Purchase
+                        </button>
+                        <a href="/homepage" class="btn btn-light w-100 border mt-2">
+                          Back to shop
+                        </a>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
         </form>
       </section>
 
@@ -179,13 +182,16 @@
 
       <!-- Footer -->
       <%- include('../partials/user-footer')%>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script>
 
 
 
           document.addEventListener("DOMContentLoaded", () => {
             const increaseButtons = document.querySelectorAll(".increase-quantity");
+
             const decreaseButtons = document.querySelectorAll(".decrease-quantity");
+            const applyCoupon = document.querySelectorAll(".applyCoupon");
             // const outOfStockMessage = document.getElementById("outOfStockMessage");
 
             console.log("Increase buttons:", increaseButtons);
@@ -219,7 +225,7 @@
 
               // If you want to display it in a specific format in the HTML:
               const subTotal = document.getElementById("sub-total");
-              subTotal.textContent = `Rs ${totalAmount.toFixed(2)}`;
+              subTotal.textContent = ` ${totalAmount.toFixed(2)}`;
 
             }
 
@@ -260,36 +266,73 @@
               }
             }
 
+
+            async function checkCoupon(couponInput, subTotal) {
+              try {
+                let error = null;
+                const response = await fetch('/checkCoupon', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify({ code: couponInput, total: subTotal })
+                })
+                if (response.ok) {
+                  const data = await response.json()
+                  if (data.success) {
+                    console.log("inside okkk");
+                    console.log(data);
+                    const discount = parseFloat(data.discount);
+                    const discountCell = document.getElementById('discountCell')
+                    discountCell.textContent = discount.toFixed(2)
+                    const newTotal = subTotal - discount;
+                    const totalAmountCell = document.getElementById('totalAmountCell');
+                    totalAmountCell.value = newTotal.toFixed(2);
+                    Swal.fire('', 'Coupon Applied', 'success')
+                  } else {
+                    console.log("inside elseee");
+                    Swal.fire(data.error)
+                    console.log(error);
+                    $('#flashMessage').text(data.error).show();
+                  }
+                }
+              } catch (error) {
+                console.error('Error checking coupon:', error);
+              }
+            }
+
+
+
+            applyCoupon.forEach(element => {
+              element.addEventListener("click", function (e) {
+                const couponInput = document.querySelector('#coupon').value.trim()
+                const subTotal = document.getElementById("sub-total").textContent;
+                const totalAmount = document.getElementById("totalAmountCell").textContent;
+
+                // Convert the extracted strings to numbers using parseFloat
+              
+                checkCoupon(couponInput, subTotal);
+              })
+            })
+
+
+
+
             increaseButtons.forEach((button) => {
               button.addEventListener("click", () => {
-                console.log("Increase button clicked");
                 const productId = button.getAttribute("data-product-id");
                 const quantityInput = document.getElementById(`count_${productId}`);
                 const quantity = parseInt(quantityInput.value, 10);
-                const elementId = `outOfStockMessage_${productId}`;
-                const availableQuantity = parseInt(
-                  quantityInput.getAttribute("data-available-quantity"),
-                  10
-                );
-                const outOfStockMessage = document.getElementById(elementId);
-                // const outOfStockMessage = document.querySelector(`#outOfStockMessage_${productId}`);
-                console.log(`outOfStockMessage_${productId},outOfStockMessage`, outOfStockMessage);
-                // );
+                const availableQuantity = parseInt(quantityInput.getAttribute("data-available-quantity"), 10);
+
+
                 if (quantity >= availableQuantity) {
-                  // Display "Out of Stock" message
                   const outOfStockMessage = document.querySelector(`#outOfStockMessage_${productId}`);
                   if (outOfStockMessage) {
                     outOfStockMessage.style.display = "block";
                   }
-
-                  // Prevent further increase
                   return;
                 }
-
-
-
-
-                // Make an AJAX request to update the quantity
                 updateQuantity(productId, 1);
               });
             });

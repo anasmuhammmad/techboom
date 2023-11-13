@@ -10,7 +10,9 @@ const CartSchema = new Schema({
     
   }],
   TotalAmount: { type: Number },
-
+  coupons:[{
+    
+  }]
 })
 
 const Cart = mongoose.model('Cart', CartSchema);

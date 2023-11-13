@@ -1,5 +1,14 @@
 <%- include('../layouts/header') %>
-
+<section>
+    
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
     <link rel="stylesheet" href="/css/user-login.css">
     <div class="wrapper">
         <div class="container main">
@@ -20,12 +29,13 @@
                   
                         <div class="input-box">
                             <header>Login</header>
-                            <% if (messages.error) { %>
-                                <div class="alert alert-danger">
-                                    <%= messages.error %>
-                                </div>
-                            <% } %>
+                      
                         <form id="loginForm" action="/login" method="POST">
+                            <% if (messages && messages.length > 0) { %>
+                                <div class="alert alert-danger">
+                                  <%= messages[0] %>
+                                </div>
+                              <% } %>
                             <div class="input-field">
                                 <input type="text" class="input" id="email" name="email" required autocomplete="off">
                                 <label for="email">Email</label>
@@ -50,5 +60,5 @@
             </div>
         </div>
     </div>
-
+</section>
     <%- include('../layouts/footer') %>
