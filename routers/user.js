@@ -52,7 +52,40 @@ router.get('/shop',userController.getShop)
 router.post('/search-product', userController.getSearch)
 router.get('/category/:_id',userController.getShop)
 // router.get('/brand/:_id',userController.getShop)
+router.get('/api/products', async (req, res) => {
+  try {
+    // Extract filters from the request query
+    const selectedCategories = req.query.category ? req.query.category.split(",") : [];
+    const minPrice = req.query.minPrice || 0;
+    const maxPrice = req.query.maxPrice || Number.MAX_SAFE_INTEGER;
 
+    // Fetch products based on filters
+    const products = await Product.find({
+      category: { $in: selectedCategories },
+      price: { $gte: minPrice, $lte: maxPrice }
+    });
+
+    // Check the 'Accept' header to determine the response type
+    const acceptHeader = req.get('Accept');
+
+    if (acceptHeader && acceptHeader.includes('application/json')) {
+      // Respond with JSON
+      res.json({
+        products,
+        message: 'Products fetched successfully'
+      });
+    } else {
+      // Respond with HTML
+      res.render('user/shop', {
+        products,
+        message: 'Products fetched successfully'
+      });
+    }
+  } catch (error) {
+    console.error("Error fetching products:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
 router.get('/signup', userController.renderSignupPage);
 router.post('/signup', userController.postSignup);
 
@@ -92,8 +125,8 @@ router.get('/order/cancel/:_id',userController.orderCancel)
 router.get('/order/details/:_id',userController.orderDetails)
 router.post('/order/return/:_id',userController.returnOrder)
 
-router.post('/download-invoice',userController.downloadInvoice)
-router.get('/download-invoice/:_id',userController.downloadfile)
+router.post('/download-invoice/:_id',userController.downloadInvoice)
+router.get('/download-invoice/:id',userController.downloadFile)
 
 router.get('/editAddress',userController.getEditAddress);
 router.post('/editAddress/:_id',userController.postEditAddress)

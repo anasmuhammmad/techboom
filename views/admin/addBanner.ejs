@@ -1,0 +1,116 @@
+<%- include('../layouts/header')%>
+<%- include('../partials/admin-header')%>
+<div class="header" style="margin-top: 80px;">
+    <h1>Add Banner</h1>
+  </div>
+  <%- include('../partials/admin-canvas')%>
+
+  <div class="container-fluid">
+    <form action="/admin/addBanner" method="post" enctype="multipart/form-data">
+        <!-- Banner Name Input -->
+        <div class="form-group">
+            <label for="bannerName">Banner Name:</label>
+            <input type="text" class="form-control" id="bannerName" name="bannerName" required>
+        </div>
+
+        <!-- Banner Images Input -->
+        <div class="form-group">
+            <label for="bannerImages">Banner Images:</label>
+            <input type="file" class="form-control-file" id="bannerImages" name="Image" accept="image/*" onchange="previewImage(this)">
+        </div>
+
+        <!-- Image Preview -->
+        <div class="form-group">
+            <label for="imagePreview">Image Preview:</label>
+            <img id="imagePreview" class="img-fluid" alt="Image Preview" style="max-height: 200px;">
+            <button type="button" class="btn btn-danger mt-2" id="deleteImageButton" style="display: none" onclick="deleteImage()">Delete Image</button>
+        </div>
+
+       
+        <!-- Video Preview -->
+        <div class="form-group">
+            <label for="videoPreview">Video Preview:</label>
+            <video id="videoPreview" class="img-fluid" controls style="max-height: 200px;"></video>
+            <button type="button" class="btn btn-danger mt-2" id="deleteVideoButton" style="display: none" onclick="deleteVideo()">Delete Video</button>
+        </div>
+        <!-- //carouselE -->
+        <div class="form-group">
+            <label for="carouselImage1">Carousel Image 1:</label>
+            <input type="file" class="form-control-file" id="carouselImage1" name="carouselImage1" accept="image/*" onchange="previewImage(this)">
+        </div>
+
+        <div class="form-group">
+            <label for="carouselImage2">Carousel Image 2:</label>
+            <input type="file" class="form-control-file" id="carouselImage2" name="carouselImage2" accept="image/*" onchange="previewImage(this)">
+        </div>
+
+        <div class="form-group">
+            <label for="carouselImage3">Carousel Image 3:</label>
+            <input type="file" class="form-control-file" id="carouselImage3" name="carouselImage3" accept="image/*" onchange="previewImage(this)">
+        </div>
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-primary">Add Banner</button>
+    </form>
+</div>
+<!-- Bootstrap JS and Popper.js Scripts (needed for some Bootstrap features) -->
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+<script>
+    function previewImage(input) {
+        var preview = document.getElementById('imagePreview');
+        var deleteButton = document.getElementById('deleteImageButton');
+        
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                preview.src = e.target.result;
+                deleteButton.style.display = 'inline'; // Show the delete button
+            };
+            reader.readAsDataURL(input.files[0]);
+        } else {
+            preview.src = '';
+            deleteButton.style.display = 'none'; // Hide the delete button
+        }
+    }
+
+    function deleteImage() {
+        var preview = document.getElementById('imagePreview');
+        var fileInput = document.getElementById('bannerImages');
+        var deleteButton = document.getElementById('deleteImageButton');
+        
+        preview.src = '';
+        fileInput.value = ''; // Reset the file input
+        deleteButton.style.display = 'none'; // Hide the delete button
+    }
+    function previewVideo(input) {
+        var preview = document.getElementById('videoPreview');
+        var deleteButton = document.getElementById('deleteVideoButton');
+
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                preview.src = e.target.result;
+                deleteButton.style.display = 'inline'; // Show the delete button
+            };
+            reader.readAsDataURL(input.files[0]);
+        } else {
+            preview.src = '';
+            deleteButton.style.display = 'none'; // Hide the delete button
+        }
+    }
+
+    function deleteVideo() {
+        var preview = document.getElementById('videoPreview');
+        var fileInput = document.getElementById('bannerVideo');
+        var deleteButton = document.getElementById('deleteVideoButton');
+
+        preview.src = '';
+        fileInput.value = ''; // Reset the file input
+        deleteButton.style.display = 'none'; // Hide the delete button
+    }
+
+</script>
+
+
+  <%- include('../layouts/footer') %>

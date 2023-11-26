@@ -10,7 +10,7 @@ const Banner = require("../models/bannerSchema")
 const moment = require("moment");
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
-
+const jwt = require("jsonwebtoken");
 
 module.exports = {
     getBanners: async (req,res)=>{
@@ -36,14 +36,14 @@ module.exports = {
             ];
             const newBanner = new Banner({
                 BannerName: req.body.bannerName,
-               
+              
                 Image: req.files['Image'][0].filename,
                 Carosel: carosal,
                 Date: new Date(),
             })
           
             await newBanner.save();
-            res.redirect('/admin/banners')
+            res.redirect('/admin/banner')
         }else if(req.files['Image']){
             const newBanner = new Banner({
                 BannerName: req.body.bannerName,
@@ -57,7 +57,7 @@ module.exports = {
         else{
             const newBanner = new Banner({
                 BannerName: req.body.bannerName,
-                Video: req.files['Video'][0].filename,
+                // Video: req.files['Video'][0].filename,
                 Date: new Date(),
             })
             await newBanner.save();
@@ -103,7 +103,7 @@ module.exports = {
         const banner = req.params.id
         const result = await Banner.findOneAndDelete({ _id: banner })
         if (result) {
-            // console.log(`Banner ${banner} deleted successfully`);
+            console.log(`Banner ${banner} deleted successfully`);
             req.flash("BannerDeleted", "Banner Deleted Successfully");
             res.redirect('/admin/banners');
         }

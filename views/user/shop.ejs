@@ -175,87 +175,43 @@
   }
 </style>
 <script>
-  function applyFilters() {
-        const selectedCategories = getCheckedValues("category");
-        const selectedMinAmount = document.getElementById("minAmount").value;
-        const selectedMaxAmount = document.getElementById("maxAmount").value;
+  // Fetch categories and populate the select dropdown
+  const selectedCategories = getCheckedValues("category");
+  const minPrice = document.getElementById('minAmount').value;
+  const maxPrice = document.getElementById('maxAmount').value;
 
-        console.log("Selected Categories:", selectedCategories);
-    console.log("Selected Min Amount:", selectedMinAmount);
-    console.log("Selected Max Amount:", selectedMaxAmount);
-        const filtersURL = `/shop?categories=${selectedCategories.join(",")}&minAmount=${selectedMinAmount}&maxAmount=${selectedMaxAmount}`;
+  const filtersURL = `/api/products?category=${selectedCategories.join(",")}&minPrice=${minPrice}&maxPrice=${maxPrice}`;
 
-        $.ajax({
-            url: filtersURL,
-            type: "GET",
-            success: (response) => {
-                const productsContainer = $("#productsContainer");
+  $.ajax({
+    url: filtersURL,
+    type: "GET",
+    success: (response) => {
+      const productsContainer = $("#productsContainer");
 
-                // Clear previous products
-                productsContainer.empty();
+      // Clear previous products
+      productsContainer.empty();
 
-                // Append new products
-                response.products.forEach((product) => {
-                    const productCard = `
-                        <div class="col-md-6 col-lg-3 col-sm-6 mb-4 equal-width">
-                            <div class="card tickerTimes">
-                                <img src="/uploads/${product.images[0]}" class="card-img-top" style="height: 40vh" alt="" />
-                                <div class="card-body d-flex flex-column justify-content-between" style="height: 30vh">
-                                    <h6 class="card-title text-center product-name">${product.name}</h6>
-                                    <div class="d-flex flex-column justify-content-center">
-                                        ${product.stock=== 0 ?
-                                        `<div style="background-color: red">
-                                                <p class="card-text text-center text-light">Out of Stock</p>
-                                            </div>` :
-                                        `<p class="card-text text-center">Price ₹${product.price}</p>
-                                            <a href="/product/${product._id}" class="btn btn-primary text-center">View Details</a>`}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    `;
+      // Append new products
+      response.products.forEach((product) => {
+        const productCard = `
+          <!-- Your product card HTML here -->
+        `;
 
-                    // Append the product card to the container
-                    productsContainer.append(productCard);
-                });
-            }
-        });
-
-        console.log(filtersURL);
+        // Append the product card to the container
+        productsContainer.append(productCard);
+      });
     }
-
-    function getCheckedValues(checkboxName) {
-        const checkboxes = document.querySelectorAll(`input[name="${checkboxName}"]:checked`);
-        const values = Array.from(checkboxes).map(checkbox => checkbox.value);
-        return values;
-    }
+  });
 
 
-    
+function getCheckedValues(checkboxName) {
+  const checkboxes = document.querySelectorAll(`input[name="${checkboxName}"]:checked`);
+  const values = Array.from(checkboxes).map(checkbox => checkbox.value);
+  return values;
+}
 
+// Call setCheckedValues on page load
+$(document).ready(applyFilters); // You might want to call this based on your requirements
 </script>
 
 <%- include('../layouts/footer') %>
-
-
-
-
-<!-- 
-// Define brandItems and add event listeners for brand items
-const brandItems = document.querySelectorAll(".brand-item");
-
-brandItems.forEach((item) => {
-  item.addEventListener("mouseenter", () => {
-    const subbrandList = item.querySelector(".subbrand-list");
-    if (subbrandList) {
-      subbrandList.style.display = "block";
-    }
-  });
-
-  item.addEventListener("mouseleave", () => {
-    const subbrandList = item.querySelector(".subbrand-list");
-    if (subbrandList) {
-      subbrandList.style.display = "none";
-    }
-  });
-}); -->

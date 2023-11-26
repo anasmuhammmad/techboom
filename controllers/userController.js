@@ -7,7 +7,7 @@ const otpModel = require('../models/otpSchema')
 const nodemailer = require('nodemailer')
 const transporter = require('../config/email');
 const Category = require('../models/categorySchema');
-
+const Banner = require('../models/bannerSchema');
 const Coupon = require('../models/couponSchema');
 // const { sendOTPEmail } = require('../config/email'); 
 const userOtpVerification = require('../utility/otpFunctions');
@@ -417,10 +417,10 @@ const renderHomePage = async(req,res)=>{
     // Use the Mongoose model to find all categories in your database
     const categories = await Category.find();
     const products = await Product.find({status:'Active'});
-    
+    const banner = await Banner.find({Status:'Enabled'});
 
     // Now you can use the retrieved categories in your response
-    res.render('user/homepage', { user: user, categories: categories , products ,   error: req.flash('error'), success: req.flash('success')});
+    res.render('user/homepage', { banner,user: user, categories: categories , products ,   error: req.flash('error'), success: req.flash('success')});
   } 
   catch (error) {
     // Handle any errors that might occur during the database query
@@ -429,31 +429,53 @@ const renderHomePage = async(req,res)=>{
   }
 }
 
-const getShop = async (req, res) => {
+const getShop =async (req, res) => {
+
   const page = parseInt(req.query.page) || 1;
   const perPage = 16;
   const skip = (page - 1) * perPage;
 
   // Fetch user and other necessary data
-  const userId = req.session.userId;
+  const userId = req.session.user.user;
   const user = await User.findById(userId);
   const categories = await Category.find();
   const brands = await Brand.find();
+  const id = req.params._id;
 
-  // Fetch products based on category and price range
-  const selectedCategories = req.query.categories ? req.query.categories.split(",") : [];
-  const minAmount = req.query.minAmount || 0;
-  const maxAmount = req.query.maxAmount || Number.MAX_SAFE_INTEGER; 
+  // Fetch products based on category, minPrice, and maxPrice
+  const category = req.query.category;
+  const minPrice = req.query.minPrice || 0;
+  const maxPrice = req.query.maxPrice || Number.MAX_SAFE_INTEGER;
 
-  const products = await Product.find({
-      category: { $in: selectedCategories },
-      price: { $gte: minAmount, $lte: maxAmount }
-  }).skip(skip).limit(perPage);
- 
+  let products;
+
+  if (category) {
+    // Fetch products based on category and price range
+    products = await Product.find({
+      category: category,
+      price: { $gte: minPrice, $lte: maxPrice }
+    }).skip(skip).limit(perPage);
+  } else {
+    // Fetch all products if no category is specified
+    products = await Product.find().skip(skip).limit(perPage);
+  }
+
   const totalCount = await Product.countDocuments();
 
-  // Render the view with the fetched products
-  if (req.accepts('html')) {
+  // Check the 'Accept' header to determine the response type
+  const acceptHeader = req.get('Accept');
+
+  if (acceptHeader && acceptHeader.includes('application/json')) {
+    // Respond with JSON
+    res.json({
+      products,
+      currentPage: page,
+      perPage,
+      totalCount,
+      totalPages: Math.ceil(totalCount / perPage)
+    });
+  } else {
+    // Respond with HTML
     res.render('user/shop', {
       user,
       categories,
@@ -464,20 +486,9 @@ const getShop = async (req, res) => {
       totalCount,
       totalPages: Math.ceil(totalCount / perPage)
     });
-  } else if (req.accepts('json')) {
-    // Send JSON data
-    res.json({
-      products,
-      currentPage: page,
-      perPage,
-      totalCount,
-      totalPages: Math.ceil(totalCount / perPage)
-    });
-  } else {
-    // Handle other formats if needed
-    res.status(406).send('Not Acceptable');
   }
-}
+};
+
   
 
 
@@ -542,13 +553,13 @@ const returnOrder =   async (req, res) => {
 
 const downloadInvoice = async (req, res) => {
   try {
-   
+    console.log("Attempting to find order with ID:", req.body.orderId);
     const orderData = await Order.findOne({
       _id: req.body.orderId,
     })
       .populate("Address")
       .populate("Items.ProductId");
-    console.log("order data ====", orderData);
+    console.log("order data ====", orderData);  
 
 
     const filePath = await invoice.order(orderData).catch((error) => {
@@ -559,18 +570,24 @@ const downloadInvoice = async (req, res) => {
     console.log("filePath ====", filePath);
 
     const orderId = orderData._id;
-   
+    console.log("orderId ====", orderId);
     res.json({ orderId });
   } catch (error) {
     console.error("Error in downloadInvoice:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
-const downloadfile =  async (req, res) => {
+const downloadFile =  async (req, res) => {
   const id = req.params._id;
-  const filePath = `C:/Users/USER/Desktop/Desktop/techboom/public/pdf/${id}.pdf`;
-  console.log("filePath ====", filePath);
-  res.download(filePath, `invoice.pdf`);
+
+  if (id) {
+    const filePath = `C:/Users/USER/Desktop/Desktop/Techboom/public/pdf/${id}.pdf`;
+    console.log("filePath ====", filePath);
+    res.download(filePath, `invoice.pdf`);
+  } else {
+    // Handle the case where id is not available
+    res.status(404).send("File not found");
+  }
 };
 
 
@@ -1586,7 +1603,7 @@ module.exports = {
   home,productdetails, renderOtpPage,getProfile, renderSignupPage, returnOrder,postSignup, postOtpVerification, resendOtp, renderLoginPage,
   postUserLogin, renderHomePage,renderForgotPasswordPage, postForgotPassword,getUserSignupWithReferralCode, renderForgotOtpPage,postForgotOtpVerification,resendForgotOtp,
   getCart,postCart,getAddToCart,addAddressCheckout,trackOrder,orderList,orderCancel,orderDetails, getEditAddress, postEditAddress , changePassword,addAddress
-  ,updateQuantity,getSearch,removeCart, downloadfile,downloadInvoice,getCheckout,verifyPayment, postCheckout,checkCoupon,orderSuccess,products,getShop,logout
+  ,updateQuantity,getSearch,removeCart, downloadFile,downloadInvoice,getCheckout,verifyPayment, postCheckout,checkCoupon,orderSuccess,products,getShop,logout
 };
 
 
