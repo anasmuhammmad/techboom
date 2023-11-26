@@ -7,6 +7,7 @@ const otpModel = require('../models/otpSchema')
 const nodemailer = require('nodemailer')
 const transporter = require('../config/email');
 const Category = require('../models/categorySchema');
+
 const Coupon = require('../models/couponSchema');
 // const { sendOTPEmail } = require('../config/email'); 
 const userOtpVerification = require('../utility/otpFunctions');
@@ -16,6 +17,7 @@ const sendEmail = require('../utility/sendEmail');
 const resendOTP = require('../utility/resendOTP');
 const createCart = require('../utility/createCartForUser');
 const Product = require('../models/productSchema');
+const invoice = require("../utility/invoice");
 const User = require('../models/userSchema');
 const session = require('express-session');
 const Order = require('../models/orderSchema');
@@ -27,7 +29,7 @@ const Brand = require('../models/brandSchema');
 const razorpay = require("../utility/razorpay");
 const crypto = require('crypto');
 const Offer = require('../models/offerSchema');
-
+const path = require('path');
 
 // const generateAndSendOTP = async (email) => {
 //   try {
@@ -428,93 +430,55 @@ const renderHomePage = async(req,res)=>{
 }
 
 const getShop = async (req, res) => {
-    const page = parseInt(req.query.page) || 1;
-    const perPage = 16;
-    const skip = (page - 1) * perPage;
-    const users = await User.find().skip(skip).limit(perPage);
-    const totalCount = await Product.countDocuments();
-    console.log(req.url);
-    console.log(req.session.user);
-    const userId = req.session.userId;
-    const user = await User.findById(userId);
-    const categories = await Category.find();
-    const brands = await Brand.find();
-    const offers = await Offer.find()
-    const id = req.params._id;
-   
-  
-    
+  const page = parseInt(req.query.page) || 1;
+  const perPage = 16;
+  const skip = (page - 1) * perPage;
 
-    let query = req.query.query;
-    const reg = new RegExp(`^${query}`, "i");
+  // Fetch user and other necessary data
+  const userId = req.session.userId;
+  const user = await User.findById(userId);
+  const categories = await Category.find();
+  const brands = await Brand.find();
 
+  // Fetch products based on category and price range
+  const selectedCategories = req.query.categories ? req.query.categories.split(",") : [];
+  const minAmount = req.query.minAmount || 0;
+  const maxAmount = req.query.maxAmount || Number.MAX_SAFE_INTEGER; 
 
+  const products = await Product.find({
+      category: { $in: selectedCategories },
+      price: { $gte: minAmount, $lte: maxAmount }
+  }).skip(skip).limit(perPage);
+ 
+  const totalCount = await Product.countDocuments();
 
-     
-    if (query) {
-      products = await Product.find({ name: { $regex: reg } });
-      return res.render("user/shop", {
-        user,
-        categories,
-        brands,
-        products,
-        currentPage: page,
-        perPage,
-        totalCount,
-        totalPages: Math.ceil(totalCount / perPage),
-      });
-    } else {
-      if (req.url === "/shop") {
-        const products = await Product.find({ Category: id,status: "Active" });
-        console.log("Products:", products);
-        return res.render("user/shop", {
-          user,
-          categories,
-          brands,
-          products,
-          currentPage: page,
-          perPage,
-          totalCount,
-          totalPages: Math.ceil(totalCount / perPage),
-        });
-       
-      } else if (req.url === `/category/${id}`) {
-        console.log("inside category");
-        const products = await Product.find({
-          category: id,
-          status: "Active",
-        }).lean();
-        // console.log("MongoDB Query:", products.getQuery());
-
-        res.render("user/shop", {
-          user,
-          categories,
-          brands,
-          products,
-          currentPage: page,
-          perPage,
-          totalCount,
-          totalPages: Math.ceil(totalCount / perPage),
-        });
-      } else if (req.url === `/brand/${id}`) {
-        console.log("inside brand");
-        const products = await Product.find({
-          BrandName: id,
-          status: "Active",
-        });
-        res.render("user/shop", {
-          user,
-          categories,
-          brands,
-          products,
-          currentPage: page,
-          perPage,
-          totalCount,
-          totalPages: Math.ceil(totalCount / perPage),
-        });
-      }
-    }
+  // Render the view with the fetched products
+  if (req.accepts('html')) {
+    res.render('user/shop', {
+      user,
+      categories,
+      brands,
+      products,
+      currentPage: page,
+      perPage,
+      totalCount,
+      totalPages: Math.ceil(totalCount / perPage)
+    });
+  } else if (req.accepts('json')) {
+    // Send JSON data
+    res.json({
+      products,
+      currentPage: page,
+      perPage,
+      totalCount,
+      totalPages: Math.ceil(totalCount / perPage)
+    });
+  } else {
+    // Handle other formats if needed
+    res.status(406).send('Not Acceptable');
   }
+}
+  
 
 
 
@@ -574,30 +538,41 @@ const returnOrder =   async (req, res) => {
 };
 
 
-const downloadfile = async (req, res) => {
-  const id = req.params._id;
-    const filePath = `C:/Users/user/Desktop/Ticker/public/pdf/${id}.pdf`;
-    res.download(filePath, `invoice.pdf`);
-
-};
 
 
 const downloadInvoice = async (req, res) => {
   try {
+   
     const orderData = await Order.findOne({
       _id: req.body.orderId,
     })
       .populate("Address")
       .populate("Items.ProductId");
     console.log("order data ====", orderData);
-    const filePath = await invoice.order(orderData);
+
+
+    const filePath = await invoice.order(orderData).catch((error) => {
+      console.error("Error in invoice.order:", error);
+      throw error; // Rethrow the error to be caught in the outer catch block
+    });
+    
+    console.log("filePath ====", filePath);
+
     const orderId = orderData._id;
+   
     res.json({ orderId });
   } catch (error) {
     console.error("Error in downloadInvoice:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+const downloadfile =  async (req, res) => {
+  const id = req.params._id;
+  const filePath = `C:/Users/USER/Desktop/Desktop/techboom/public/pdf/${id}.pdf`;
+  console.log("filePath ====", filePath);
+  res.download(filePath, `invoice.pdf`);
+};
+
 
 const renderForgotPasswordPage = async (req, res) => {
   const { email } = req.body;
@@ -837,8 +812,8 @@ const trackOrder = async (req, res) => {
   console.log(orderId);
   const order = await Order.findById(orderId)
     .populate('Items.ProductId')
-  const addressId = order.Address._id
-  const address = await User.findOne({ _id: userId}, {Address: { $elemMatch: { _id: addressId} } })
+    const addressName = order?.Address?.name;
+  const address = await User.findOne({ _id: userId}, {Address: { $elemMatch: { name: addressName} } })
   console.log(address,"address");
   // console.log(Address,"address");
   res.render("user/trackOrder",{user,order,address})

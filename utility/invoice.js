@@ -16,17 +16,17 @@ module.exports = {
 
             "images": {
                 // "background": "https://public.easyinvoice.cloud/pdf/sample-background.pdf"
-                "logo": fs.readFileSync(path.join(__dirname, '..', 'public', 'images', 'screenshot--272-removebgpreview-1@2x.png'), 'base64'),
+                "logo": fs.readFileSync(path.join(__dirname, '..', 'public', 'img', 'logo-si.png'), 'base64'),
                 // "background": fs.readFileSync(path.join(__dirname, '..', 'public', 'assets', 'background', 'your_background.png'), 'base64')
                 // "background": "https://public.easyinvoice.cloud/pdf/sample-background.pdf"
 
             },
             "sender": {
-                "company": "TICKER",
-                "address": "ASHOKAPURAM",
+                "company": "TECHBOOM",
+                "address": "GURGAON,HARYANA",
                 "zip": "673001",
-                "city": "Calicut",
-                "country": "Kerala"
+                "city": "GURGAON",
+                "country": "HARYANA"
             },
             "client": {
                 // "company": order.ShippedAddress.Name,
@@ -41,14 +41,14 @@ module.exports = {
             },
             "information": {
                 "number": order._id,
-                "date": order.OrderedDate,
-                "due-date": order.OrderedDate
+                "date": order.OrderDate,
+                "due-date": order.OrderDate
             },
             "products": order.Items.map((product) => ({
-                "quantity": product.Quantity,
-                "description": product.ProductId.ProductName, // You might want to use product description here
+                "quantity": product.stock,
+                "description": product.ProductId.name, // You might want to use product description here
                 "tax-rate": 0,
-                "price": product.ProductId.DiscountAmount
+                "price": product.ProductId.discountPrice
             })),
 
             "bottom-notice": "Thank You For Your Purchase",
@@ -88,8 +88,9 @@ module.exports = {
 
 
             const filePath = path.join(__dirname, '..', 'public', 'pdf', `${order._id}.pdf`);
+            console.log("File Path:", filePath);
             await writeFileAsync(filePath, result.pdf, 'base64');
-
+            console.log("File successfully written:", filePath);
             resolve(filePath);
  } catch (error) {
             console.log(error)

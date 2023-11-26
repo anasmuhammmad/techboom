@@ -22,6 +22,7 @@ const moment = require('moment');
 const userAuth = require('../middlewares/userAuth')
 const cron = require('../utility/cron');
 const Offer = require('../models/offerSchema');
+
 // product list
 
 // router.get('/homep',async(req,res)=>{
@@ -50,7 +51,7 @@ router.get('/productdetails/:productId',userController.productdetails)
 router.get('/shop',userController.getShop)
 router.post('/search-product', userController.getSearch)
 router.get('/category/:_id',userController.getShop)
-router.get('/brand/:_id',userController.getShop)
+// router.get('/brand/:_id',userController.getShop)
 
 router.get('/signup', userController.renderSignupPage);
 router.post('/signup', userController.postSignup);
@@ -88,7 +89,7 @@ router.get('/order/cancel/:_id',userController.orderCancel)
     //   console.log('Cannot Cancel Order. Status:', order.Status); // Add this line for debugging
     //   return res.status(400).send('Order cannot be cancelled');
     // }
-router.get('/order/details/:_id',userController.orderDetails )
+router.get('/order/details/:_id',userController.orderDetails)
 router.post('/order/return/:_id',userController.returnOrder)
 
 router.post('/download-invoice',userController.downloadInvoice)

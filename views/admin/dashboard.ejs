@@ -1,28 +1,84 @@
-<%- include('../layouts/header')%> <%- include('../partials/admin-header')%>
+<%- include('../layouts/header')%>
+ <%- include('../partials/admin-header')%>
+ <div class="modal" id="salesReportModal" tabindex="-1" role="dialog" aria-labelledby="salesReportModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="salesReportModalLabel">Sales Report</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form id="salesReport" method="post" action="/admin/download-sales-report">
+            <div class="form-group">
+              <label for="startDate">Start Date:</label>
+              <input type="date" name="startDate" class="form-control" id="startDate" required>
+            </div>
+            <div class="form-group">
+              <label for="endDate">End Date:</label>
+              <input type="date" name="endDate" class="form-control" id="endDate" required>
+            </div>
+            <div class="form-group">
+                <label>File Format:</label>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="fileFormat" id="pdf" value="pdf" checked>
+                    <label class="form-check-label" for="pdf">
+                        PDF
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="fileFormat" id="excel" value="excel">
+                    <label class="form-check-label" for="excel">
+                        Excel
+                    </label>
+                </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="submit" data-bs-dismiss="modal" class="btn btn-primary">Download</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
 <div class="header" style="margin-top: 80px">
   <h1>Admin Dashboard</h1>
 </div>
 <%- include('../partials/admin-canvas')%>
+<div class="text-end">
+    <button class="btn btn-outline-info me-2" data-bs-toggle="modal" data-bs-target="#salesReportModal">Sales Report</button>
+</div>
 <div class="container mt-4">
   <div class="row">
     <div class="col-lg-12">
-      <div class="card mb-4" style="background: linear-gradient(to right, rgba(255,0,0,0), rgb(229, 255, 251));">
-        <h2 class="card-header">Sales Analysis</h2>
-        <div class="card-body">
-            <div class="dropdown">
-                <button class="btn btn-secondary dropdown-toggle" type="button" id="timeIntervalDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                  By Day
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="timeIntervalDropdown">
-                    <li><a class="dropdown-item"  id="byDayOption">By Day</a></li>
-                    <li><a class="dropdown-item"  id="byMonthOption">By Month</a></li>
-                  <li><a class="dropdown-item"  id="byYearOption">By Year</a></li>
-                </ul>
+        <div class="card mb-4" style="background: linear-gradient(to right, rgba(255,0,0,0), rgb(229, 255, 251));">
+          <h2 class="card-header">Sales Analysis</h2>
+          <div class="card-body">
+            <div class="row">
+                <div class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="timeIntervalDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                      By Day
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="timeIntervalDropdown">
+                      <li><a class="dropdown-item" id="byDayOption">By Day</a></li>
+                      <li><a class="dropdown-item" id="byMonthOption">By Month</a></li>
+                      <li><a class="dropdown-item" id="byYearOption">By Year</a></li>
+                    </ul>
+                  </div>
+              <div class="col-lg-6">
+                <canvas id="salesGraphAmount"></canvas>
+              </div>
+              <div class="col-lg-6">
+                <canvas id="salesGraphCount"></canvas>
+              </div>
             </div>
-          <canvas id="salesGraph"></canvas>
+          </div>
         </div>
       </div>
-    </div>
+      
 
     <div class="col-lg-12">
         <div class="card mb-4" style="background: linear-gradient(to right, rgba(255,0,0,0), rgb(196, 255, 245));">
@@ -75,7 +131,7 @@
 
 <style>
   .header {
-  background-color: #333;
+  background-color: style="background: linear-gradient(to right, rgba(255,0,0,0), rgb(229, 255, 251));";
   color: #fff;
   padding: 20px;
   text-align: center;
@@ -157,8 +213,6 @@ async function fetchSalesData(timeInterval) {
     }
 }
 
-
-
   async function fetchOrdersAndSales() {
     try {
       const response = await fetch("/admin/latestOrders");
@@ -178,24 +232,56 @@ async function fetchSalesData(timeInterval) {
     console.log(salesData, "hereee");
 
     // Get the canvas element
-    const ctx = document.getElementById("salesGraph").getContext("2d");
+    const Amount = document.getElementById("salesGraphAmount").getContext("2d");
+    const Count = document.getElementById("salesGraphCount").getContext("2d");
 
     // If a chart already exists, destroy it
-    if (window.myChart) {
-        window.myChart.destroy();
+    if (window.myChart1) {
+        window.myChart1.destroy();
+    }
+    if (window.myChart2) {
+        window.myChart2.destroy();
     }
     const barColors = ["red", "green","blue","orange","brown"]
 
-    window.myChart = new Chart(ctx, {
+    window.myChart1 = new Chart(Amount, {
         type: "bar",
         data: {
-            labels: salesData.labels,
+            labels: salesData.labelsByCount,
             datasets: [
                 {
                     label: "Sales",
-                    data: salesData.data,
+                    data: salesData.dataByCount,
+                    backgroundColor: "green",
+                    borderColor: "rgba(0, 0, 0, 0)",
+                    borderWidth: 3,
+                },
+            ],
+        },
+        options: {
+            scales: {
+                x: [{
+                    grid: {
+                        display: true
+                    }
+                }],
+                y: [{
+                    beginAtZero: true,
+                    maxTicksLimit: 5
+                }]
+            }
+        },
+    });
+    window.myChart2 = new Chart(Count, {
+        type: "bar",
+        data: {
+            labels: salesData.labelsByAmount,
+            datasets: [
+                {
+                    label: "Sales",
+                    data: salesData.dataByAmount,
                     backgroundColor: "blue",
-                    borderColor: "rgba(75, 192, 192, 1)",
+                    borderColor: "rgba(0, 0, 0, 0)",
                     borderWidth: 3,
                 },
             ],
@@ -216,6 +302,17 @@ async function fetchSalesData(timeInterval) {
     });
 }
 
+    // async function downloadSalesReport(){
+    //     $.ajax({
+    //         url : "/admin/download-sales-report",
+    //         method : 'POST',
+    //         data: $('#salesReport').serialize(),
+    //         success : (response)=>{ 
+    //             console.log("success got",success);
+    //         }
+    //     })
+    // }
+
 
   async function updateLatestOrdersAndBestSellers() {
     const data = await fetchOrdersAndSales();
@@ -232,11 +329,12 @@ async function fetchSalesData(timeInterval) {
         const paymentCell = row.insertCell(3);
         const statusCell = row.insertCell(4);
 
-        orderIdCell.textContent = order._id;
+        orderIdCell.textContent = `ORD-${order._id}`;
         dateCell.textContent = order.OrderDate; 
         totalCell.textContent = order.TotalPrice; 
         paymentCell.textContent = order.PaymentMethod; 
         statusCell.textContent = order.PaymentStatus; 
+        
     });
 
     bestSellersData.forEach((seller) => {
@@ -255,9 +353,9 @@ async function fetchSalesData(timeInterval) {
         productImageCell.appendChild(imgElement);
 
         productCell.textContent = seller.productDetails._id; 
-        productNameCell.textContent = seller.productDetails.ProductName; 
-        priceCell.textContent = seller.productDetails.Price; 
-        statusCell.textContent = seller.productDetails.Status; 
+        productNameCell.textContent = seller.productDetails.name; 
+        priceCell.textContent = seller.productDetails.price; 
+        statusCell.textContent = seller.productDetails.status; 
         salesCell.textContent = seller.totalCount;
     });
 }

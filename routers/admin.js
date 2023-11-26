@@ -109,41 +109,15 @@ router.get('/admin/login', adminController.getLogin);
 router.post('/admin/login', adminController.postLogin);
 router.get('/admin/logout', adminController.logout);
 
-// router.post('/admin/login', async (req, res) => {
 
-//     try {
-//         const Email = req.body.Email;
-//         console.log(req.body.Email);
-//         const Password = req.body.Password;
-//         const admin = await Admin.findOne({ Email: Email });
-//         console.log(admin);
-//         if (admin.Status === "Active") {
-//             const matchedPassword = await bcrypt.compare(Password, admin.Password);
-//             if (matchedPassword) {
-//                 const accessToken = jwt.sign(
-//                     { admin: admin._id },
-//                     process.env.ACCESS_TOKEN_SECRET,
-//                     { expiresIn: 60 * 60 }
-//                 );
-//                 res.cookie("adminJwt", accessToken, { maxAge: 60 * 1000 * 60 });
-//                 req.session.admin = admin;
-//                 res.redirect("/addproduct");
-//             } else {
-//                 console.log(error);
-//                 res.redirect("/admin/login");
-//             }
-//         } else {
-//             console.log(error);
-//             res.redirect("/admin/login")
-//         }
-//     }
+router.get('/admin/dashboard', auth.authMiddleware, adminController.getDashboard);
+router.get('/admin/latestOrders', auth.authMiddleware, adminController.getOrdersAndSellers);
+router.get('/admin/count-orders-by-year',auth.authMiddleware, adminController.getCount)
+router.get('/admin/count-orders-by-month',auth.authMiddleware,adminController.getCount);
+router.get('/admin/count-orders-by-day',auth.authMiddleware,adminController.getCount);
 
-//     catch (error) {
-//         console.log(error);
-//         res.redirect("/admin/login");
-//     }
-// })
-// product-page
+router.post('/admin/download-sales-report',auth.authMiddleware,adminController.getDownloadSalesReport);
+
 router.get("/admin/product",auth.authMiddleware, productController.getProduct)
 router.get("/admin/product/:_id",auth.authMiddleware,productController.blockProduct)
 
@@ -187,6 +161,6 @@ router.get('/admin/orders/return-request',adminController.getReturnRequests);
 router.post('/admin/order/handleRequest',adminController.getHandleRequest);    
 
 
-router.post('/download-sales-report',auth.authMiddleware,adminController.getDownloadSalesReport)
+
 
 module.exports = router;    

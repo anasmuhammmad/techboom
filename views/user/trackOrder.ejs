@@ -75,11 +75,15 @@
         <div class="card mt-4">
             <div class="card-header">SHIPPING INFORMATION</div>
                 <div class="card-body">
-                    <h5>name: <%= address.Address[0].Name %></h5>
-                    <p>City: <%= address.Address[0].City %></p>
-                    <p>Pincode: <%= address.Address[0].Pincode %></p>
-                    <p>State: <%= address.Address[0].State %></p>
-                    <p>Mobile: <%= address.Address[0].Mobile %></p>
+                    <% if (address && address.Address && address.Address[0]) { %>
+                        <h5>Name: <%= address.Address[0].Name %></h5>
+                        <p>City: <%= address.Address[0].City %></p>
+                        <p>Pincode: <%= address.Address[0].Pincode %></p>
+                        <p>State: <%= address.Address[0].State %></p>
+                        <p>Mobile: <%= address.Address[0].Mobile %></p>
+                    <% } else { %>
+                        <p>No shipping information available.</p>
+                    <% } %>
                 </div>
             </div>
         </div>
