@@ -54,6 +54,13 @@ const store = new MongoDBStore({
     res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
     next();
   });
+  
+  app.use('/orderSuccess', (req, res, next) => {
+    // Add specific cache control for the '/orderSuccess' route
+    res.header('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.header('Pragma', 'no-cache');
+    next();
+  });
 
   // Middleware
   app.use(express.json());

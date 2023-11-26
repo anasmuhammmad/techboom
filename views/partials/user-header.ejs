@@ -1,89 +1,125 @@
-<header>
-    <nav class="navbar bg-body-tertiary p-0">
-      <div class="container-fluid d-flex justify-content-between align-items-middle" style="background-color: #FFE4C4;">
-          <div class="align-self-start"> <!-- Align the image to the left -->
-              <a class="navbar-brand" href="/homepage">
-                  <img src="/img/logo-admin.png" style="max-height: 70px;" alt="">
+  <header>
+    <nav class="navbar p-0 navbar-expand-lg">
+      <div class="container-fluid d-flex justify-content-between align-items-middle" style="background-color: #FFE4C4">
+        <div class="align-self-start">
+          <a class="navbar-brand" href="/homepage">
+            <img src="/img/logo-admin.png" style="max-height: 70px" alt="">
+          </a>
+        </div>
+        <!-- Move the search bar outside of the collapse button -->
+        <form id="searchForm">
+        <div class="d-flex">
+          <input class="form-control me-2" id="searchInput" type="text" placeholder="Search" aria-label="Search">
+          <button class="btn btn-outline-success" id="searchButton" type="button">Search</button>
+      </div>
+        </form>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <!-- Add the "navbar-nav" class to the <ul> for vertical alignment in the collapsed menu and ms-auto for right alignment -->
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto"> <!-- Add ms-auto class -->
+            <li class="nav-item">
+              <a class="nav-link" href="/homepage">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/shop">Shop</a>
+            </li>
+          </ul>
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link" href="/wishlist">
+                <i class="fa-solid fa-heart text-danger"></i>
               </a>
-          </div>
-          <div class=" me-5"> 
-            <div class="d-flex gap-3 align-items-center">
-              <div>
-                <a class="text-decoration-none text-dark" href="/homepage">
-                <span> Home</span>
-                </a>
-              </div>
-              <div>
-                <a class="text-decoration-none text-dark" href="/shop">
-                <span> Shop</span>
-                </a>
-              </div>
-              <form class="d-flex" role="search" id="searchForm">
-                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                <button class="btn btn-outline-success" type="submit">Search</button>
-              </form>
-              <div>
-                <a class="text-decoration-none text-dark" href="">
-                <i class="fa-solid fa-heart text-danger " ></i>
-                </a>
-              </div>
-              <div>
-                <a class="text-decoration-none text-dark " href="/cart">
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/cart">
                 <i class="fa-solid fa-cart-shopping text-primary"></i>
+              </a>
+            </li>
+            <li class="nav-item me-5">
+              <% if (user) { %>
+              <div class="dropdown">
+                <a href="#" class="dropdown-toggle nav-link" id="usernameLink" data-bs-toggle="dropdown" aria-expanded="false">
+                  <%= user.Username %> <i class="fa-solid fa-user"></i>
                 </a>
+                <ul class="dropdown-menu" aria-labelledby="usernameLink">
+                  <li><a class="dropdown-item" href="/profile">Profile</a></li>
+                  <li><hr class="dropdown-divider" /></li>
+                  <li>
+                    <a class="dropdown-item" href="/logout" id="logoutLink">Logout</a>
+                  </li>
+                </ul>
               </div>
-                <div>
-                    <% if(user) { %>
-                      <div class="dropdown">
-                        <a href="#" class="dropdown-toggle text-decoration-none text-dark" id="usernameLink" data-bs-toggle="dropdown" aria-expanded="false">
-                            <%= user.username %> <i class="fa-solid fa-user"></i>
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="usernameLink">
-                            <li><a class="dropdown-item" href="/profile">Profile</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="/logout" id="logoutLink">Logout</a></li>
-                        </ul>
-                    </div>
-                      <%} else { %>
-                        <a class="text-decoration-none text-dark" href="/signup">
-                            <i class="fa-solid fa-user"></i><span>
-                              signup
-                          </a>
-                        <%}%>
-                    </span>
-                  </a>
-                </div>
-              </div>
-          </div>
+              <% } else { %>
+              <a class="nav-link" href="/signup">
+                <i class="fa-solid fa-user"></i><span> Signup </span>
+              </a>
+              <% } %>
+            </li>
+          </ul>
+        </div>
       </div>
     </nav>
-    <script>
-document.addEventListener("DOMContentLoaded", function () {
-  const searchForm = document.getElementById("searchForm");
-  const searchInput = document.getElementById("searchInput");
-  const searchResultsContainer = document.getElementById("searchResults");
-
-  searchForm.addEventListener("submit", function (e) {
-    e.preventDefault();
-
-    const searchQuery = searchInput.value;
-
-    // Make an AJAX request to the server
-    fetch(`/search?q=${searchQuery}`)
-      .then((response) => response.json())
-      .then((data) => {
-        // Handle the search results, e.g., display them in the searchResultsContainer
-        const results = data.results;
-        displaySearchResults(results);
-      });
-  });
-
-  // Function to display search results (implement as needed)
-  function displaySearchResults(results) {
-    // Implement how you want to display search results on your web page
-    // You can append results to the searchResultsContainer, for example.
-  }
-});
-    </script>
-    </header>
     
+
+    </header>
+    <!-- <script>
+
+      function search() {
+
+    event.preventDefault();
+    console.log('Search clicked!');
+
+    const searchQuery = document.getElementById('searchQuery').value;
+    const url = `/search-product?query=${encodeURIComponent(searchQuery)}`;
+    console.log('Fetch URL:', url);
+    fetch(url)
+      .then(response => {
+        console.log('Response:', response);
+      return response.json()
+      })
+      .then(data => { 
+        displaySearchResults(data);
+      })
+      .catch(error => { 
+        console.error('Error:', error);
+        // Handle error on the client side if necessary
+      });
+    }
+
+
+    function displaySearchResults(results) {
+
+    const resultsContainer = document.getElementById('searchResults');  
+    resultsContainer.innerHTML = ''; // Clear previous results
+
+    // Display product results
+    if (results && results.products) {
+      results.products.forEach(product => {
+        const productDiv = document.createElement('div');
+        productDiv.textContent = `Product: ${product.ProductName}`;
+        resultsContainer.appendChild(productDiv);
+      });
+    }
+
+    // Display category results
+    if (results && results.categories) {
+      results.categories.forEach(category => {
+        const categoryDiv = document.createElement('div');
+        categoryDiv.textContent = `Category: ${category.Name}`;
+        resultsContainer.appendChild(categoryDiv);
+      });
+    }
+    // Display brand results
+    if (results && results.brands) {
+      results.brands.forEach(brand => {
+        const brandDiv = document.createElement('div');
+        brandDiv.textContent = `Brand: ${brand.Name}`;
+        resultsContainer.appendChild(brandDiv);
+      });
+    }
+  }
+    document.getElementById('searchForm').addEventListener('submit', search);
+
+      </script> -->

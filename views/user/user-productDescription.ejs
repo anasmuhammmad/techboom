@@ -21,13 +21,26 @@
                     <div class="card-body">
                       <h1 class="card-title tickerTimes"><%= product.name %></h1>
                       <p class="card-text mt-5 tickerDescription">Rating: 4.5 (100 reviews)</p>
-                      <p class="card-text mt-5">
-                        Price:
-                        <span class="text-decoration-line-through"><%= product.price %>/-</span>
-                        <%= product.discountPrice %>/-
-                      </p>
-                      <p class="card-text tickerDescription mt-5"><%= product.description %></p>
-                    </div>
+                        <!-- <p class="card-text mt-5">
+                            Price:
+                            <span class="text-decoration-line-through"><%= product.price %>/-</span>
+                            <%= product.discountPrice %>/-
+                        </p> -->
+                        <% if (product.price === product.discountPrice ){%>
+                            <p class="card-text mt-3">
+                              Price: <%= product.price %>/-
+                            </p>
+                            <%} else{ %>
+                          <p class="card-text mt-3">
+                            Price:
+                            <span class="text-decoration-line-through"
+                              ><%= product.price %>/-</span
+                            >
+                            <%= product.discountPrice %>/-
+                          </p>
+                          <%}%>
+                        <p class="card-text tickerDescription mt-5"><%= product.description %></p>
+                        </div>
                     <div class="mt-5 mb-5 ms-2">
                         <a href=""><button class="btn btn-outline-danger mt-2">Add to Wishlist <i class="fas fa-heart"></i></button></a> 
                         <% if (product.stock <= 0) { %>

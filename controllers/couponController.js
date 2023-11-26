@@ -5,6 +5,7 @@ const ObjectId = mongoose.Types.ObjectId;
 const moment = require('moment');
 const razorpay = require("../utility/razorpay");
 const Coupon = require('../models/couponSchema');
+const User = require('../models/userSchema');
 
 
 module.exports = {
@@ -19,9 +20,13 @@ module.exports = {
    
       getAddCoupon: async (req, res) => {
         try {
+         
           res.render("admin/addCoupon");
         } catch (error) {}
       },
+
+
+
  
       postAddCoupon: async (req, res) => {
         try {
@@ -31,11 +36,16 @@ module.exports = {
           } else if (req.body.discountType === "percentage") {
             req.body.amount = req.body.amount[0];
           }
+          if(req.body.amount <= 0 ){
+            return res.json({ error: "COUPON amount cannot be 0 or negative" })
+          }
           const coupon = await Coupon.create(req.body);
           if (coupon) {
             console.log("added to collection");
+            res.json({ success: true });
           } else {
             console.log("not added to collection");
+            res.json({ error: "COUPON already consist" });
           }
         } catch (error) {
           console.log(error);
@@ -161,5 +171,12 @@ module.exports = {
       console.log(error);
       res.json({ error: "Some error Occurred" });
     }
+  },
+
+  getCoupons: async(req,res)=>{
+    const userId = req.session.userId;
+    const user = await User.findById(userId);
+    const coupons = await Coupon.find()
+    res.render('user/coupons',{user,coupons})
   }
 }

@@ -4,6 +4,17 @@
   <h1>Order List</h1>
 </div>
 <%- include('../partials/admin-canvas')%>
+<div class="text-end me-2 mb-2">
+  <a href="/admin/orders/return-request">
+    <button type="submit" class="btn btn-outline-danger" style="border-radius: 10px;">
+      Return requests 
+      <% if (numberOfRequest > 0) { %>
+        <span class="badge bg-secondary"><%= numberOfRequest %></span>
+
+      <% } %>
+    </button>
+  </a>
+</div>
     <div class="container">
         <% if(order.length> 0) { %> 
           <table class="table table-dark table-striped">
@@ -38,15 +49,24 @@
                   <td>
                     <!-- Displaying the current status dynamically -->
                     <% if (order[i].Status !== 'Cancelled') { %>
+                      <% if (order[i].Status !== 'Return Requested') { %>
+                        <% if (order[i].Status !== 'Returned') { %>
+                          <% if (order[i].Status !== 'Delivered') { %>
                         <% const currentStatus = order[i].Status || 'Order Placed'; %>
-                        <select class="form-select" id="statusSelect<%= i %>"
-                          onchange="changeOrderStatus('<%= order[i]._id %>', <%= i %>)">
+                        <select class="form-select" id="statusSelect<%= i %>" onchange="changeOrderStatus('<%= order[i]._id %>', <%= i %> )">
                           <option value="Order Placed" <%= currentStatus === 'Order Placed' ? 'selected' : '' %>>Order Placed</option>
                           <option value="Shipped" <%= currentStatus === 'Shipped' ? 'selected' : '' %>>Shipped</option>
                           <option value="Delivered" <%= currentStatus === 'Delivered' ? 'selected' : '' %>>Delivered</option>
                           <option value="Rejected" <%= currentStatus === 'Rejected' ? 'selected' : '' %>>Rejected</option>
+                          <option value="Returned" <%= currentStatus === 'Returned' ? 'selected' : '' %>>Returned</option>
                         </select>
-                      <% } else { %>
+                        <% }else{ %>
+                          Delivered
+                        <% }}else{ %>
+                          Returned
+                        <% }}else{ %>
+                        Return Requested
+                      <% }} else { %>
                         Cancelled
                       <% } %>
   
@@ -89,13 +109,20 @@
                       <%= currentPage * perPage  %>
                       <%}%>
                        results from <%= totalCount %></p>
-                    <ul class="pagination">
-                      <% for (let i = 1; i <= totalPages; i++) { %>
-                        <li class="page-item <%= currentPage === i ? 'active' : '' %>">
-                          <a class="page-link" href="?page=<%= i %>"><%= i %></a>
-                        </li>
-                      <% } %>
-                    </ul>
+                       <ul class="pagination">
+                        <%if(currentPage === 1){%>
+                        <%}else{%>
+                          <li class="page-item <%= currentPage === currentPage ? 'active' : '' %>">
+                            <a class="page-link" href="?page=<%=currentPage-1%>"> prev </a>
+                          </li>
+                          <%}%>
+                          <li class="page-item <%= currentPage === currentPage ? '' : '' %>">
+                            <a class="page-link" href="?page=<%=currentPage%>"><%= currentPage %></a>
+                          </li>
+                          <li class="page-item <%= currentPage === currentPage ? 'active' : '' %>">
+                            <a class="page-link" href="?page=<%=currentPage+1%>"> next</a>
+                          </li>
+                      </ul>
                   </div>
                   <% } else { %>
                     <p>No results found.</p>

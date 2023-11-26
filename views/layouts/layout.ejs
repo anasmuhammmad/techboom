@@ -1,0 +1,59 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Your head content here -->
+</head>
+<style>
+
+.success-message {
+    display: none;
+    color: green;
+    background-color: #dff0d8; /* Use a background color for success messages */
+    border: 1px solid #d6e9c6; /* Use a border for success messages */
+    padding: 10px; /* Add padding for better visibility */
+  }
+
+  .error-message {
+    display: none;
+    color: red;
+    background-color: #f2dede; /* Use a background color for error messages */
+    border: 1px solid #ebccd1; /* Use a border for error messages */
+    padding: 10px; /* Add padding for better visibility */
+  }
+</style>
+<body>
+
+
+    <% if (error || success) { %>
+        <div class="messages">
+          <% if (error) { %>
+            <div class="error-message">
+              <%= error %>
+            </div>
+          <% } %>
+    
+          <% if (success) { %>
+            <div class="success-message">
+              <%= success %>
+            </div>
+          <% } %>
+        </div>
+      <% } %>
+
+      <script>
+        // JavaScript to show only the relevant message box based on the message type
+        const errorBox = document.querySelector('.error-message');
+        const successBox = document.querySelector('.success-message');
+    
+        if ("<%= error %>") {
+          errorBox.style.display = 'block';
+        }
+    
+        if ("<%= success %>") {
+          successBox.style.display = 'block';
+        }
+        </script>
+
+</body>
+</html>

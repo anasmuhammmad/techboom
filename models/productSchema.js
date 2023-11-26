@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
-
+const { Schema } = mongoose;
+const ObjectId = Schema.Types.ObjectId;
   const productSchema = mongoose.Schema({
           name: {
               type : String,
@@ -42,6 +43,9 @@ const mongoose = require('mongoose');
         discountPrice: {
             type: Number,
           },
+        // offerAmount:{
+        //   type: Number,
+        // },
         rating:{
             type: String,
             // required: true,
@@ -59,8 +63,10 @@ const mongoose = require('mongoose');
             type: Array,
         },
         category: {
-            type: String,
+            type: Schema.Types.ObjectId,
+            ref:'Categories',
             required: true,
+     
           },
         display: {
             type: String,

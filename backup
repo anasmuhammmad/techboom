@@ -308,6 +308,192 @@
 
 
 
+const postCheckout = async(req,res)=>{
+    const userId = req.session.userId
+    const user = await User.findById(userId);
+    if (user && user.status === 'Blocked') {
+      console.log("kernninda");
+      req.flash('error', 'Your account is blocked. You cannot make purchases.');
+      return res.redirect('/homepage'); // Redirect to a suitable page.
+    }
+    else{
+    console.log(req.body);
+    const PaymentMethod = req.body.paymentMethod
+    const Address = req.body.Address
+    const amount = req.session.totalPrice;
+    const Email = user.email
+    const cart = await Cart.findOne({UserId:userId}).populate("Items.ProductId")
+    console.log(req.session.totalPrice);
+    
+    const address = await User.findOne(
+      {
+        _id: userId,
+      },
+      {
+        Address: {
+          $elemMatch: { _id: new mongoose.Types.ObjectId(Address) },
+        },
+      }
+    );
+    console.log("add====", address);
+  
+    const add = {
+      Name: address.Address[0].Name,
+      Address: address.Address[0].AddressLane,
+      Pincode: address.Address[0].Pincode,
+      City: address.Address[0].City,
+      State: address.Address[0].State,
+      Mobile: address.Address[0].Mobile,
+    };
+  
+  
+    const newOrders = new Order({
+     UserId: userId,
+     Items: cart.Items,
+     OrderDate: moment(new Date()).format('llll') ,
+     ExpectedDeliveryDate : moment().add(4, 'days').format('llll'),
+     TotalPrice: req.session.totalPrice,
+     Address: Address,
+     PaymentMethod: PaymentMethod
+    })
+    //delete the items in the cart after checkout  
+    await  Cart.findByIdAndDelete(cart._id)
+    //save order to database
+    const order = await  newOrders.save();
+    console.log(order,"in orders");
+    req.session.orderId = order._id
+  
+    for (const item of order.Items) {
+     const productId = item.ProductId;
+     const quantity = item.Quantity;
+   
+     const product = await Product.findById(productId);
+   
+     if (product) {
+       const updatedQuantity = product.stock - quantity;
+   
+       if (updatedQuantity <=0) {
+         product.stock = 0;
+     product.Status = "Out of Stock";
+     await product.save();
+       } else {
+         // Update the product's available quantity
+         product.stock = updatedQuantity;
+   
+         // Save the updated product back to the database
+         await product.save();
+       }
+     }
+   }
+  //  cod
+   if(PaymentMethod === "cod"){
+    //send email with details of orders
+    const transporter = nodemailer.createTransport({
+     port: 465,
+     host: "smtp.gmail.com",
+     auth: {
+       user: "techboompage@gmail.com",
+       pass: process.env.PASSWORD,
+     },
+     secure: true,
+   });
+   const mailData = {
+     from: "techboompage@gmail.com",
+     to: Email,
+     subject:'Your Orders!' ,
+     text:`Hello! ${user.username} Your order has been received and will be processed within one business day.`+
+     ` your total price is ${req.session.totalPrice}`
+   };
+   transporter.sendMail(mailData, (error, info) => {
+     if (error) {
+       return console.log(error);
+     }
+     console.log("Success");
+   });
+   res.json({ codSuccess: true });
+  }
+  
+  else if(PaymentMethod === 'online') {
+  
+    console.log("hereeeeeee");
+    const order = {
+      amount: amount,
+      currency: "INR",
+      receipt: req.session.orderId,
+    };
+    await razorpay
+      .createRazorpayOrder(order)
+      .then((createdOrder) => {
+        console.log("payment response", createdOrder);
+        res.json({ createdOrder, order });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  
+    
+      
+    
+  }
+  else if(PaymentMethod === "wallet"){
+    const transporter = nodemailer.createTransport({
+      port: 465,
+      host: "smtp.gmail.com",
+      auth: {
+        user: "techboompage@gmail.com",
+        pass: process.env.PASSWORD,
+      },
+      secure: true,
+    });
+    const mailData = {
+      from: "techboompage@gmail.com",
+      to: Email,
+      subject: "Your Orders!",
+      text:
+        `Hello! ${user.Username} Your order has been received and will be processed within one business day.` +
+        ` your total price is ${req.session.totalPrice}`,
+    };
+    transporter.sendMail(mailData, (error, info) => {
+      if (error) {
+        return console.log(error);
+      }
+      console.log("Success");
+    });
+    await User.findByIdAndUpdate(userId,{$inc:{WalletAmount: -order.TotalPrice}})
+    await Order.findByIdAndUpdate(order._id,{PaymentStatus:'Paid'})
+    await Cart.findByIdAndDelete(cart._id);
+    res.json({ walletSuccess: true });
+  }
+  //  res.redirect('/orderSuccess')
+  //   console.log(cart.Items);
+  }
+  
+  }
+  const verifyPayment= async (req, res) => {
+    console.log("it is the body", req.body);
+    let hmac = crypto.createHmac("sha256", process.env.KEY_SECRET);
+    hmac.update(
+      req.body.payment.razorpay_order_id +
+        "|" +
+        req.body.payment.razorpay_payment_id
+    );
+  
+    hmac = hmac.digest("hex");
+    if (hmac === req.body.payment.razorpay_signature) {
+      const orderId = new mongoose.Types.ObjectId(
+        req.body.order.createdOrder.receipt
+      );
+      const updateOrderDocument = await Order.findByIdAndUpdate(orderId, {
+        PaymentStatus: "Paid",
+        PaymentMethod: "Online",
+      });
+      res.json({ success: true });
+    } else {
+      console.log("hmac failed");
+      res.json({ failure: true });
+    }
+  };
+  
 
 
 

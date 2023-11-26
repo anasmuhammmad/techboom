@@ -4,7 +4,8 @@ const userOtpVerification = require('../utility/otpFunctions');
 const adminController = require('../controllers/adminController');
 const userController = require('../controllers/userController');
 const productController = require('../controllers/productController');
-const auth = require('../middlewares/adminAuth');
+const offerController = require('../controllers/offerController');
+const orderController = require('../controllers/orderController');
 const Admin = require('../models/adminSchema');
 const Category = require('../models/categorySchema');
 const Brand = require('../models/brandSchema');
@@ -12,6 +13,7 @@ const Product = require("../models/productSchema");
 const jwt = require("jsonwebtoken");
 const flash = require("express-flash");
 const bcrypt = require("bcrypt");
+const auth  = require("../middlewares/adminAuth");
 const { route } = require('./user');
 const couponController = require('../controllers/couponController');
 const mongoose = require('mongoose');
@@ -158,21 +160,33 @@ router.get('/admin/addcategory',auth.authMiddleware,adminController.getAddCatego
 router.post('/admin/addcategory',auth.authMiddleware,upload.single('image'),adminController.postAddCategory)
 router.get('/admin/edit/:id',auth.authMiddleware,adminController.getEditCategory)
 router.post('/admin/edit/:id',upload.single('image'),adminController.postEditCategory)
-router.get('/admin/addbrand',adminController.getAddBrand)
-router.post('/admin/addbrand',adminController.postAddBrand)
+router.get('/admin/addbrand',auth.authMiddleware,adminController.getAddBrand)
+router.post('/admin/addbrand',auth.authMiddleware,adminController.postAddBrand)
 
 
 
-router.get('/admin/coupons',couponController.getCoupon)
-router.get('/admin/addCoupon',adminController.getAddCoupon)
-router.post('/admin/addCoupon',adminController.postAddCoupon)
+router.get('/admin/coupons',auth.authMiddleware,couponController.getCoupon)
+router.get('/admin/addCoupon',auth.authMiddleware,couponController.getAddCoupon)
+router.post('/admin/addCoupon',auth.authMiddleware,couponController.postAddCoupon)
 
-router.get('/admin/addproduct',productController.getAddProduct)
-router.post('/admin/addproduct',upload.array('image',3),productController.postAddProduct)
+router.get('/admin/offers',auth.authMiddleware,offerController.getOffers)
+router.post('/admin/addCategoryOffer',auth.authMiddleware,offerController.addCategoryOffer)
+router.post('/admin/offers/disableAndEnableOffer/:_id',auth.authMiddleware,offerController.offerStatus);
+
+router.get('/admin/offers',auth.authMiddleware,offerController.getOffers)
 
 
-router.get('/admin/order',adminController.getOrders)
-router.get('/admin/order/details/:_id',adminController.getOrderDetails)
+router.get('/admin/addproduct',auth.authMiddleware,productController.getAddProduct)
+router.post('/admin/addproduct',auth.authMiddleware,upload.fields([{ name: 'image1', maxCount: 1 }, { name: 'image2', maxCount: 1 }, { name: 'image3', maxCount: 1 }]),productController.postAddProduct)
+
+
+router.get('/admin/order',auth.authMiddleware,adminController.getOrders)
+router.get('/admin/order/details/:_id',auth.authMiddleware,adminController.getOrderDetails)
 router.put('/admin/order/update-status/:orderId',adminController.putUpdateStatus)
+router.get('/admin/orders/return-request',adminController.getReturnRequests); 
+router.post('/admin/order/handleRequest',adminController.getHandleRequest);    
 
-module.exports = router;
+
+router.post('/download-sales-report',auth.authMiddleware,adminController.getDownloadSalesReport)
+
+module.exports = router;    

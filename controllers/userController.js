@@ -23,7 +23,10 @@ const Cart = require('../models/cartSchema');
 const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
 const moment = require('moment');
+const Brand = require('../models/brandSchema');
 const razorpay = require("../utility/razorpay");
+const crypto = require('crypto');
+const Offer = require('../models/offerSchema');
 
 
 // const generateAndSendOTP = async (email) => {
@@ -72,12 +75,15 @@ const productList = [
 //   res.render("user/user-shop", { productList, err: "" });
 // };
 
-const renderShopPage = async (req, res) => {
-  const products = await Product.find();
+const home = async (req, res) => {
+  const user = await User.find();
+  const products = await Product.find({status:"Active"});
   const  categories = await Category.find();
   console.log(categories); // Add this line for debugging
-  res.render("user/homepage", {products, categories: categories ,productList, err: "" });
+  res.render("user/homepage", {user,products, categories: categories ,productList, err: "" ,error: req.flash('error'), success: req.flash('success')});
 };
+
+
 
 
 const productdetails = async(req,res)=>{
@@ -112,7 +118,7 @@ const productdetails = async(req,res)=>{
     // Render the product details page with dynamic data
     // res.render('user/user-product-details', { product, relatedProducts });
     
-    res.render('user/user-productDescription', { product, relatedProducts,user });
+    res.render('user/user-productDescription', { product, relatedProducts,user ,error: req.flash('error'), success: req.flash('success')});
   } catch (err) {
     // Handle any errors, e.g., database query error
     console.error(err);
@@ -131,6 +137,7 @@ res.render("user/userProfile", {
   orderCount,
   cartCount,
   addressCount,
+  error: req.flash('error'), success: req.flash('success')
 });
 };
 // try {
@@ -161,9 +168,18 @@ res.render("user/userProfile", {
 // }
 
 const renderSignupPage = (req, res) => {
-  const error = req.flash('error');
-
-  res.render('user/user-signup', { error });
+  try {
+    const referrerId = req.query.referrer;
+    if (referrerId) {
+        req.session.referrerId = referrerId;
+    }
+    const errorMessages = req.flash('error');
+    const successMessage = req.flash('success');
+    res.render('user/user-signup', { error: errorMessages, success: successMessage ,error: req.flash('error'), success: req.flash('success')});
+  } catch (error) {
+    console.error('Error rendering signup page:', error);
+    res.render('user/user-signup', { error: ['An unexpected error occurred.'], success: [] });
+  }
 };
 
 const postSignup = async (req, res) => {
@@ -183,18 +199,18 @@ const postSignup = async (req, res) => {
        const userExists = await UserModel.findOne({ email });
        if (userExists) {
         req.flash('error', 'User with this email already exists');
-        return res.render("user/user-signup", { error: req.flash('error') });
+        return res.redirect("/signup");
       }
   
 
-      const newUser = new User({
-        username,
-        email,
-        password,
-        // Other user-specific fields
-      });
-      const savedUser = await newUser.save();
-      createCart(savedUser._id);
+      // const newUser = new User({
+      //   username,
+      //   email,
+      //   password,
+      //   // Other user-specific fields
+      // });
+      // const savedUser = await newUser.save();
+      // createCart(savedUser._id);
 
     req.session.userData = {
       username, email, password
@@ -204,16 +220,44 @@ const postSignup = async (req, res) => {
 
 
 
-    req.flash('success', 'Registration successful. Please check your email for OTP.');
+  
 
     res.redirect('/otp');
 
 
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: error.message });
+    console.error('Error during signup:', error);
+
+  req.flash('error', 'An error occurred during signup. Please try again.');
+  res.redirect("/signup");
   }
 };
+
+
+const getUserSignupWithReferralCode = async (req, res) => {
+    try {
+      const _id = req.params._id;
+      
+    console.log("Referral Link _id:", _id);
+
+     const user =  await User.findOneAndUpdate(
+        { _id: _id },
+        { $inc: { WalletAmount: 100 } },
+        { new: true }
+      );
+      
+      if (user) {
+        console.log("User found and updated:", user);
+        res.redirect("/signup");
+    } else {
+        console.log("User not found");
+        res.status(404).send("User not found");
+    }
+     
+    } catch (error) {
+      console.log(error);
+    }
+}
 
 const renderOtpPage = async (req, res) => {
 
@@ -231,7 +275,7 @@ const renderOtpPage = async (req, res) => {
     req.session.email = email;
 
     console.log(otp);
-    res.render('user/user-otpveri', { errorMessages, otp: 'Resended OTP' + otp, email }); // Pass OTP to the view
+    res.render('user/user-otpveri', { errorMessages, otp: 'Resended OTP' + otp, email , error: req.flash('error'), success: req.flash('success')}); // Pass OTP to the view
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: error.message });
@@ -281,9 +325,20 @@ const postOtpVerification = async (req, res) => {
     if (otpMatch) {
 
       console.log(typedOTP);
-
+      req.flash('success', 'Successfully registered!');
       const newUser = await registerUser(username, email, password);
-      return res.redirect('/shop');
+
+            // const newUser = new User({
+      //   username,
+      //   email,
+      //   password,
+      //   // Other user-specific fields
+      // });
+      // const savedUser = await newUser.save();
+      createCart(newUser._id);
+
+
+      return res.redirect('/login');
     } else {
       req.flash('error', 'Invalid OTP');
       return res.redirect('/otp');
@@ -305,7 +360,7 @@ const renderLoginPage = async (req, res) => {
   // else
   // {
     try {
-      res.render('user/user-login',  {messages: req.flash('error'),message: req.flash('success')});
+      res.render('user/user-login',   { error: req.flash('error'), success : req.flash('success')});
       
     }
 
@@ -332,7 +387,7 @@ const postUserLogin = async (req, res) => {
       if (passwordMatch) {
         // req.session.userAuth = true;
 
-        req.flash('success', 'Successfully logged in.');
+        req.flash('success', 'Successfully logged in');
 
         res.redirect("/homepage");
    
@@ -363,7 +418,7 @@ const renderHomePage = async(req,res)=>{
     
 
     // Now you can use the retrieved categories in your response
-    res.render('user/homepage', { user: user, categories: categories , products , messages: { error: req.flash('error'), success: req.flash('successfully logged in') } });
+    res.render('user/homepage', { user: user, categories: categories , products ,   error: req.flash('error'), success: req.flash('success')});
   } 
   catch (error) {
     // Handle any errors that might occur during the database query
@@ -371,6 +426,179 @@ const renderHomePage = async(req,res)=>{
     res.status(500).send('An error occurred while fetching categories.');
   }
 }
+
+const getShop = async (req, res) => {
+    const page = parseInt(req.query.page) || 1;
+    const perPage = 16;
+    const skip = (page - 1) * perPage;
+    const users = await User.find().skip(skip).limit(perPage);
+    const totalCount = await Product.countDocuments();
+    console.log(req.url);
+    console.log(req.session.user);
+    const userId = req.session.userId;
+    const user = await User.findById(userId);
+    const categories = await Category.find();
+    const brands = await Brand.find();
+    const offers = await Offer.find()
+    const id = req.params._id;
+   
+  
+    
+
+    let query = req.query.query;
+    const reg = new RegExp(`^${query}`, "i");
+
+
+
+     
+    if (query) {
+      products = await Product.find({ name: { $regex: reg } });
+      return res.render("user/shop", {
+        user,
+        categories,
+        brands,
+        products,
+        currentPage: page,
+        perPage,
+        totalCount,
+        totalPages: Math.ceil(totalCount / perPage),
+      });
+    } else {
+      if (req.url === "/shop") {
+        const products = await Product.find({ Category: id,status: "Active" });
+        console.log("Products:", products);
+        return res.render("user/shop", {
+          user,
+          categories,
+          brands,
+          products,
+          currentPage: page,
+          perPage,
+          totalCount,
+          totalPages: Math.ceil(totalCount / perPage),
+        });
+       
+      } else if (req.url === `/category/${id}`) {
+        console.log("inside category");
+        const products = await Product.find({
+          category: id,
+          status: "Active",
+        }).lean();
+        // console.log("MongoDB Query:", products.getQuery());
+
+        res.render("user/shop", {
+          user,
+          categories,
+          brands,
+          products,
+          currentPage: page,
+          perPage,
+          totalCount,
+          totalPages: Math.ceil(totalCount / perPage),
+        });
+      } else if (req.url === `/brand/${id}`) {
+        console.log("inside brand");
+        const products = await Product.find({
+          BrandName: id,
+          status: "Active",
+        });
+        res.render("user/shop", {
+          user,
+          categories,
+          brands,
+          products,
+          currentPage: page,
+          perPage,
+          totalCount,
+          totalPages: Math.ceil(totalCount / perPage),
+        });
+      }
+    }
+  }
+
+
+
+
+  const getSearch =  async (req, res) => {
+    const searchQuery = req.body.query;
+    const productCriteria = {
+      $or: [{ ProductName: { $regex: searchQuery, $options: "i" } }],
+    };
+    console.log("products", productCriteria);
+
+    Category.find({ Name: { $regex: searchQuery, $options: "i" } })
+      .then((categoryResults) => {
+        Brand.find({ Name: { $regex: searchQuery, $options: "i" } })
+          .then((brandResults) => {
+            Product.find(productCriteria)
+              .then((productResults) => {
+                const results = {
+                  products: productResults,
+                  categories: categoryResults,
+                  brands: brandResults,
+                };
+                res.json(results);
+              })
+              .catch((error) => {
+                console.error(error);
+                res.status(500).json({ error: "An error occurred" });
+              });
+          })
+          .catch((error) => {
+            console.error(error);
+            res.status(500).json({ error: "An error occurred" });
+          });
+      })
+      .catch((error) => {
+        console.error(error);
+        res.status(500).json({ error: "An error occurred" });
+      });
+    console.log("search Query", searchQuery);
+  };
+
+
+const returnOrder =   async (req, res) => {
+  const orderId = req.params._id;
+  try {
+    console.log(req.body.returnReason)
+    const order = await Order.findOneAndUpdate( { _id: orderId }, { $set:{Status: "Return Requested", ReturnReason: req.body.returnReason}}, { new: true });
+
+    if (!order) {
+      return res.status(404).send("Order not found");
+    }
+    return res.redirect("/orderList");
+  } catch (error) {
+    console.error("Error cancelling the order:", error);
+    return res.status(500).send("Error requesting return");
+  }
+};
+
+
+const downloadfile = async (req, res) => {
+  const id = req.params._id;
+    const filePath = `C:/Users/user/Desktop/Ticker/public/pdf/${id}.pdf`;
+    res.download(filePath, `invoice.pdf`);
+
+};
+
+
+const downloadInvoice = async (req, res) => {
+  try {
+    const orderData = await Order.findOne({
+      _id: req.body.orderId,
+    })
+      .populate("Address")
+      .populate("Items.ProductId");
+    console.log("order data ====", orderData);
+    const filePath = await invoice.order(orderData);
+    const orderId = orderData._id;
+    res.json({ orderId });
+  } catch (error) {
+    console.error("Error in downloadInvoice:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
 const renderForgotPasswordPage = async (req, res) => {
   const { email } = req.body;
  
@@ -444,7 +672,7 @@ const postForgotOtpVerification = async(req, res) => {
       console.log(typedOTP);
 
       // const newUser = await registerUser(username, email, password);
-       res.redirect('/shop');
+       res.redirect('/homepage');
     } else {
       req.flash('error', 'Invalid OTP');
       return res.redirect('/forgot-otp');
@@ -491,7 +719,7 @@ const   resendForgotOtp = async(req, res) => {
     });
   if(cart){
     for (const item of cart.Items) {
-      if (item.ProductId.stock <= 0) {
+      if (item.ProductId && item.ProductId.stock !== undefined && item.ProductId.stock <= 0) {
         item.outOfStock = true;
       } else {
         item.outOfStock = false;
@@ -518,61 +746,88 @@ const   resendForgotOtp = async(req, res) => {
     }
     else{
     req.session.totalPrice = req.body.totalPrice;
-    res.redirect('/checkout')
+      const cart = await Cart.findOneAndUpdate(
+      { UserId: userId },
+      { $set: { TotalAmount: req.session.totalPrice } },
+      { new: true },
+    // );
+    res.redirect('/checkout'));
     
   }
 }
 const getAddToCart =  async (req, res) => {
-  try {
-    const productId = req.params._id;
+
     const userId = req.session.userId;
-
-    console.log('userId:', userId); // Log the userId
-    // Find the user's cart or create a new one if it doesn't exist
-    const cart = await Cart.findOne({ UserId: userId }).populate({
-      path: 'Items.ProductId',
-      model: 'Product', // Change 'Product' to your actual model name
-    });
-    console.log('cart:', cart); // Log the cart
-
-    if (!cart) {
-      const newCart = new Cart({ UserId: userId, Items: [] });
+    const productId = req.params._id;
+    console.log(userId);
+    const userCart = await Cart.findOne({ UserId: userId });
+    if (userCart) {
+      const existingCart = userCart.Items.find((item) =>
+        item.ProductId.equals(productId)
+      );
+      if (existingCart) {
+        existingCart.Quantity += 1;
+      } else {
+        userCart.Items.push({ ProductId: productId, Quantity: 1 });
+      }
+      await userCart.save();
+    } else {
+      const newCart = new Cart({
+        UserId: userId,
+        Items: [{ ProductId: productId, Quantity: 1 }],
+      });
+      console.log(newCart);
       await newCart.save();
     }
+    res.redirect("/cart");
+    // const userId = req.session.userId;
 
-    // Find the product to add to the cart
-    const productToAdd = await Product.findById(productId);
+    // console.log('userId:', userId); // Log the userId
+    // // Find the user's cart or create a new one if it doesn't exist
+    // const cart = await Cart.findOne({ UserId: userId }).populate({
+    //   path: 'Items.ProductId',
+    //   model: 'Product', // Change 'Product' to your actual model name
+    // });
+    // console.log('cart:', cart); // Log the cart
 
-    console.log('productToAdd:', productToAdd); // Log the productToAdd
+    // if (!cart) {
+    //   const newCart = new Cart({ UserId: userId, Items: [] });
+    //   await newCart.save();
+    // }
 
-    if (!productToAdd) {
-      return res.status(404).json({ error: "Product not found" });
-    }
+    // // Find the product to add to the cart
+    // const productToAdd = await Product.findById(productId);
+
+    // console.log('productToAdd:', productToAdd); // Log the productToAdd
+
+    // if (!productToAdd) {
+    //   return res.status(404).json({ error: "Product not found" });
+    // }
 
 
-    const existingCartItem = cart.Items.find((item) =>
-      item.ProductId.equals(productId)
-    );
+    // const existingCartItem = cart.Items.find((item) =>
+    //   item.ProductId.equals(productId)
+    // );
 
-    if (existingCartItem) {
-      // If the product is already in the cart, increase the quantity
-      existingCartItem.Quantity += 1;
-    } else {
-      // If the product is not in the cart, add it with a quantity of 1
-      cart.Items.push({
-        ProductId: productId,
-        Quantity: 1,
-      });
-    }
+    // if (existingCartItem) {
+    //   // If the product is already in the cart, increase the quantity
+    //   existingCartItem.Quantity += 1;
+    // } else {
+    //   // If the product is not in the cart, add it with a quantity of 1
+    //   cart.Items.push({
+    //     ProductId: productId,
+    //     Quantity: 1,
+    //   });
+    // }
 
-    await cart.save();
+    // await cart.save();
 
-    res.redirect('/cart'); // Redirect to the cart page or another appropriate page
-  } catch (err) {
-    console.log(err);
-    // Handle the error appropriately (e.g., send an error response)
-    res.status(500).json({ error: "Internal Server Error" });
-  }
+    // res.redirect('/cart'); // Redirect to the cart page or another appropriate page
+  // } catch (err) {
+  //   console.log(err);
+  //   // Handle the error appropriately (e.g., send an error response)
+  //   res.status(500).json({ error: "Internal Server Error" });
+  // }
 }
 const trackOrder = async (req, res) => {
   const userId = req.session.userId;
@@ -589,11 +844,29 @@ const trackOrder = async (req, res) => {
   res.render("user/trackOrder",{user,order,address})
 }
 
-const orderList = async (req,res)=>{
-  const userId = req.session.userId;
+const orderList = async (req,res)=>{  
+   const userId = req.session.userId;
   const user = await User.findById(userId);
-  const order = await Order.find({UserId:userId})
-  res.render('user/orderList',{user,order})
+  const page = parseInt(req.query.page) || 1;
+  const perPage = 10;
+  const skip = (page - 1) * perPage;
+  const totalCount = await Order.countDocuments({ UserId: userId });
+  const order = await Order.find({ UserId: userId })
+    .skip(skip)
+    .limit(perPage)
+    .sort({ _id: -1 });
+  res.render("user/orderList", {
+    user,
+    order,
+    currentPage: page,
+    perPage,
+    totalCount,
+    totalPages: Math.ceil(totalCount / perPage),
+  });
+  // const userId = req.session.userId;
+  // const user = await User.findById(userId);
+  // const order = await Order.find({UserId:userId})
+  // res.render('user/orderList',{user,order})
 }
 
 const orderCancel = async (req,res)=>{
@@ -674,7 +947,7 @@ const getEditAddress = async (req, res) => {
   const userId = req.session.userId;
   const user = await User.findById(userId);
   console.log(user.Address);
-  res.render('user/editAddress',{user})
+  res.render('user/editAddress',{user,error: req.flash('error'), success: req.flash('success')})
 }
 const postEditAddress = async(req,res) => 
   {
@@ -825,120 +1098,328 @@ const addAddressCheckout = async (req, res) => {
 const getCheckout = async(req,res)=>{
   const userId = req.session.userId;
   const user = await User.findById(userId);
-  res.render('user/checkout',{user});
-}
-const postCheckout = async(req,res)=>{
-  const userId = req.session.userId
-  const user = await User.findById(userId);
-  if (user && user.status === 'Blocked') {
-    console.log("kernninda");
-    req.flash('error', 'Your account is blocked. You cannot make purchases.');
-    return res.redirect('/homepage'); // Redirect to a suitable page.
+  const cart = await Cart.findOne({ UserId: userId }).populate(
+    "Items.ProductId"
+  );
+  if (!cart) {
+    res.redirect("/cart");  
+  } else {
+    res.render("user/checkout", { user, cart });
   }
-  else{
-  console.log(req.body);
-  const PaymentMethod = req.body.paymentMethod
-  const Address = req.body.Address
+}
 
-  const Email = user.email
-  const cart = await Cart.findOne({UserId:userId}).populate("Items.ProductId")
-  console.log(req.session.totalPrice);
+
+const postCheckout = async(req,res)=>{
   
+    console.log("inside body", req.body);
+    const PaymentMethod = req.body.paymentMethod;
+    const Address = req.body.Address;
+    const userId = req.session.userId;
+    const amount = req.session.totalPrice;
+    const user = await User.findById(userId);
+    const Email = user.email;
+    const cart = await Cart.findOne({ UserId: userId }).populate(
+      "Items.ProductId"
+    );
+    console.log(req.session.totalPrice);
+    const address = await User.findOne(
+      {
+        _id: userId,
+      },
+      {
+        Address: {
+          $elemMatch: { _id: new mongoose.Types.ObjectId(Address) },
+        },
+      }
+    );
+    console.log("add====", address);
 
-  const newOrders = new Order({
-   UserId: userId,
-   Items: cart.Items,
-   OrderDate: moment(new Date()).format('llll') ,
-   ExpectedDeliveryDate : moment().add(4, 'days').format('llll'),
-   TotalPrice: req.session.totalPrice,
-   Address: Address,
-   PaymentMethod: PaymentMethod
-  })
-  //delete the items in the cart after checkout  
-  await  Cart.findByIdAndDelete(cart._id)
-  //save order to database
-  const order = await  newOrders.save();
-  console.log(order,"in orders");
-  req.session.orderId = order._id
-
-  for (const item of order.Items) {
-   const productId = item.ProductId;
-   const quantity = item.Quantity;
- 
-   const product = await Product.findById(productId);
- 
-   if (product) {
-     const updatedQuantity = product.stock - quantity;
- 
-     if (updatedQuantity <=0) {
-       product.stock = 0;
-   product.Status = "Out of Stock";
-   await product.save();
-     } else {
-       // Update the product's available quantity
-       product.stock = updatedQuantity;
- 
-       // Save the updated product back to the database
-       await product.save();
-     }
-   }
- }
- if(PaymentMethod === "cod"){
-  //send email with details of orders
-  const transporter = nodemailer.createTransport({
-   port: 465,
-   host: "smtp.gmail.com",
-   auth: {
-     user: "techboompage@gmail.com",
-     pass: process.env.PASSWORD,
-   },
-   secure: true,
- });
- const mailData = {
-   from: "techboompage@gmail.com",
-   to: Email,
-   subject:'Your Orders!' ,
-   text:`Hello! ${user.username} Your order has been received and will be processed within one business day.`+
-   ` your total price is ${req.session.totalPrice}`
- };
- transporter.sendMail(mailData, (error, info) => {
-   if (error) {
-     return console.log(error);
-   }
-   console.log("Success");
- });
- res.json({ codSuccess: true });
-}
-
-else {
-  let amount = req.session.totalPrice;
-  console.log("hereeeeeee");
-  const order = {
-    amount: amount,
-    currency: "INR",
-    receipt: req.session.orderId,
-  };
-  await razorpay
-    .createRazorpayOrder(order)
-    .then((createdOrder) => {
-      console.log("payment response", createdOrder);
-      res.json({ createdOrder, order });
-    })
-    .catch((err) => {
-      console.log(err);
+    const add = {
+      Name: address.Address[0].Name,
+      Address: address.Address[0].AddressLane,
+      Pincode: address.Address[0].Pincode,
+      City: address.Address[0].City,
+      State: address.Address[0].State,
+      Mobile: address.Address[0].Mobile,
+    };
+    const newOrders = new Order({
+      UserId: userId,
+      Items: cart.Items,
+      OrderDate: new Date(),
+      TotalPrice: req.session.totalPrice,
+      Address: add,
+      PaymentMethod: PaymentMethod,
     });
-}
+    const order = await newOrders.save();
+    console.log("in orders==", order);
+    req.session.orderId = order._id;
+
+    for (const item of order.Items) {
+      const productId = item.ProductId;
+      const quantity = item.Quantity;
+
+      const product = await Product.findById(productId);
+
+      if (product) {
+        const updatedQuantity = product.stock - quantity;
+
+        if (updatedQuantity <= 0) {
+          product.stock = 0;
+          product.Status = "Out of Stock";
+          await product.save();
+        } else {
+          product.stock = updatedQuantity;
+          await product.save();
+        }
+      }
+    }
+    if (PaymentMethod === "cod") {
+      const transporter = nodemailer.createTransport({
+        port: 465,
+        host: "smtp.gmail.com",
+        auth: {
+          user: "techboompage@gmail.com",
+          pass: "",
+        },
+        secure: true,
+      });
+      const mailData = {
+        from: "techboompage@gmail.com",
+        to: Email,
+        subject: "Your Orders!",
+        text:
+          `Hello! ${user.Username} Your order has been received and will be processed within one business day.` +
+          ` your total price is ${req.session.totalPrice}`,
+      };
+      transporter.sendMail(mailData, (error, info) => {
+        if (error) {
+          return console.log(error);
+        }
+        console.log("Success");
+      });
+      await Cart.findByIdAndDelete(cart._id);
+      res.json({ codSuccess: true });
+
+      // online checkout
+    } else if(PaymentMethod === "online") {
+      const order = {
+        amount: amount,
+        currency: "INR",
+        receipt: req.session.orderId,
+      };
+      await razorpay
+        .createRazorpayOrder(order)
+        .then((createdOrder) => {
+          console.log("payment response", createdOrder);
+          res.json({ onlineSuccess:true, createdOrder, order });
+        })
+        .catch(async(err) => {
+          console.log(err);
+          await Cart.findByIdAndDelete(cart._id);
+        });
+      }else if(PaymentMethod === "wallet"){
+        const transporter = nodemailer.createTransport({
+          port: 465,
+          host: "smtp.gmail.com",
+          auth: {
+            user: "techboompage@gmail.com",
+            pass: process.env.Password,
+          },
+          secure: true,
+        });
+        const mailData = {
+          from: "techboompage@gmail.com",
+          to: Email,
+          subject: "Your Orders!",
+          text:
+            `Hello! ${user.Username} Your order has been received and will be processed within one business day.` +
+            ` your total price is ${req.session.totalPrice}`,
+        };
+        transporter.sendMail(mailData, (error, info) => {
+          if (error) {
+            return console.log(error);
+          }
+          console.log("Success");
+        });
+        await User.findByIdAndUpdate(userId,{$inc:{WalletAmount: -order.TotalPrice}})
+        await Order.findByIdAndUpdate(order._id,{PaymentStatus:'Paid'})
+        await Cart.findByIdAndDelete(cart._id);
+        res.json({ walletSuccess: true });
+      }
+  }
+
+  // const userId = req.session.userId
+  // const user = await User.findById(userId);
+  // // if (user &&user.status === 'Blocked') {
+   
+  // //   req.flash('error', 'Your account is blocked. You cannot make purchases.');
+  // //   return res.redirect('/homepage'); // Redirect to a suitable page.
+  // // }
+  // // else{
+  // console.log(req.body);
+  // const PaymentMethod = req.body.paymentMethod
+  // const Address = req.body.Address
+  // const amount = req.session.totalPrice;
+  // const Email = user.email
+  // const cart = await Cart.findOne({UserId:userId}).populate("Items.ProductId")
+  // console.log(req.session.totalPrice);
+  
+  // const address = await User.findOne(
+  //   {
+  //     _id: userId,
+  //   },
+  //   {
+  //     Address: {
+  //       $elemMatch: { _id: new mongoose.Types.ObjectId(Address) },
+  //     },
+  //   }
+  // );
+  // console.log("add====", address);
+
+//   const add = {
+//     Name: address.Address[0].Name,
+//     Address: address.Address[0].AddressLane,
+//     Pincode: address.Address[0].Pincode,
+//     City: address.Address[0].City,
+//     State: address.Address[0].State,
+//     Mobile: address.Address[0].Mobile,
+//   };
+
+
+//   const newOrders = new Order({
+//    UserId: userId,
+//    Items: cart.Items,
+//    OrderDate: moment(new Date()).format('llll') ,
+//    ExpectedDeliveryDate : moment().add(4, 'days').format('llll'),
+//    TotalPrice: req.session.totalPrice,
+//    Address: Address,
+//    PaymentMethod: PaymentMethod
+//   })
+//   //delete the items in the cart after checkout  
+//   await  Cart.findByIdAndDelete(cart._id)
+//   //save order to database
+//   const order = await  newOrders.save();
+//   console.log(order,"in orders");
+//   req.session.orderId = order._id
+
+//   for (const item of order.Items) {
+//    const productId = item.ProductId;
+//    const quantity = item.Quantity;
+ 
+//    const product = await Product.findById(productId);
+ 
+//    if (product) {
+//      const updatedQuantity = product.stock - quantity;
+ 
+//      if (updatedQuantity <=0) {
+//        product.stock = 0;
+//    product.Status = "Out of Stock";
+//    await product.save();
+//      } else {
+//        // Update the product's available quantity
+//        product.stock = updatedQuantity;
+ 
+//        // Save the updated product back to the database
+//        await product.save();
+//      }
+//     }
+//  }
+// //  cod
+//  if(PaymentMethod === "cod"){
+//   //send email with details of orders
+//   const transporter = nodemailer.createTransport({
+//    port: 465,
+//    host: "smtp.gmail.com",
+//    auth: {
+//      user: "techboompage@gmail.com",
+//      pass: process.env.PASSWORD,
+//    },
+//    secure: true,
+//  });
+//  const mailData = {
+//    from: "techboompage@gmail.com",
+//    to: Email,
+//    subject:'Your Orders!' ,
+//    text:`Hello! ${user.username} Your order has been received and will be processed within one business day.`+
+//    ` your total price is ${req.session.totalPrice}`
+//  };
+//  transporter.sendMail(mailData, (error, info) => {
+//    if (error) {
+//      return console.log(error);
+//    }
+//    console.log("Success");
+//  });
+//  res.json({ codSuccess: true });
+// }
+
+// else if(PaymentMethod === 'online') {
+
+//   console.log("hereeeeeee");
+//   const order = {
+//     amount: amount,
+//     currency: "INR",
+//     receipt: req.session.orderId,
+//   };
+//   await razorpay
+//     .createRazorpayOrder(order)
+//     .then((createdOrder) => {
+//       console.log("payment response", createdOrder);
+//       res.json({ createdOrder, order });
+//     })
+//     .catch((err) => {
+//       console.log(err);
+//     });
+
+  
+    
+  
+// }
+// else if(PaymentMethod === "wallet"){
+//   const transporter = nodemailer.createTransport({
+//     port: 465,
+//     host: "smtp.gmail.com",
+//     auth: {
+//       user: "techboompage@gmail.com",
+//       pass: process.env.PASSWORD,
+//     },
+//     secure: true,
+//   });
+//   const mailData = {
+//     from: "techboompage@gmail.com",
+//     to: Email,
+//     subject: "Your Orders!",
+//     text:
+//       `Hello! ${user.Username} Your order has been received and will be processed within one business day.` +
+//       ` your total price is ${req.session.totalPrice}`,
+//   };
+//   transporter.sendMail(mailData, (error, info) => {
+//     if (error) {
+//       return console.log(error);
+//     }
+//     console.log("Success");
+//   });
+//   await User.findByIdAndUpdate(userId,{$inc:{WalletAmount: -order.TotalPrice}})
+// await Order.findByIdAndUpdate(order._id,{PaymentStatus:'Paid'})
+// await Cart.findByIdAndDelete(cart._id);
+// res.json({ walletSuccess: true });
+// }
 //  res.redirect('/orderSuccess')
 //   console.log(cart.Items);
-}
-const verifyPayment = async(req,res)=>{
+
+
+
+const verifyPayment= async (req, res) => {
+  const PaymentMethod = req.body.paymentMethod;
+    const Address = req.body.Address;
+    const userId = req.session.userId;
+    const amount = req.session.totalPrice;
+    const user = await User.findById(userId);
+    const Email = user.email;
+    const cart = await Cart.findOne({ UserId: userId }).populate(
+      "Items.ProductId"
+    );
   console.log("it is the body", req.body);
   let hmac = crypto.createHmac("sha256", process.env.KEY_SECRET);
-  console.log(
-    req.body.payment.razorpay_order_id +
-      "|" +
-      req.body.payment.razorpay_payment_id
-  );
   hmac.update(
     req.body.payment.razorpay_order_id +
       "|" +
@@ -950,19 +1431,25 @@ const verifyPayment = async(req,res)=>{
     const orderId = new mongoose.Types.ObjectId(
       req.body.order.createdOrder.receipt
     );
-    console.log("reciept", req.body.order.createdOrder.receipt);
     const updateOrderDocument = await Order.findByIdAndUpdate(orderId, {
       PaymentStatus: "Paid",
       PaymentMethod: "Online",
     });
-    console.log("hmac success");
+
+    await Cart.findByIdAndDelete(cart._id);
+
+    console.log('Order and cart updated and deleted successfully');
+
     res.json({ success: true });
   } else {
     console.log("hmac failed");
     res.json({ failure: true });
   }
-}
-}
+};
+
+
+
+
 
 const checkCoupon = async(req,res)=>{
   try {
@@ -1112,9 +1599,23 @@ const products = async (req, res) => {
     res.status(500).render('error', { message: 'An error occurred while fetching product details' });
   }
 }
-module.exports = {
-  renderShopPage,productdetails, renderOtpPage,getProfile, renderSignupPage, postSignup, postOtpVerification, resendOtp, renderLoginPage,
-  postUserLogin, renderHomePage,renderForgotPasswordPage, postForgotPassword,renderForgotOtpPage,postForgotOtpVerification,resendForgotOtp,
-  getCart,postCart,getAddToCart,addAddressCheckout,trackOrder,orderList,orderCancel,orderDetails, getEditAddress, postEditAddress , changePassword,addAddress
-  ,updateQuantity,removeCart, getCheckout, postCheckout,checkCoupon,orderSuccess,products
+const logout = (req, res) => {
+try {
+  res.redirect('/login');
+}
+catch (error) {
+
+}
 };
+module.exports = {
+  home,productdetails, renderOtpPage,getProfile, renderSignupPage, returnOrder,postSignup, postOtpVerification, resendOtp, renderLoginPage,
+  postUserLogin, renderHomePage,renderForgotPasswordPage, postForgotPassword,getUserSignupWithReferralCode, renderForgotOtpPage,postForgotOtpVerification,resendForgotOtp,
+  getCart,postCart,getAddToCart,addAddressCheckout,trackOrder,orderList,orderCancel,orderDetails, getEditAddress, postEditAddress , changePassword,addAddress
+  ,updateQuantity,getSearch,removeCart, downloadfile,downloadInvoice,getCheckout,verifyPayment, postCheckout,checkCoupon,orderSuccess,products,getShop,logout
+};
+
+
+
+
+
+

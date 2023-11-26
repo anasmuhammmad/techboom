@@ -1,4 +1,5 @@
   <%- include('../layouts/header') %>
+  <%- include('../layouts/layout') %>
     <link rel="stylesheet" href="/css/user-signup.css" />
     <header>
       <nav class="navbar bg-body-tertiary p-0">
@@ -52,17 +53,7 @@
                     </div>
                     <div class="form-group mt-3">
                       <label for="email">Email Address</label>
-                      <!-- <%if(error && error.email){%>
-                        <p class="text-danger text-center">
-                          <%= error %>
-                        </p>
-                        <%}%> -->
-
-                        <!-- <% if (error && error.length > 0) { %>
-                          <p class="text-danger text-center">
-                            <%= error[0] %>
-                          </p>
-                        <% } %> -->
+       
                           <input type="email" class="form-control mt-2" id="email" name="email"
                             placeholder="Enter your email address" required />
                     </div>
@@ -130,11 +121,7 @@
                       </div>
                     </div>
              
-                    <% if (error && error.password) { %>
-                      <p class="text-danger text-center">
-                        <%= error.password.message %>
-                      </p>
-                    <% } %>
+            
 
                     <div class="form-check mt-3">
                       <input type="checkbox" class="form-check-input" id="agreeTerms" />

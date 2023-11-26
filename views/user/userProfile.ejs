@@ -1,5 +1,6 @@
 <%- include('../layouts/header') %>
 <%- include('../partials/user-header') %>
+<%- include('../layouts/layout') %>
 <div class="modal fade tickerTimes" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -30,20 +31,9 @@
     </div>
 </div>
 <div class="container tickerTimes">
-  <h6>Your Profile</h6>
+  <h1 class="text-center tickerTimes">YOUR PROFILE</h1>
   <div class="row mb-4 mt-3">
-    <div class="col-lg-2">
-      <div class="profile-picture d-flex flex-column">
-        <div class="profile-image">
-        </div>
-        <input type="file" id="profile-picture" accept="image/*" style="display: none;">
-        <div class="text-start">
-          <label for="profile-picture" class="profile-upload-btn">
-            <i class="fas fa-camera"></i> Upload Picture
-          </label>
-        </div>
-      </div>
-    </div>
+    <div class="card p-4">
     <div class="col-lg-10">
       <div class="form-group">
         <label for="name">Name:</label>
@@ -58,11 +48,29 @@
         <i class="fas fa-plus-circle"></i> Change password
        </button>
     </div>
+    </div>
+  </div>
+  <div class="card p-3 text-center">
+    <div class="wallet-header">Your Wallet Balance</div>
+    <div class="wallet-balance">₹<%=user.WalletAmount%></div>
+    <a class="btn text-dark d-flex-column  border-0">
+      <div class="wallet-header"> 
+        Refer to your friends and earn Rs:100  in each.
+      </div>
+        <div>
+        <h6>Your referral link : </h6>
+        <h6 class="text-primary" id="referral-link">localhost:5000/signup/<%=user._id%> </h6>
+        </div>
+        <div class="p-4">
+        <button id="copyButton" class="fa fa-copy fa-xl  border-0"></button>
+        </div>
+      <span id="copySuccessMessage" class="d-none fw-bold text-success"> Text copied to clipboard! </span>
+    </a> 
   </div>
   <div class="row justify-content-center">
-    <div class="col-lg-12 col-md-6 col-sm-6  col-12">
+    <div class="col-lg-6 col-md-6 col-sm-6  col-12">
         <a class="text-decoration-none" href="/orderList">
-            <div class="card text-center  mb-3" style=" background: linear-gradient(to right, rgba(255,0,0,0), rgb(196, 255, 245));; height: 30vh;">
+            <div class="card text-center  mb-3" style="background: linear-gradient(215deg, rgb(212, 102, 255), rgb(240, 220, 131)); height: 30vh;">
                 <div class="card-header">
                     <img src="/images/order-box-removebg-preview.png" class="img-fluid" style="width: 10vh;"
                         alt="">
@@ -76,9 +84,9 @@
             </div>
         </a>
     </div>
-    <div class="col-lg-12 col-md-6 col-sm-6 col-12">
+    <div class="col-lg-6 col-md-6 col-sm-6 col-12">
         <a class="text-decoration-none" href="/cart">
-            <div class="card text-center mb-3" style=" background: linear-gradient(to right, rgba(255,0,0,0), rgb(196, 255, 245));; height: 30vh;">
+            <div class="card text-center mb-3" style="background: linear-gradient(215deg, rgb(212, 102, 255), rgb(240, 220, 131)); height: 30vh;">
                 <div class="card-header">
                     <img src="/images/cart-card-removebg-preview.png" class="img-fluid" style="width: 10vh;"
                         alt="">
@@ -92,9 +100,9 @@
             </div>
         </a>
     </div>
-    <div class="col-lg-12 col-md-6 col-sm-6 col-12">
+    <div class="col-lg-6 col-md-6 col-sm-6 col-12">
         <a class="text-decoration-none" href="/editAddress">
-            <div class="card text-center  mb-3" style=" background: linear-gradient(to right, rgba(255,0,0,0), rgb(196, 255, 245));; height: 30vh;">
+            <div class="card text-center  mb-3" style="background: linear-gradient(215deg, rgb(212, 102, 255), rgb(240, 220, 131)); height: 30vh;">
                 <div class="card-header">
                     <img src="/images/address-removebg-preview.png" class="img-fluid" style="width: 10vh;"
                         alt="">
@@ -107,9 +115,9 @@
             </div>
         </a>
     </div>
-    <div class="col-lg-12 col-md-6 col-sm-6  col-12">
+    <div class="col-lg-6 col-md-6 col-sm-6  col-12">
         <a class="text-decoration-none" href="">
-            <div class="card text-center mb-3" style=" background: linear-gradient(to right, rgba(255,0,0,0), rgb(196, 255, 245));; height: 30vh;">
+            <div class="card text-center mb-3" style="background: linear-gradient(215deg, rgb(212, 102, 255), rgb(240, 220, 131)); height: 30vh;">
                 <div class="card-header">
                     <img src="/images/wishlist-card-removebg-preview.png" class="img-fluid" style="width: 10vh;"
                         alt="">
@@ -123,9 +131,9 @@
             </div>
         </a>
     </div>
-    <div class="col-lg-12 col-md-6 col-sm-6  col-12">
+    <div class="col-lg-6 col-md-6 col-sm-6  col-12">
         <a class="text-decoration-none" href="">
-            <div class="card text-center mb-3" style=" background: linear-gradient(to right, rgba(255,0,0,0), rgb(196, 255, 245));; height: 30vh;">
+            <div class="card text-center mb-3" style="background: linear-gradient(215deg, rgb(212, 102, 255), rgb(240, 220, 131)); height: 30vh;">
                 <div class="card-header">
                     <img src="/images/review-removebg-preview.png" class="img-fluid" style="width: 10vh;"
                         alt="">
@@ -139,21 +147,25 @@
             </div>
         </a>
     </div>
-    <div class="col-lg-12 col-md-6 col-sm-6  col-12">
-        <a class="text-decoration-none" href="">
-            <div class="card text-center mb-3" style=" background: linear-gradient(to right, rgba(255,0,0,0), rgb(196, 255, 245));; height: 30vh;">
-                <div class="card-header">
-                    <img src="/images/account-removebg-preview.png" class="img-fluid" style="width: 10vh;"
-                        alt="">
-                </div>
-                <div class="card-body">
-                    <h2 class="tickerTimes text-dark" style="font-family: 'Times New Roman', Times, serif;">
-                       Account Settings
-                    </h2>
-                </div>
-            </div>
-        </a>
-    </div>
+    
+
+    <div class="col-lg-6 col-md-6 col-sm-6  col-12">
+      <a class="text-decoration-none" href="/coupons">
+          <div class="card text-center mb-3" style="background: linear-gradient(215deg, rgb(212, 102, 255), rgb(240, 220, 131)); height: 30vh;">
+              <div class="card-header">
+                  <img src="/images/coupon2-removebg-preview.png" class="img-fluid" style="width: 10vh;"
+                      alt="">
+              </div>
+              <div class="card-body">
+                  <h2 class="tickerTimes text-dark" style="font-family: 'Times New Roman', Times, serif;">
+                    Coupons
+                  </h2>
+              </div>
+          </div>
+      </a>
+  </div>
+
+
 </div>
 </div>
 
@@ -185,9 +197,60 @@
     border-radius: 5px;
     cursor: pointer;
   }
+  .wallet-header {
+    font-size: 24px;
+    color: #007bff;
+    margin-bottom: 20px;
+}
+
+.wallet-balance {
+    font-size: 36px;
+    color: #28a745;
+    margin-bottom: 30px;
+}
+
+.wallet-buttons {
+    display: flex;
+    justify-content: center;
+}
+
+.wallet-button {
+    margin: 10px;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+.wallet-button:hover {
+    background-color: #0056b3;
+}
 </style>
 <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
 <script>
+  document.getElementById("copyButton").addEventListener("click", function () {
+  const referralLink = document.getElementById("referral-link").textContent;
+
+  const tempInput = document.createElement("input");
+  tempInput.value = referralLink;
+  document.body.appendChild(tempInput);
+
+  tempInput.select();
+  document.execCommand("copy");
+
+  document.body.removeChild(tempInput);
+
+  const successMessage = document.getElementById("copySuccessMessage");
+  successMessage.classList.remove("d-none");
+
+  setTimeout(function () {
+    successMessage.classList.add("d-none");
+  }, 3000);
+});
+
     $("#passwordChangeForm").submit((e) => {
   e.preventDefault();
   $.ajax({
@@ -199,18 +262,14 @@
         console.log('Password changed successfully');
         // Close the modal
         $('#changePasswordModal').modal('hide');
-        // Show a success message
-        // You can replace this with your preferred success message display logic
+
         alert('Password changed successfully');
       } else {
-        // Show a flash message
         $('#flashMessage').text(response.error).show();
       }
     },
     error: (xhr, status, error) => {
-      // Handle the AJAX error
       console.log('Error:', error);
-      // Show a flash message
       $('#flashMessage').text('An error occurred. Please try again.').show();
     }
   });

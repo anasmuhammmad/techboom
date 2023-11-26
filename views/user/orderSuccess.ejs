@@ -19,5 +19,16 @@
       <a href="/homepage" class="text-dark fw-bold text-decoration-none">Go To Home</a>
 </div>
 </section>
-
+<!-- <script>
+  if (sessionStorage.getItem('paymentSuccess')) {
+  // Clear the flag (optional)
+  
+  setTimeout(function() {
+      window.location.href = '/cart';
+    }, 3000); 
+} else {
+  // Redirect to errorPage if the flag is not set
+  sessionStorage.removeItem('paymentSuccess');
+}
+</script> -->
 <%- include('../layouts/footer') %>

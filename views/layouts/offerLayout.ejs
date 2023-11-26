@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Your head content here -->
+    <style>
+        
+
+        /* Style for the container */
+        .category-offers-container {
+   
+            position: absolute;
+            top: 10%;
+            left: 0;
+            z-index: 1000;
+            background-color: #fff;
+            /* box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); */
+            border: .4px solid #ccc;
+            
+        
+          /* Adjust the max-height as needed */
+           
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: opacity 0.3s, transform 0.3s;
+        }
+
+        /* Show the container when it has the 'show' class */
+        .category-offers-container.show {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container mt-3">
+        <div class="category-offers-container" id="categoryOffersContainer">
+            <!-- Content will be dynamically added here -->
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const categoryOffersContainer = document.getElementById('categoryOffersContainer');
+
+            // Fetch active category offers from the server
+            fetch('/active-category-offers')
+                .then(response => response.json())
+                .then(activeCategoryOffers => {
+                    console.log("Fetched", activeCategoryOffers);
+                    categoryOffersContainer.innerHTML = ''; // Clear existing content
+
+                    if (activeCategoryOffers.length === 0) {
+                        categoryOffersContainer.innerHTML = '<p>No active category offers</p>';
+                    } else {
+                        activeCategoryOffers.forEach(offer => {
+                            const offerItem = document.createElement('p');
+                            offerItem.textContent = ` Offer Discount: ${offer.offerPrice}% on all  ${offer.categoryName} products`;
+                            categoryOffersContainer.appendChild(offerItem);
+                        });
+                    }
+
+                    // Show the container
+                    categoryOffersContainer.classList.add('show');
+                })
+                .catch(error => console.error('Error fetching category offers:', error));
+        });
+    </script>
+</body>
+
+</html>

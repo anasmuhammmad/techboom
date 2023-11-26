@@ -4,9 +4,10 @@ const Category = require("../models/categorySchema");
 const Brand = require("../models/brandSchema")
 const flash = require("express-flash");
 const Admin = require("../models/adminSchema");
-const adminAuth = require('../middlewares/adminAuth')
+const adminAuth = require('../middlewares/adminAuth.js')
 const bcrypt = require("bcrypt");
-
+const pdf = require("../utility/pdf")
+const orderHelper = require("../helpers/orderHelpers")
 const Order = require("../models/orderSchema");
 const Coupon = require("../models/couponSchema");
 module.exports = {
@@ -34,6 +35,7 @@ module.exports = {
   
   getAddCoupon: async (req, res) => {
     try {
+      console.log("hello");
       res.render("admin/addCoupon");
     } catch (error) {}
   },
@@ -47,11 +49,16 @@ module.exports = {
       } else if (req.body.discountType === "percentage") {
         req.body.amount = req.body.amount[0];
       }
+      if(req.body.amount <= 0 ){
+        return res.json({ error: "COUPON amount cannot be 0 or negative" })
+      }
       const coupon = await Coupon.create(req.body);
       if (coupon) {
         console.log("added to collection");
+        res.json({ success: true });
       } else {
         console.log("not added to collection");
+        res.json({ error: "COUPON already consist" });
       }
     } catch (error) {
       console.log(error);
@@ -255,23 +262,30 @@ module.exports = {
   // },
 
 getOrders: async (req,res)=>{
-  const page = parseInt(req.query.page) || 1; // Get the page number from query parameters
-  const perPage = 10; // Number of items per page
+  const page = parseInt(req.query.page) || 1;
+  const perPage = 10;
   const skip = (page - 1) * perPage;
-
-  // Query the database for products, skip and limit based on the pagination
-  const order = await Order.find()
-      .skip(skip)
-      .limit(perPage).lean();
-
+  const order = await Order.find().skip(skip).limit(perPage).lean();
+  const returnRequestedCount = await Order.aggregate([
+    {
+      $match: {
+        Status: 'Return Requested',
+      },
+    },
+    {
+      $count: 'count',
+    },
+  ]);
+  const numberOfRequest = returnRequestedCount[0]?.count
   const totalCount = await Order.countDocuments();
 
-  res.render('admin/adminOrders', {
-      order,
-      currentPage: page,
-      perPage,
-      totalCount,
-      totalPages: Math.ceil(totalCount / perPage),
+  res.render("admin/adminOrders", {
+    order,
+    numberOfRequest,
+    currentPage: page,
+    perPage,
+    totalCount,
+    totalPages: Math.ceil(totalCount / perPage),
   });
 
 },
@@ -284,6 +298,100 @@ getOrderDetails: async (req,res)=>{
     console.log(error);
   }
 },
+
+getReturnRequests: async (req,res)=>{
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const perPage = 10;
+    const skip = (page - 1) * perPage;
+    const order = await Order.find({Status: 'Return Requested' }).skip(skip).limit(perPage)
+    const totalCount = await Order.countDocuments({Status: 'Return Requested' });
+    res.render('admin/returnRequests',{
+      order,
+      totalCount,
+    currentPage: page,
+    perPage,
+    totalPages: Math.ceil(totalCount / perPage),
+    })
+  } catch (error) {
+    console.log(error);
+  }
+},
+
+
+getHandleRequest: async (req,res)=>{
+  try {
+    const orderId = req.body.orderId
+    const input = req.body.input
+    if(input === 'accept'){
+      const order = await Order.findById(orderId).populate('Items.ProductId')
+      const _id = order.UserId
+      if(order.PaymentStatus === 'Paid'){
+        await User.findOneAndUpdate(
+          { _id: _id },
+          { $inc: { WalletAmount: order.TotalPrice } }
+        );
+      }
+      let status = "Returned"
+      const updatedOrder = await Order.findByIdAndUpdate(
+        orderId,
+        { Status: status,PaymentStatus: "Refunded" },
+        { new: true }
+      );
+      console.log("orderr",order.Items);
+      order.Items.forEach(async(item)=>{
+        await Product.updateOne(
+          {_id : item.ProductId},
+          {$inc:{stock: item.Quantity}}
+        )
+      })
+    }else{
+      let status = "Return Rejected"
+      const updatedOrder = await Order.findByIdAndUpdate(
+        orderId,
+        { Status: status },
+        { new: true }
+      );
+    }
+    res.json({success: true})
+
+  } catch (error) {
+    console.log(error);
+  }
+},
+
+getDownloadSalesReport: async (req,res)=>{
+  console.log(req.body);
+  try {
+    const startDate = req.body.startDate
+    const format = req.body.fileFormat
+    const endDate = req.body.endDate
+    const orders = await Order.find({
+      PaymentStatus: 'Paid',
+    }).populate('Items.ProductId')
+
+    const totalSales = await Order.aggregate([
+      {
+      $match:{
+        PaymentStatus: 'Paid',
+      }
+  },
+  {
+    $group: {
+      _id: null,
+      totalSales: {$sum: '$TotalPrice'}
+    }
+  }
+])
+const sum = totalSales.length > 0 ? totalSales[0].totalSales : 0;
+pdf.downloadPdf(req,res,orders,startDate,endDate,totalSales)
+
+  } catch (error) {
+    console.log(error);
+  }
+
+},
+
 putUpdateStatus: async (req,res)=>{
   console.log("hereee");
   const orderId = req.params.orderId;
@@ -461,6 +569,27 @@ postAddProduct: async (req, res) => {
     
 
     },
+
+    
+ getReturnRequest: async ( req,res) => {
+  try {
+      const page = parseInt(req.query.page) || 1;
+      const perPage = 10;
+      const skip = (page - 1) * perPage;
+      const order = await Order.find({Status: 'Return Requested' }).skip(skip).limit(perPage)
+      const totalCount = await Order.countDocuments({Status: 'Return Requested' });
+      res.render('admin/returnRequests',{
+        order,
+        totalCount,
+      currentPage: page,
+      perPage,
+      totalPages: Math.ceil(totalCount / perPage),
+      })
+    } catch (error) {
+      console.log(error);
+    }
+  },
+
   //   try {
   //     const productType = req.body.productType;
       
@@ -538,38 +667,64 @@ postAddProduct: async (req, res) => {
   getCategoriesAndBrands: async (req, res) => {
     const categories = await Category.find();
     const brands = await Brand.find();
-    res.render("admin/categoriesAndBrands", { categories, brands });
+    res.render("admin/categoriesAndBrands", { categories, brands, error: req.flash('error'),success: req.flash('success') });
   },
 
   getAddCategory: async (req, res) => {
-    res.render("admin/addcategory");
+    res.render("admin/addcategory",{error: req.flash('error'),success: req.flash('success')});
   },
 
 
   postAddCategory: async (req, res) => {
     try {
-      // const imageBuffer = req.file.buffer; // Get the image data from multer
-      const imageFileName = req.file.filename;
-
-      const newCategory = new Category({
-        Name: req.body.Name,
-        image : imageFileName
-      });
-
-
-      // Save the newCategory to the database
-      let data = await newCategory.save();
-      req.session.idd = data;
-
-      req.flash('success', 'Category added successfully');
-      // Redirect or send a success response
-      res.redirect('/admin/categoriesandbrands');
+      console.log(req.file);
+      req.body.image = req.file.filename;
+      const uploaded = await Category.create(req.body);
+      res.redirect("/admin/categoriesandbrands");
     } catch (error) {
-      console.error(error);
-      req.flash('error', 'Error Adding the Category');
-      res.redirect('/admin/categoriesandbrands');
+      console.log(error);
+      if (error.code === 11000) {
+          req.flash("error", "Category already exist");
+          res.redirect("/admin/addcategory");
+      } else {
+        req.flash("error", "Error Adding the Category");
+        res.redirect("/admin/categoriesandbrands");
+
+      }
     }
   },
+
+
+
+
+  // try {
+    //   // const imageBuffer = req.file.buffer; // Get the image data from multer
+    //   const imageFileName = req.file.filename;
+
+    //   const newCategory = new Category({
+    //     Name: req.body.Name,
+    //     image : imageFileName
+    //   });
+
+
+    //   // Save the newCategory to the database
+    //   let data = await newCategory.save();
+    //   req.session.idd = data;
+
+    //   req.flash('success', 'Category added successfully');
+    //   // Redirect or send a success response
+    //  return res.redirect('/admin/categoriesandbrands');
+    // } catch (error) {
+      
+    //   req.flash('error','Error Adding the Category,try to add both fields properly');
+    //   return res.redirect('/admin/addcategory');
+    // }
+
+
+
+
+
+
 
   // getEditCategory: async (req, res) => {
   //   const _id = req.params._id;
@@ -583,13 +738,13 @@ postAddProduct: async (req, res) => {
     try {
       const _id = req.params.id;
       const image = req.session.idd ;
-
+      const errorMessages = req.flash('error');
       console.log(_id);
       const category = await Category.findById(_id);
       if (!category) {
         return res.status(404).send('Category not found'); // Handle not found case
       }
-      res.render('admin/editCategory', { category });
+      res.render('admin/editCategory', { category, errorMessages});
     } catch (error) {
       console.error(error);
       res.status(500).send('Server Error'); // Handle server error
@@ -614,8 +769,11 @@ postAddProduct: async (req, res) => {
     
         if (image) {
           updatedCategoryData.image = image.filename  ;
+        }else {
+          // If image is empty, 
+          req.flash('error','Image is required for category update.')
+          return res.redirect('/admin/edit/${_id}')
         }
-    
         // Update the category in your database with the new data
         const updatedCategory = await Category.findByIdAndUpdate(_id, updatedCategoryData, {new: true});
         if (!updatedCategory) {

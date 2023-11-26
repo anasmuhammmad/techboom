@@ -1,4 +1,6 @@
 <%- include('../layouts/header') %>
+<%- include('../layouts/layout') %>
+
 <section>
     
     <span></span>
@@ -31,11 +33,7 @@
                             <header>Login</header>
                       
                         <form id="loginForm" action="/login" method="POST">
-                            <% if (messages && messages.length > 0) { %>
-                                <div class="alert alert-danger">
-                                  <%= messages[0] %>
-                                </div>
-                              <% } %>
+                    
                             <div class="input-field">
                                 <input type="text" class="input" id="email" name="email" required autocomplete="off">
                                 <label for="email">Email</label>

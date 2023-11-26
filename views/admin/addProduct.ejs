@@ -34,15 +34,15 @@
                                             required></textarea>
                                         <label for="productSpecification2">Product Specification:</label>
                                         <textarea class="form-control bg-light" name="Specification2"
-                                            id="productSpecification" placeholder="Enter product Specification"
+                                            id="productSpecification2" placeholder="Enter product Specification"
                                             required></textarea>
                                         <label for="productSpecification3">Product Specification:</label>
                                         <textarea class="form-control bg-light" name="Specification3"
-                                            id="productSpecification" placeholder="Enter product Specification"
+                                            id="productSpecification3" placeholder="Enter product Specification"
                                             required></textarea>
                                         <label for="productSpecification4">Product Specification:</label>
                                         <textarea class="form-control bg-light" name="Specification4"
-                                            id="productSpecification" placeholder="Enter product Specification"
+                                            id="productSpecification4" placeholder="Enter product Specification"
                                             required></textarea>
                                     </div>
                                     <br>
@@ -99,7 +99,7 @@
                                             <label for="discountAmount">Discount Amount:</label>
                                             <input type="number" name="DiscountAmount" class="form-control bg-light"
                                                 id="discountAmount" placeholder="Enter discount amount" min="0"
-                                                required />
+                                                 />
                                             <span id="discountPrice-validation-message"
                                                 class="validation-message"></span>
                                         </div>
@@ -262,14 +262,38 @@
         }
       }
 
-         // Check if the discount amount is greater than or equal to the base price
-         if (parseFloat(discountPriceInput.value) >= parseFloat(basePriceInput.value)) {
-        // If the discount amount is not less than the base price, prevent form submission
-        event.preventDefault();
-        alert('Discount amount must be less than the base price.');
-        return;
-      }
+    //      // Check if the discount amount is greater than or equal to the base price
+    //      if (parseFloat(discountPriceInput.value) >= parseFloat(basePriceInput.value)) {
+    //     // If the discount amount is not less than the base price, prevent form submission
+    //     event.preventDefault();
+    //     alert('Discount amount must be less than the base price.');
+    //     return;
+    //   }
     });
+    document.getElementById('productImage').addEventListener('change', handleImagePreview);
+
+function handleImagePreview(event) {
+    const input = event.target;
+    const imagesContainer = document.querySelector('.row');
+
+    // Clear existing previews
+    imagesContainer.querySelectorAll('.uploaded-image img').forEach(img => img.src = '');
+
+    // Display new previews
+    Array.from(input.files).forEach((file, index) => {
+        const reader = new FileReader();
+        const imgElement = document.getElementById(`uploadedImage${index + 1}`);
+        const deleteButton = document.querySelector(`.delete-image[data-index="${index + 1}"]`);
+
+        reader.onload = function (e) {
+            imgElement.src = e.target.result;
+            imgElement.style.display = 'block';
+            deleteButton.style.display = 'block';
+        };
+
+        reader.readAsDataURL(file);
+    });
+}
 
             </script>
 

@@ -34,9 +34,12 @@ const beautifyUnique = require('mongoose-beautiful-unique-validation');
       Cart: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Cart', // Reference the Cart schema
-      }
-    
-
+      },
+      Wishlist: [{
+        ProductId: {type:mongoose.Schema.Types.ObjectId,ref: "Product"}
+      }],
+      WalletAmount: {type:Number,default: 0},
+      referralCode: String,
     });
     schema.plugin(beautifyUnique);
   const User= mongoose.model('User',schema)
