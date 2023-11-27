@@ -46,46 +46,13 @@ router.get('/profile',userController.getProfile)
 
 // router.get('/', userController.renderHomePage);
 // router.get('/shop',userController.renderShopPage);
-router.get('/productdetails/:productId',userController.productdetails)
+router.get('/productdetails/:productId', auth.userauthMiddleware,userController.productdetails)
 
-router.get('/shop',userController.getShop)
-router.post('/search-product', userController.getSearch)
-router.get('/category/:_id',userController.getShop)
+router.get('/shop', auth.userauthMiddleware,userController.getShop)
+router.post('/search-product', auth.userauthMiddleware,userController.getSearch)
+router.get('/category/:_id',auth.userauthMiddleware,userController.getShop)
 // router.get('/brand/:_id',userController.getShop)
-router.get('/api/products', async (req, res) => {
-  try {
-    // Extract filters from the request query
-    const selectedCategories = req.query.category ? req.query.category.split(",") : [];
-    const minPrice = req.query.minPrice || 0;
-    const maxPrice = req.query.maxPrice || Number.MAX_SAFE_INTEGER;
 
-    // Fetch products based on filters
-    const products = await Product.find({
-      category: { $in: selectedCategories },
-      price: { $gte: minPrice, $lte: maxPrice }
-    });
-
-    // Check the 'Accept' header to determine the response type
-    const acceptHeader = req.get('Accept');
-
-    if (acceptHeader && acceptHeader.includes('application/json')) {
-      // Respond with JSON
-      res.json({
-        products,
-        message: 'Products fetched successfully'
-      });
-    } else {
-      // Respond with HTML
-      res.render('user/shop', {
-        products,
-        message: 'Products fetched successfully'
-      });
-    }
-  } catch (error) {
-    console.error("Error fetching products:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
 router.get('/signup', userController.renderSignupPage);
 router.post('/signup', userController.postSignup);
 
@@ -103,59 +70,60 @@ router.get('/resend-otp', userController.resendOtp)
 
   router.get('/login', userController.renderLoginPage)
   router.post('/login',userController.postUserLogin)
-  router.get('/homepage',userController.renderHomePage)
+  router.get('/logout',userController.logout);
+  router.get('/homepage',auth.userauthMiddleware,userController.renderHomePage)
 
 
-  router.get('/product/:productId', userController.products);
+  router.get('/product/:productId',auth.userauthMiddleware, userController.products);
 
-  router.get('/cart', userController.getCart);
-router.post('/cart',userController.postCart);
+  router.get('/cart',auth.userauthMiddleware, userController.getCart);
+router.post('/cart',auth.userauthMiddleware,userController.postCart);
 
 
-router.get('/addtocart/:_id',userController.getAddToCart);
-router.get('/trackOrder', userController.trackOrder);
+router.get('/addtocart/:_id',auth.userauthMiddleware,userController.getAddToCart);
+router.get('/trackOrder', auth.userauthMiddleware,userController.trackOrder);
 
-router.get('/orderList', userController.orderList)
+router.get('/orderList',auth.userauthMiddleware, userController.orderList)
 
-router.get('/order/cancel/:_id',userController.orderCancel)
+router.get('/order/cancel/:_id',auth.userauthMiddleware,userController.orderCancel)
     // } else {
     //   console.log('Cannot Cancel Order. Status:', order.Status); // Add this line for debugging
     //   return res.status(400).send('Order cannot be cancelled');
     // }
-router.get('/order/details/:_id',userController.orderDetails)
-router.post('/order/return/:_id',userController.returnOrder)
+router.get('/order/details/:_id',auth.userauthMiddleware,userController.orderDetails)
+router.post('/order/return/:_id',auth.userauthMiddleware,userController.returnOrder)
 
-router.post('/download-invoice/:_id',userController.downloadInvoice)
-router.get('/download-invoice/:id',userController.downloadFile)
+router.post('/download-invoice/:_id',auth.userauthMiddleware,userController.downloadInvoice)
+router.get('/download-invoice/:id',auth.userauthMiddleware,userController.downloadFile)
 
-router.get('/editAddress',userController.getEditAddress);
-router.post('/editAddress/:_id',userController.postEditAddress)
-router.post('/changePassword', userController.changePassword)
-
-
-
-router.post('/addAddress',userController.addAddress)
-
-
-router.post('/updateQuantity',userController.updateQuantity)
-
-router.get('/removefromcart/:_id',userController.removeCart)
+router.get('/editAddress',auth.userauthMiddleware,userController.getEditAddress);
+router.post('/editAddress/:_id',auth.userauthMiddleware,userController.postEditAddress)
+router.post('/changePassword',auth.userauthMiddleware, userController.changePassword)
 
 
 
-router.get('/checkout',userController.getCheckout)
-
-router.post('/checkout',userController.postCheckout)
-
-router.post('/verify-payment',userController.verifyPayment)
-router.post('/addAddress-Checkout',userController.addAddressCheckout)
+router.post('/addAddress',auth.userauthMiddleware,userController.addAddress)
 
 
-router.post('/checkCoupon',couponController.checkCoupon)
+router.post('/updateQuantity',auth.userauthMiddleware,userController.updateQuantity)
 
-router.get('/coupons',couponController.getCoupons)
+router.get('/removefromcart/:_id',auth.userauthMiddleware,userController.removeCart)
 
-router.get('/orderSuccess', userController.orderSuccess);
+
+
+router.get('/checkout',auth.userauthMiddleware,userController.getCheckout)
+
+router.post('/checkout',auth.userauthMiddleware,userController.postCheckout)
+
+router.post('/verify-payment',auth.userauthMiddleware,userController.verifyPayment)
+router.post('/addAddress-Checkout',auth.userauthMiddleware,userController.addAddressCheckout)
+
+
+router.post('/checkCoupon',auth.userauthMiddleware,couponController.checkCoupon)
+
+router.get('/coupons',auth.userauthMiddleware,couponController.getCoupons)
+
+router.get('/orderSuccess', auth.userauthMiddleware,userController.orderSuccess);
 
   
 
@@ -171,7 +139,7 @@ router.get('/orderSuccess', userController.orderSuccess);
   
 
 
-router.get('/logout',userController.logout);
+
 
 module.exports = router;
 

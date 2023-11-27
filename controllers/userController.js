@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express.Router();
 const bcrypt = require('bcrypt');
-const auth = require('../middlewares/userAuth')
+const userAuth = require('../middlewares/userAuth.js')
 const UserModel = require('../models/userSchema');
 const otpModel = require('../models/otpSchema')
 const nodemailer = require('nodemailer')
@@ -361,14 +361,13 @@ const renderLoginPage = async (req, res) => {
   // }
   // else
   // {
-    try {
-      res.render('user/user-login',   { error: req.flash('error'), success : req.flash('success')});
-      
-    }
+    if (req.session.userAuth) {
+      res.redirect("/homepage");
+    } else {
+      res.render("user/user-login" ,{error: req.flash('error'), success: req.flash('success')});
+    } ;
+    
 
-    catch(error){
-
-    }
 }
 
 const postUserLogin = async (req, res) => {
@@ -389,6 +388,8 @@ const postUserLogin = async (req, res) => {
       if (passwordMatch) {
         // req.session.userAuth = true;
 
+        req.session.userAuth = true;
+       
         req.flash('success', 'Successfully logged in');
 
         res.redirect("/homepage");
@@ -1593,6 +1594,7 @@ const products = async (req, res) => {
 }
 const logout = (req, res) => {
 try {
+  req.session.userAuth = false;
   res.redirect('/login');
 }
 catch (error) {

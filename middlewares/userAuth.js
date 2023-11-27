@@ -35,8 +35,8 @@
 //         }
 //     },
 // }
-const authMiddleware = (req, res, next) => {
-    if ( req.session.auth) {
+const userauthMiddleware = (req, res, next) => {
+    if ( req.session.userAuth) {
       // User is authenticated
       next();
     } else {
@@ -45,4 +45,4 @@ const authMiddleware = (req, res, next) => {
     }
   };
   
-module.exports = {authMiddleware};
+module.exports = {userauthMiddleware};
