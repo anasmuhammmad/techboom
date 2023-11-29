@@ -51,7 +51,9 @@ router.get('/productdetails/:productId', auth.userauthMiddleware,userController.
 router.get('/shop', auth.userauthMiddleware,userController.getShop)
 router.post('/search-product', auth.userauthMiddleware,userController.getSearch)
 router.get('/category/:_id',auth.userauthMiddleware,userController.getShop)
-// router.get('/brand/:_id',userController.getShop)
+
+// Route for handling AJAX/JSON requests
+
 
 router.get('/signup', userController.renderSignupPage);
 router.post('/signup', userController.postSignup);
@@ -71,8 +73,8 @@ router.get('/resend-otp', userController.resendOtp)
   router.get('/login', userController.renderLoginPage)
   router.post('/login',userController.postUserLogin)
   router.get('/logout',userController.logout);
-  router.get('/homepage',auth.userauthMiddleware,userController.renderHomePage)
-
+  router.get('/homepage',userController.renderHomePage)
+  
 
   router.get('/product/:productId',auth.userauthMiddleware, userController.products);
 
@@ -93,8 +95,8 @@ router.get('/order/cancel/:_id',auth.userauthMiddleware,userController.orderCanc
 router.get('/order/details/:_id',auth.userauthMiddleware,userController.orderDetails)
 router.post('/order/return/:_id',auth.userauthMiddleware,userController.returnOrder)
 
-router.post('/download-invoice/:_id',auth.userauthMiddleware,userController.downloadInvoice)
-router.get('/download-invoice/:id',auth.userauthMiddleware,userController.downloadFile)
+router.post('/download-invoice',auth.userauthMiddleware,userController.downloadInvoice)
+router.get('/download-invoice/:orderId',auth.userauthMiddleware,userController.downloadfile)
 
 router.get('/editAddress',auth.userauthMiddleware,userController.getEditAddress);
 router.post('/editAddress/:_id',auth.userauthMiddleware,userController.postEditAddress)
@@ -134,8 +136,9 @@ router.get('/orderSuccess', auth.userauthMiddleware,userController.orderSuccess)
   router.post('/forgot-otp', userController.postForgotOtpVerification);
   router.get('/forgot-resend-otp', userController.resendForgotOtp);
 
-
-
+  router.get('/wishlist', userController.getWishlist);
+  router.get('/addToWishlist/:_id',userController.addToWishlist);
+  router.get('/removeFromWishlist/:_id',userController.removeFromWishlist);
   
 
 

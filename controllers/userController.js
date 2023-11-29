@@ -430,65 +430,66 @@ const renderHomePage = async(req,res)=>{
   }
 }
 
-const getShop =async (req, res) => {
+  const getShop =async (req, res) => {
+    const page = parseInt(req.query.page) || 1;
+    const perPage = 16;
+    const skip = (page - 1) * perPage;
+    
+    // Fetch user and other necessary data
+    const userId = req.session.userId;
+    const user = await User.findById(userId);
+    const categories = await Category.find();
+    const id = req.params._id;
+    
+    // Fetch products based on local storage data if available
+    const localStorageData = req.query.localStorageData; // You need to define how local storage data is passed in the query
 
-  const page = parseInt(req.query.page) || 1;
-  const perPage = 16;
-  const skip = (page - 1) * perPage;
+    console.log('Local storage data:', localStorageData);  
+    let products;
+    
+    if (localStorageData) {
+        // Parse and process local storage data (modify as per your local storage data structure)
+        const localStorageParsedData = JSON.parse(localStorageData);
+        console.log('Parsed Local Storage Data:', localStorageParsedData);
+        const categoryIds = localStorageParsedData.selectedCategories;
 
-  // Fetch user and other necessary data
-  const userId = req.session.user.user;
-  const user = await User.findById(userId);
-  const categories = await Category.find();
-  const brands = await Brand.find();
-  const id = req.params._id;
+        // Fetch products based on local storage data
+        products = await Product.find({ category: { $in: categoryIds } });
+        console.log('Query filter:', { category: { $in: categoryIds } });
+        console.log('Query result:', { products });
+    } else {
+        // Fetch all products if no local storage data is present
+        products = await Product.find().skip(skip).limit(perPage);
+    }
 
-  // Fetch products based on category, minPrice, and maxPrice
-  const category = req.query.category;
-  const minPrice = req.query.minPrice || 0;
-  const maxPrice = req.query.maxPrice || Number.MAX_SAFE_INTEGER;
+    const totalCount = await Product.countDocuments();
 
-  let products;
-
-  if (category) {
-    // Fetch products based on category and price range
-    products = await Product.find({
-      category: category,
-      price: { $gte: minPrice, $lte: maxPrice }
-    }).skip(skip).limit(perPage);
-  } else {
-    // Fetch all products if no category is specified
-    products = await Product.find().skip(skip).limit(perPage);
-  }
-
-  const totalCount = await Product.countDocuments();
-
-  // Check the 'Accept' header to determine the response type
-  const acceptHeader = req.get('Accept');
-
-  if (acceptHeader && acceptHeader.includes('application/json')) {
-    // Respond with JSON
-    res.json({
-      products,
-      currentPage: page,
-      perPage,
-      totalCount,
-      totalPages: Math.ceil(totalCount / perPage)
-    });
-  } else {
-    // Respond with HTML
+    if (req.xhr || req.headers.accept.indexOf('json') > -1) {
+      return res.json({
+        user,
+        categories,
+        products,
+        currentPage: page,
+        perPage,
+        totalCount,
+        totalPages: Math.ceil(totalCount / perPage)
+      });
+    }
+  
+    // Otherwise, render HTML
     res.render('user/shop', {
       user,
       categories,
-      brands,
       products,
       currentPage: page,
       perPage,
       totalCount,
       totalPages: Math.ceil(totalCount / perPage)
     });
-  }
-};
+    // Render the view with the fetched products
+
+
+  };
 
   
 
@@ -554,41 +555,34 @@ const returnOrder =   async (req, res) => {
 
 const downloadInvoice = async (req, res) => {
   try {
-    console.log("Attempting to find order with ID:", req.body.orderId);
+    const orderId = req.body.orderId || req.params.orderId;
     const orderData = await Order.findOne({
       _id: req.body.orderId,
     })
       .populate("Address")
       .populate("Items.ProductId");
-    console.log("order data ====", orderData);  
-
-
-    const filePath = await invoice.order(orderData).catch((error) => {
-      console.error("Error in invoice.order:", error);
-      throw error; // Rethrow the error to be caught in the outer catch block
-    });
+    console.log("order data ====", orderData);
+  const filePath = await invoice.order(orderData);
     
-    console.log("filePath ====", filePath);
 
-    const orderId = orderData._id;
-    console.log("orderId ====", orderId);
-    res.json({ orderId });
+    
+
+  res.json({ orderId });
+
+  // Send the generated invoice file for download
+
   } catch (error) {
     console.error("Error in downloadInvoice:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
-};
-const downloadFile =  async (req, res) => {
-  const id = req.params._id;
-
-  if (id) {
-    const filePath = `C:/Users/USER/Desktop/Desktop/Techboom/public/pdf/${id}.pdf`;
-    console.log("filePath ====", filePath);
-    res.download(filePath, `invoice.pdf`);
-  } else {
-    // Handle the case where id is not available
-    res.status(404).send("File not found");
-  }
+}
+const downloadfile =  async (req, res) => {
+  console.log('hellooo')
+  const id = req.params.orderId;
+  console.log('iddd',id); 
+  const filePath = `C:/Users/USER/Desktop/techboom/public/pdf/${id}.pdf`;
+  res.download(filePath, `invoice.pdf`);
+  
 };
 
 
@@ -1592,6 +1586,55 @@ const products = async (req, res) => {
     res.status(500).render('error', { message: 'An error occurred while fetching product details' });
   }
 }
+
+const getWishlist = async (req, res) => {
+  const userId = req.session.userId;
+  const date = new Date();
+  const user = await User.findOne({ _id: userId })
+    .populate("Wishlist.ProductId")
+    .exec();
+  console.log(user.Wishlist);
+  res.render("user/wishlist", { user, date });
+}
+
+const  addToWishlist = async(req,res) => {
+  const ProductId = req.params._id;
+  const userId = req.session.userId;
+  const user = await User.findById(userId);
+  const isProductInWishlist = user.Wishlist.some(
+    (wish) => wish.ProductId.toString() === ProductId
+  );
+  console.log("logginggg", isProductInWishlist);
+  if (isProductInWishlist) {
+    res.json({ success: false, message: "Product already in Wishlist" });
+  } else {
+    console.log("inside else");
+    const result = await User.updateOne(
+      {
+        _id: userId,
+      },
+      { $push: { Wishlist: { ProductId: ProductId } } }
+    );
+    res.json({ success: true, message: "Added to wishlist" });
+  }
+}
+const removeFromWishlist = async(req,res) => {
+  const ProductId = req.params._id;
+  const userId = req.session.userId;
+  try {
+    const updatedWishlist = await User.findOneAndUpdate(
+      { _id: userId },
+      { $pull: { Wishlist: { ProductId: ProductId } } },
+      { new: true }
+    );
+    res.redirect("/wishlist");
+  } catch (error) {
+    console.log(error);
+  }
+
+};
+
+
 const logout = (req, res) => {
 try {
   req.session.userAuth = false;
@@ -1605,7 +1648,7 @@ module.exports = {
   home,productdetails, renderOtpPage,getProfile, renderSignupPage, returnOrder,postSignup, postOtpVerification, resendOtp, renderLoginPage,
   postUserLogin, renderHomePage,renderForgotPasswordPage, postForgotPassword,getUserSignupWithReferralCode, renderForgotOtpPage,postForgotOtpVerification,resendForgotOtp,
   getCart,postCart,getAddToCart,addAddressCheckout,trackOrder,orderList,orderCancel,orderDetails, getEditAddress, postEditAddress , changePassword,addAddress
-  ,updateQuantity,getSearch,removeCart, downloadFile,downloadInvoice,getCheckout,verifyPayment, postCheckout,checkCoupon,orderSuccess,products,getShop,logout
+  ,updateQuantity,getSearch,removeCart, downloadfile,downloadInvoice,getCheckout,verifyPayment, postCheckout,checkCoupon,orderSuccess,products,getShop,getWishlist,removeFromWishlist,addToWishlist,logout
 };
 
 

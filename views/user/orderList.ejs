@@ -97,33 +97,32 @@
 <script>
   function confirmCancellation(orderId) {
     const confirmation = confirm('Are you sure you want to cancel this order?');
-    console.log('Confirmation:', confirmation);
     if (confirmation) {
-      console.log('Order cancellation confirmed. Redirecting...');
       window.location.href = '/order/cancel/' + orderId;
     }
   }
   async function downloadInvoice(orderId) {
                   try {
-                    console.log('Downloading invoice for orderId:', orderId); 
-                    const response = await fetch('/download-invoice/:_id', {
+                    const response = await fetch('/download-invoice', {
                       method: 'POST',
                       headers: {
                         'Content-Type': 'application/json',
                       },
                       body: JSON.stringify({ orderId }),
                     })
+                    console.log(orderId,"orderId")
                     if (response.ok) {
-
-                      console.log('Invoice download successful. Redirecting...');
+                     
+                      console.log("response inside", response)
                       window.location.href = `/download-invoice/${orderId}`;
                     }
+                    else{
+                      console.error('Error in downloadInvoice:', response.status, response.statusText);
+                    }
                   } catch (err) {
-                  console.error('Error in downloadInvoice:', err);
                     console.error("error in order History", err)
                   } finally {
                     // loadingSpinner.style.display = 'none';
-                    console.log('Download invoice function completed.');
                   }
                 }
 
