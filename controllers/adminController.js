@@ -70,7 +70,7 @@ module.exports = {
     if (req.session.adminAuth) {
       res.redirect("/admin/product");
     } else {
-      res.render("admin/adminlogin",{err:" "});
+      res.render("admin/adminLogin",{err:" "});
     }
   },
 
