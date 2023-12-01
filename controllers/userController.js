@@ -78,7 +78,7 @@ const productList = [
 // };
 const initial = async (req, res) => {
   try{
-    res.redirect('/login');
+    res.redirect('/homepage');
   }
   catch (error) {
     console.log(error);
