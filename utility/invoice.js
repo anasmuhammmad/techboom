@@ -27,19 +27,14 @@ module.exports = {
             },
           
             "sender": {
-<<<<<<< HEAD
+
                 "company": "TICKER",
                 "address": "ASHOKAPURAM",
                 "zip": "673001",
                 "city": "Calicut",
                 "country": "Kerala"
-=======
-                "company": "Techboom",
-                "address": "GURGAON",
-                "zip": "673001",
-                "city": "HARYANA",
-                "country": "INDIA"
->>>>>>> d9b017da630c960f5518bce6061b0dd6428af459
+
+     
             },
             "client": {
                 "company": order.Address.Name,
@@ -58,15 +53,15 @@ module.exports = {
             },
             "products": order.Items.map((product) => ({
                 "quantity": product.Quantity,
-<<<<<<< HEAD
+
                 "description": product.ProductId.ProductName, // You might want to use product description here
                 "tax-rate": 0,
-                "price": product.ProductId.DiscountAmount
-=======
+                "price": product.ProductId.DiscountAmount,
+
                 "description": product.ProductId.name, // You might want to use product description here
                 "tax-rate": 0,
                 "price": product.ProductId.discountPrice, // You might want to use product price here
->>>>>>> d9b017da630c960f5518bce6061b0dd6428af459
+
             })),
 
             "bottom-notice": "Thank You For Your Purchase",
@@ -105,7 +100,7 @@ module.exports = {
             console.log("Creating invoice...");
             // console.log("Data object:", data);
             const result = await easyinvoice.createInvoice(data);
-<<<<<<< HEAD
+
             console.log("Invoice Result:", result);
 
             const filePath = path.join(__dirname, '..', 'public', 'pdf', `${order._id}.pdf`);
@@ -114,19 +109,6 @@ module.exports = {
             
             resolve(filePath);
  } catch (error) {
-=======
-           
-            // console.log("Invoice Result:", result);
-            const filePath = path.join(__dirname, '..', 'public', 'pdf', `${order._id}.pdf`);
-            // console.log("File Path:", filePath);
-            await writeFileAsync(filePath, result.pdf, 'base64');
-
-        
-           resolve(filePath);
-           
- 
-        } catch (error) {
->>>>>>> d9b017da630c960f5518bce6061b0dd6428af459
             console.log(error)
             reject(error);
         }

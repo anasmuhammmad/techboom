@@ -555,18 +555,16 @@ const returnOrder =   async (req, res) => {
 
 const downloadInvoice = async (req, res) => {
   try {
-<<<<<<< HEAD
-    const id = req.params.orderId;
-=======
+
+
     const orderId = req.body.orderId || req.params.orderId;
->>>>>>> d9b017da630c960f5518bce6061b0dd6428af459
+
     const orderData = await Order.findOne({
       _id: req.body.orderId,
     })
       .populate("Address")
       .populate("Items.ProductId");
     console.log("order data ====", orderData);
-<<<<<<< HEAD
     const filePath = await invoice.order(orderData);
     try {
       const filePathForSampleOrder = await invoice.order(sampleOrderData);
@@ -575,11 +573,11 @@ const downloadInvoice = async (req, res) => {
       console.error('Error in invoice.order:', error);
     }
     console.log('Code after invoice generation');
-    const orderId = orderData._id;
+
     console.log('helloooooooooo',orderId)
     res.json({ orderId });
-=======
-  const filePath = await invoice.order(orderData);
+
+ 
     
 
     
@@ -588,12 +586,12 @@ const downloadInvoice = async (req, res) => {
 
   // Send the generated invoice file for download
 
->>>>>>> d9b017da630c960f5518bce6061b0dd6428af459
+
   } catch (error) {
     console.error("Error in downloadInvoice:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
-<<<<<<< HEAD
+
 };
 const downloadfile =  async (req, res) => {
   const id = req.params.orderId;
@@ -601,17 +599,9 @@ const downloadfile =  async (req, res) => {
   const filePath = `C:/Users/user/Desktop/Desktop/techboom/public/pdf/${id}.pdf`;
   console.log('filePath =', filePath);
   res.download(filePath, `invoice.pdf`);
-=======
+
 }
-const downloadfile =  async (req, res) => {
-  console.log('hellooo')
-  const id = req.params.orderId;
-  console.log('iddd',id); 
-  const filePath = `C:/Users/USER/Desktop/techboom/public/pdf/${id}.pdf`;
-  res.download(filePath, `invoice.pdf`);
-  
->>>>>>> d9b017da630c960f5518bce6061b0dd6428af459
-};
+
 
 
 const renderForgotPasswordPage = async (req, res) => {
