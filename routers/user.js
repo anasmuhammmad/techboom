@@ -95,8 +95,13 @@ router.get('/order/cancel/:_id',auth.userauthMiddleware,userController.orderCanc
 router.get('/order/details/:_id',auth.userauthMiddleware,userController.orderDetails)
 router.post('/order/return/:_id',auth.userauthMiddleware,userController.returnOrder)
 
+<<<<<<< HEAD
 // router.post('/download-invoice',auth.userauthMiddleware,userController.downloadInvoice)
 router.get('/download-invoice/:orderId',auth.userauthMiddleware,userController.downloadInvoice)
+=======
+router.post('/download-invoice',auth.userauthMiddleware,userController.downloadInvoice)
+router.get('/download-invoice/:orderId',auth.userauthMiddleware,userController.downloadfile)
+>>>>>>> d9b017da630c960f5518bce6061b0dd6428af459
 
 router.get('/editAddress',auth.userauthMiddleware,userController.getEditAddress);
 router.post('/editAddress/:_id',auth.userauthMiddleware,userController.postEditAddress)

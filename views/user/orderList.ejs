@@ -102,6 +102,7 @@
     }
   }
   async function downloadInvoice(orderId) {
+<<<<<<< HEAD
   try {
     const response = await fetch(`/download-invoice/${orderId}`, {
       method: 'GET',
@@ -110,6 +111,31 @@
     if (!response.ok) {
       throw new Error(`Failed to download invoice. Status: ${response.status}`);
     }
+=======
+                  try {
+                    const response = await fetch('/download-invoice', {
+                      method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/json',
+                      },
+                      body: JSON.stringify({ orderId }),
+                    })
+                    console.log(orderId,"orderId")
+                    if (response.ok) {
+                     
+                      console.log("response inside", response)
+                      window.location.href = `/download-invoice/${orderId}`;
+                    }
+                    else{
+                      console.error('Error in downloadInvoice:', response.status, response.statusText);
+                    }
+                  } catch (err) {
+                    console.error("error in order History", err)
+                  } finally {
+                    // loadingSpinner.style.display = 'none';
+                  }
+                }
+>>>>>>> d9b017da630c960f5518bce6061b0dd6428af459
 
     const blob = await response.blob();
 

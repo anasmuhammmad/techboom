@@ -6,8 +6,12 @@ const writeFileAsync = util.promisify(fs.writeFile);
 
 module.exports = {
   order: async (order) => {
+   
+    
+
+
     // console.log(order, "utitlity");
-  var data = {
+  const data = {
             // Customize enables you to provide your own templates
             // Please review the documentation for instructions and examples
             "customize": {
@@ -21,23 +25,31 @@ module.exports = {
                 // "background": "https://public.easyinvoice.cloud/pdf/sample-background.pdf"
 
             },
+          
             "sender": {
+<<<<<<< HEAD
                 "company": "TICKER",
                 "address": "ASHOKAPURAM",
                 "zip": "673001",
                 "city": "Calicut",
                 "country": "Kerala"
+=======
+                "company": "Techboom",
+                "address": "GURGAON",
+                "zip": "673001",
+                "city": "HARYANA",
+                "country": "INDIA"
+>>>>>>> d9b017da630c960f5518bce6061b0dd6428af459
             },
             "client": {
-                // "company": order.ShippedAddress.Name,
-                // "address": order.ShippedAddress.Address,
-                // "zip":order.ShippedAddress.Pincode ,
-                // "zip": order.ShippedAddress.Pincode,
-                // "city": order.ShippedAddress.City,
-                // "state":order.ShippedAddress.State,
-                // "Mob No":order.ShippedAddress.Mobaile,
-                // "state": order.ShippedAddress.State,
-                // "Mob No": order.ShippedAddress.Mobaile
+                "company": order.Address.Name,
+                "address": order.Address.Address,
+                "zip":order.Address.Pincode ,
+                "zip": order.Address.Pincode,
+                "city": order.Address.City,
+                "state":order.Address.State,
+                "Mob No":order.Address.Mobile,
+              
             },
             "information": {
                 "number": order._id,
@@ -46,9 +58,15 @@ module.exports = {
             },
             "products": order.Items.map((product) => ({
                 "quantity": product.Quantity,
+<<<<<<< HEAD
                 "description": product.ProductId.ProductName, // You might want to use product description here
                 "tax-rate": 0,
                 "price": product.ProductId.DiscountAmount
+=======
+                "description": product.ProductId.name, // You might want to use product description here
+                "tax-rate": 0,
+                "price": product.ProductId.discountPrice, // You might want to use product price here
+>>>>>>> d9b017da630c960f5518bce6061b0dd6428af459
             })),
 
             "bottom-notice": "Thank You For Your Purchase",
@@ -64,19 +82,19 @@ module.exports = {
             },
 
         // Translate your invoice to your preferred language
-        "translate": {
-            // "invoice": "FACTUUR",  // Default to 'INVOICE'
-            // "number": "Nummer", // Defaults to 'Number'
-            // "date": "Datum", // Default to 'Date'
-            // "due-date": "Verloopdatum", // Defaults to 'Due Date'
-            // "subtotal": "Subtotaal", // Defaults to 'Subtotal'
-            // "products": "Producten", // Defaults to 'Products'
-            // "quantity": "Aantal", // Default to 'Quantity'
-            // "price": "Prijs", // Defaults to 'Price'
-            // "product-total": "Totaal", // Defaults to 'Total'
-            // "total": "Totaal", // Defaults to 'Total'
-            // "vat": "btw" // Defaults to 'vat'
-        }
+        // "translate": {
+        //     "invoice":,  // Default to 'INVOICE'
+        //     "number": "Nummer", // Defaults to 'Number'
+        //     "date": "Datum", // Default to 'Date'
+        //     "due-date": "Verloopdatum", // Defaults to 'Due Date'
+        //     "subtotal": "Subtotaal", // Defaults to 'Subtotal'
+        //     "products": "Producten", // Defaults to 'Products'
+        //     "quantity": "Aantal", // Default to 'Quantity'
+        //     "price": "Prijs", // Defaults to 'Price'
+        //     "product-total": "Totaal", // Defaults to 'Total'
+        //     "total": "Totaal", // Defaults to 'Total'
+        //     "vat": "btw" // Defaults to 'vat'
+        // }
     }
 
     //Create your invoice! Easy!
@@ -84,7 +102,10 @@ module.exports = {
       // Create a Promise to handle the asynchronous file writing
       return new Promise(async (resolve, reject) => {
         try {
+            console.log("Creating invoice...");
+            // console.log("Data object:", data);
             const result = await easyinvoice.createInvoice(data);
+<<<<<<< HEAD
             console.log("Invoice Result:", result);
 
             const filePath = path.join(__dirname, '..', 'public', 'pdf', `${order._id}.pdf`);
@@ -93,6 +114,19 @@ module.exports = {
             
             resolve(filePath);
  } catch (error) {
+=======
+           
+            // console.log("Invoice Result:", result);
+            const filePath = path.join(__dirname, '..', 'public', 'pdf', `${order._id}.pdf`);
+            // console.log("File Path:", filePath);
+            await writeFileAsync(filePath, result.pdf, 'base64');
+
+        
+           resolve(filePath);
+           
+ 
+        } catch (error) {
+>>>>>>> d9b017da630c960f5518bce6061b0dd6428af459
             console.log(error)
             reject(error);
         }
