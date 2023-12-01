@@ -76,7 +76,14 @@ const productList = [
 // renderHomePage = async (req, res) => {
 //   res.render("user/user-shop", { productList, err: "" });
 // };
-
+const initial = async (req, res) => {
+  try{
+    res.redirect('/login');
+  }
+  catch (error) {
+    console.log(error);
+  }
+}
 const home = async (req, res) => {
   const user = await User.find();
   const products = await Product.find({status:"Active"});
@@ -1663,7 +1670,7 @@ catch (error) {
 }
 };
 module.exports = {
-  home,productdetails, renderOtpPage,getProfile, renderSignupPage, returnOrder,postSignup, postOtpVerification, resendOtp, renderLoginPage,
+  initial,home,productdetails, renderOtpPage,getProfile, renderSignupPage, returnOrder,postSignup, postOtpVerification, resendOtp, renderLoginPage,
   postUserLogin, renderHomePage,renderForgotPasswordPage, postForgotPassword,getUserSignupWithReferralCode, renderForgotOtpPage,postForgotOtpVerification,resendForgotOtp,
   getCart,postCart,getAddToCart,addAddressCheckout,trackOrder,orderList,orderCancel,orderDetails, getEditAddress, postEditAddress , changePassword,addAddress
   ,updateQuantity,getSearch,removeCart, downloadfile,downloadInvoice,getCheckout,verifyPayment, postCheckout,checkCoupon,orderSuccess,products,getShop,getWishlist,removeFromWishlist,addToWishlist,logout

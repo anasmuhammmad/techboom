@@ -37,7 +37,7 @@ const mongoose = require('mongoose');
 
 
 
-router.get('/home',)
+router.get('/', userController.initial)
 
 router.get('/profile',userController.getProfile)
 
