@@ -22,11 +22,11 @@ module.exports = {
 
             },
             "sender": {
-                "company": "TECHBOOM",
-                "address": "GURGAON,HARYANA",
+                "company": "TICKER",
+                "address": "ASHOKAPURAM",
                 "zip": "673001",
-                "city": "GURGAON",
-                "country": "HARYANA"
+                "city": "Calicut",
+                "country": "Kerala"
             },
             "client": {
                 // "company": order.ShippedAddress.Name,
@@ -41,14 +41,14 @@ module.exports = {
             },
             "information": {
                 "number": order._id,
-                "date": order.OrderDate,
-                "due-date": order.OrderDate
+                "date": order.OrderedDate,
+                "due-date": order.OrderedDate
             },
             "products": order.Items.map((product) => ({
-                "quantity": product.stock,
-                "description": product.ProductId.name, // You might want to use product description here
+                "quantity": product.Quantity,
+                "description": product.ProductId.ProductName, // You might want to use product description here
                 "tax-rate": 0,
-                "price": product.ProductId.discountPrice
+                "price": product.ProductId.DiscountAmount
             })),
 
             "bottom-notice": "Thank You For Your Purchase",
@@ -85,12 +85,12 @@ module.exports = {
       return new Promise(async (resolve, reject) => {
         try {
             const result = await easyinvoice.createInvoice(data);
-
+            console.log("Invoice Result:", result);
 
             const filePath = path.join(__dirname, '..', 'public', 'pdf', `${order._id}.pdf`);
-            console.log("File Path:", filePath);
+           
             await writeFileAsync(filePath, result.pdf, 'base64');
-            console.log("File successfully written:", filePath);
+            
             resolve(filePath);
  } catch (error) {
             console.log(error)

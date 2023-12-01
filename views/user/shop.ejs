@@ -29,7 +29,7 @@
     </div>
     <div class="offcanvas-body tickerTimes p-0">
         <div class="container-fluid">
-   
+
             <div class="checkbox-container">
               <h3>Category</h3>
               <% categories.forEach(function(category) { %>
@@ -39,30 +39,23 @@
               </div>
               <% }) %>
             </div>
+            
+
+            
             <div class="mt-3">
               <h3>Price Range</h3>
-              <div class="form-group">
-                  <label for="minAmount">Min Amount</label>
-                  <input type="number" class="form-control" id="minAmount" placeholder="Enter Min Amount">
-              </div>
-              <div class="form-group">
-                  <label for="maxAmount">Max Amount</label>
-                  <input type="number" class="form-control" id="maxAmount" placeholder="Enter Max Amount">
-              </div>
-          </div>
-
-            <button onclick="applyFilters(); $('#staticBackdrop').offcanvas('hide');" class="btn btn-primary">Apply Filters</button>
-  <!-- <form action="/products" method="get" id="amountFilterForm">
-    <div class="mb-3">
-       <label for="minAmount" class="form-label">Min Amount:</label>
-       <input type="number" class="form-control" id="minAmount" name="minAmount">
-    </div>
-    <div class="mb-3">
-       <label for="maxAmount" class="form-label">Max Amount:</label>
-       <input type="number" class="form-control" id="maxAmount" name="maxAmount">
-    </div>
-    <button type="submit" class="btn btn-primary">Apply Filters</button>
- </form> -->
+              <div class="radio-group">
+                <label><input type="radio" name="price" value="0-1000"> $0 - $1000</label><br>
+                <label><input type="radio" name="price" value="1001-5000"> $1001 - $5000</label><br>
+                <label><input type="radio" name="price" value="5001-10000"> $5001 - $10000</label><br>
+                <label><input type="radio" name="price" value="10001-and-above"> $10001 and above</label>
+            </div>
+            </div>  
+        </div>
+        <button onclick="applyFilters(); $('#staticBackdrop').offcanvas('hide');" class="btn btn-primary">Apply Filters</button>
+      </div>
+</div>
+   
 </section>
 <section>
   <div class="container">
@@ -175,43 +168,112 @@
   }
 </style>
 <script>
-  // Fetch categories and populate the select dropdown
-  const selectedCategories = getCheckedValues("category");
-  const minPrice = document.getElementById('minAmount').value;
-  const maxPrice = document.getElementById('maxAmount').value;
 
-  const filtersURL = `/api/products?category=${selectedCategories.join(",")}&minPrice=${minPrice}&maxPrice=${maxPrice}`;
+function getStoredFilters() {
+    const storedCategories = localStorage.getItem("selectedCategories");
+ 
+    const storedPrice = localStorage.getItem("selectedPrice");
 
-  $.ajax({
-    url: filtersURL,
-    type: "GET",
-    success: (response) => {
-      const productsContainer = $("#productsContainer");
+    return {
+      selectedCategories: storedCategories ? storedCategories.split(",") : [],
+   
+      selectedPrice: storedPrice || null,
+    };
+  }
+  const storedFilters = getStoredFilters();
+console.log('Stored Filters:', storedFilters);
+  function applyFilters() {
+        
+        const selectedCategories = getCheckedValues ("category");
 
-      // Clear previous products
-      productsContainer.empty();
+    
+        const selectedPrices = getSelectedValues("price");
 
-      // Append new products
-      response.products.forEach((product) => {
-        const productCard = `
-          <!-- Your product card HTML here -->
-        `;
+        localStorage.setItem("selectedCategories", selectedCategories.join(","));
+     
+        localStorage.setItem("selectedPrice", selectedPrices || "");
 
-        // Append the product card to the container
-        productsContainer.append(productCard);
-      });
+        console.log('Stored Categories:', localStorage.getItem("selectedCategories"));
+console.log('Stored Price:', localStorage.getItem("selectedPrice"));
+        const filtersURL = `/shop?categories=${selectedCategories.join(",")}&prices=${selectedPrices}&localStorageData=${JSON.stringify(storedFilters)}`;
+
+        $.ajax({
+          url: filtersURL,
+          type: "GET",
+          dataType: 'json',
+          success: (response)=>{
+            if (response.products && Array.isArray(response.products)){
+            const productsContainer = $("#productsContainer");
+
+            // Clear previous products
+            productsContainer.empty();
+
+            // Append new products
+            response.products.forEach ((product) => {
+                const productCard = `
+                    <div class="col-md-6 col-lg-3 col-sm-6 mb-4 equal-width">
+                        <div class="card tickerTimes">
+                            <img src="/uploads/${product.images[0]}" class="card-img-top" style="height: 40vh" alt="" />
+                            <div class="card-body d-flex flex-column justify-content-between" style="height: 30vh">
+                                <h6 class="card-title text-center product-name">${product.name}</h6>
+                                <div class="d-flex flex-column justify-content-center">
+                                    ${product.stock === 0 ? 
+                                        `<div style="background-color: red">
+                                            <p class="card-text text-center text-light">Out of Stock</p>
+                                        </div>` : 
+                                        `<p class="card-text text-center">Price ₹${product.price}</p>
+                                        <a href="/product/${product._id}" class="btn btn-primary text-center">View Details</a>`}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                // Append the product card to the container
+                productsContainer.append(productCard);
+            });
+          
+          }
+          else {
+        console.error("Invalid or missing 'products' array in the response");
+        }
+        }
+
+    
+        })
+        console.log(filtersURL);
     }
-  });
+
+    function setCheckedValues() {
+    const storedFilters = getStoredFilters();
+
+    storedFilters.selectedCategories.forEach((category) => {
+      $(`input[name="category"][value="${category}"]`).prop("checked", true);
+    });
+
+    
+
+    if (storedFilters.selectedPrice) {
+      $(`input[name="price"][value="${storedFilters.selectedPrice}"]`).prop("checked", true);
+    }
+  }
+
+  // Call setCheckedValues on page load
+  $(document).ready(setCheckedValues);
 
 
-function getCheckedValues(checkboxName) {
-  const checkboxes = document.querySelectorAll(`input[name="${checkboxName}"]:checked`);
-  const values = Array.from(checkboxes).map(checkbox => checkbox.value);
-  return values;
-}
+    function getCheckedValues(checkboxName) {
+        const checkboxes = document.querySelectorAll(`input[name="${checkboxName}"]:checked`);
+        const values = Array.from(checkboxes).map(checkbox => checkbox.value);
+        return values;
+    }
 
-// Call setCheckedValues on page load
-$(document).ready(applyFilters); // You might want to call this based on your requirements
+    function getSelectedValues(name) {
+    const selectedRadio = document.querySelector(`input[name="${name}"]:checked`);
+    return selectedRadio ? selectedRadio.value : null;
+    }
+    console.log(localStorage.getItem("selectedCategories"));
+console.log(localStorage.getItem("selectedPrice"));
 </script>
 
 <%- include('../layouts/footer') %>

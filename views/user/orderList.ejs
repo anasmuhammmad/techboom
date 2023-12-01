@@ -97,36 +97,38 @@
 <script>
   function confirmCancellation(orderId) {
     const confirmation = confirm('Are you sure you want to cancel this order?');
-    console.log('Confirmation:', confirmation);
     if (confirmation) {
-      console.log('Order cancellation confirmed. Redirecting...');
       window.location.href = '/order/cancel/' + orderId;
     }
   }
   async function downloadInvoice(orderId) {
-                  try {
-                    console.log('Downloading invoice for orderId:', orderId); 
-                    const response = await fetch('/download-invoice/:_id', {
-                      method: 'POST',
-                      headers: {
-                        'Content-Type': 'application/json',
-                      },
-                      body: JSON.stringify({ orderId }),
-                    })
-                    if (response.ok) {
+  try {
+    const response = await fetch(`/download-invoice/${orderId}`, {
+      method: 'GET',
+    });
 
-                      console.log('Invoice download successful. Redirecting...');
-                      window.location.href = `/download-invoice/${orderId}`;
-                    }
-                  } catch (err) {
-                  console.error('Error in downloadInvoice:', err);
-                    console.error("error in order History", err)
-                  } finally {
-                    // loadingSpinner.style.display = 'none';
-                    console.log('Download invoice function completed.');
-                  }
-                }
+    if (!response.ok) {
+      throw new Error(`Failed to download invoice. Status: ${response.status}`);
+    }
 
+    const blob = await response.blob();
+
+    // Create a download link
+    const downloadLink = document.createElement('a');
+    downloadLink.href = window.URL.createObjectURL(blob);
+    downloadLink.download = `${orderId}_invoice.pdf`;
+
+    // Append the link to the body and trigger the download
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+
+    // Remove the link from the DOM
+    document.body.removeChild(downloadLink);
+  } catch (error) {
+    console.error('Error downloading invoice:', error);
+    // Handle error, e.g., show an error message to the user
+  }
+}
   // function submitReturnReason(orderId){
   //   let reason = document.getElementById('returnReason').value;
   //   console.log("onsideeee",reason);
