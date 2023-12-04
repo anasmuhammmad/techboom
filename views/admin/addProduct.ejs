@@ -50,37 +50,25 @@
                                     <div class="border p-3 mb-3 bg-light ">
                                         <!-- Added bg-light and text-center classes -->
                                         <h3>Media</h3>
-                                        <div class="form-group text-center ">
-                                            <label for="productImage">Drag and drop or click to upload an image:</label>
-                                            <br><br><br><br>
-                                            <input type="file" name="image" class="form-control-file" id="productImage"
-                                                accept="image/*" multiple style="display: none;" />
-                                        </div>
+           
                                         <!-- uploaded images -->
                                         <div class="row">
                                             <div class="col-md-4">
-                                                <div class="uploaded-image">
-                                                    <img src="" alt="Uploaded Image 1" id="uploadedImage1"
-                                                        class="img-fluid" data-index="1">
-                                                    <button class="btn btn-danger btn-sm delete-image"
-                                                        style="display: none;" data-index="1">Delete</button>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <div class="uploaded-image">
-                                                    <img src="" alt="Uploaded Image 2" id="uploadedImage2"
-                                                        class="img-fluid" data-index="2">
-                                                    <button class="btn btn-danger btn-sm delete-image"
-                                                        style="display: none;" data-index="2">Delete</button>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <div class="uploaded-image">
-                                                    <img src="" alt="Uploaded Image 3" id="uploadedImage3"
-                                                        class="img-fluid" data-index="3">
-                                                    <button class="btn btn-danger btn-sm delete-image"
-                                                        style="display: none;" data-index="3">Delete</button>
-                                                </div>
+                                                <div class="form-group text-center">
+                                                    <label for="image">Image :</label>
+                                                    <input
+                                                      type="file"
+                                                      name="image"
+                                                      class="form-control-file"
+                                                      id="image"
+                                                      accept="image/*"
+                                                    />
+                                                    <img src="" alt="Image" class="img-fluid" style="max-height: 200px;" id="previewImage">
+                                                  </div>
+                
+                                                   
+                                                <!-- uploaded images -->
+                                                
                                             </div>
                                         </div>
                                     </div>

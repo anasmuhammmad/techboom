@@ -8,6 +8,7 @@ const adminAuth = require('../middlewares/adminAuth.js')
 const bcrypt = require("bcrypt");
 const pdf = require("../utility/pdf")
 const orderHelper = require("../helpers/orderHelpers")
+const cropImage = require("../utility/imageCrop")
 const exceljs = require("exceljs");
 const Order = require("../models/orderSchema");
 const moment = require("moment");
@@ -86,18 +87,10 @@ module.exports = {
         const Password = req.body.Password;
         const admin = await Admin.findOne({ Email: Email });
         console.log(admin);
-        if (admin.Status === "Active") {
-          const matchedPassword = await bcrypt.compare(Password, admin.Password);
-          if (matchedPassword)
-          // if(Password === admin.Password)
-          {
-            // const accessToken = jwt.sign(
-            //   { admin: admin._id },
-            //   process.env.ACCESS_TOKEN_SECRET,
-            //   { expiresIn: 60 * 60 }
-            // );
-            // res.cookie("adminJwt", accessToken, { maxAge: 60 * 1000 * 60 });
-            // req.session.admin = admin;
+        if (admin && admin.Status === "Active" && admin.Password === Password) {
+        
+         
+    
             req.session.adminAuth = true;
             req.session.admin = admin;
             res.redirect("/admin/product");
@@ -105,15 +98,17 @@ module.exports = {
             console.log("Password donot match");
             res.redirect("/admin/login");
           }
-        } else {
-          console.log("Admin is not active");
-          res.redirect("/admin/login")
-        }
+        // } else {
+        //   console.log("Admin is not active");
+        //   res.redirect("/admin/login")
+        // }
       } catch (error) {
         console.log(error);
         res.redirect("/admin/login");
       }
+    
     },
+  
 
       logout : async (req, res) => {
         req.session.adminAuth = false;
@@ -647,71 +642,74 @@ putUpdateStatus: async (req,res)=>{
    
 
 },
+getAddProduct: async (req, res) => {
+  const categories = await Category.find()
+  const brand = await Brand.find()
+  res.render("admin/addProduct", { categories, brand });
+},
 postAddProduct: async (req, res) => {
   try {
-    console.log(req.files);
-
-    
-    const {
-      ProductName,
-      Description,
-      Specification1,
-      Specification2,
-      Specification3,
-      Specification4,
-      image,
-      Price,
-      DiscountAmount,
-      
-      storagesize, 
-      graphicscard, 
-      AvailableQuantity,
-      Category,
-      BrandName,
-      Tags,
-    } = req.body;
-
-    // Extract image file names from req.files
-    const imageFileNames = req.files.map((file) => file.filename);
-
-    const productType = req.body.productType;
-    // Create an object to hold variations based on the product type
-    const variations = [] ;
-
-    if (productType === 'Storage Devices') {
+    console.log(req.files,"req files are empty");
+  
+  
+    const image = [];
+    const productType = req.body.ProductType;
+    const variations = [];
+    const category = await Category.findOne({ Name: req.body.Category });
+    const BrandName = await Brand.findOne({ Name: req.body.BrandName });
+    if (productType === "Storage Devices") {
       const storagesize = req.body.storagesize;
-      variations.push({ name: 'Storage Size', value: storagesize });
-    } else if (productType === 'Graphics Card') {
-      const graphicscard = req.body.graphicscard;
-      variations.push({ name: 'GPU Model', value: graphicscard });
+      variations.push({ value: storage });
+    } else if (productType === "Graphics Card") {
+      const gpumodel = req.body.gpumodel;
+      variations.push({ value: gpumodel });
     }
+    console.log(variations[0]);
+    
+    for (let i = 1; i <= 3; i++) {
+      const fieldName = `image${i}`;
+      if (req.files[fieldName] && req.files[fieldName][0]) {
+        image.push(req.files[fieldName][0].filename);
+      }
+    }
+    const fieldName = 'image';
 
-    // Create a new Product instance based on your model structure
+    if (req.files[fieldName] && req.files[fieldName][0]) {
+      image.push(req.files[fieldName][0].filename);
+    }
+    console.log('Image Paths:', image);
+
+    let Status;
+    // cropImage(images)
+    // if (req.body.AvailableQuantity <= 0) {
+    //   Status = "Out of Stock";
+    // } else {
+    //   Status = "In Stock";
+    // }
     const newProduct = new Product({
-      name: ProductName,
-      description: Description,
-      specifications: [Specification1, Specification2, Specification3, Specification4],
-      images: imageFileNames,
-      price: Price,
-      discountPrice: DiscountAmount,
-      type: productType,
-      stock: AvailableQuantity,
-      category: Category,
-      brand: BrandName,
-      tags: Tags.split(',').map((tag) => tag.trim()),
-      variation:variations, // Include variations based on the selected product type
-      // Add additional properties here based on your model structure
+      name: req.body.ProductName,
+      price: req.body.Price,
+      description: req.body.Description,
+      BrandName: BrandName._id,
+      Tags: req.body.Tags,
+      stock: req.body.AvailableQuantity,
+      category: category._id,
+      
+      Status: "Active",
+      specifications: req.body.Specification1,
+      specifications: req.body.Specification2,
+      specifications: req.body.Specification3,
+      specifications: req.body.Specification4,
+      discountPrice: req.body.DiscountAmount,
+      // Variation: variations[0].value,
+      // ProductType: req.body.ProductType,
+      UpdatedOn: new Date(),
+      images: image,
     });
-
-    // Save the new product to the database
-    await newProduct.save();
-
-    // Redirect to a success page or the product listing page
-    res.redirect('/admin/product');
+    newProduct.save();
+    res.redirect("/admin/product");
   } catch (error) {
-    // Handle errors, e.g., show an error page
-    console.error(error);
-    res.status(500).send('Internal Server Error');
+    console.log(`An error happened ${error}`);
   }
 },
   getEditProduct: async (req, res) => {

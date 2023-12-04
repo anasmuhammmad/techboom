@@ -69,8 +69,8 @@ router.post('/admin/offers/disableAndEnableOffer/:_id',auth.authMiddleware,offer
 router.get('/admin/offers',auth.authMiddleware,offerController.getOffers)
 
 
-router.get('/admin/addproduct',auth.authMiddleware,productController.getAddProduct)
-router.post('/admin/addproduct',auth.authMiddleware,upload.fields([{ name: 'image1', maxCount: 1 }, { name: 'image2', maxCount: 1 }, { name: 'image3', maxCount: 1 }]),productController.postAddProduct)
+router.get('/admin/addproduct',auth.authMiddleware,adminController.getAddProduct)
+router.post('/admin/addproduct',upload.fields([{ name: 'image', maxCount: 1 }, { name: 'image2', maxCount: 1 }, { name: 'image3', maxCount: 1 }]),adminController.postAddProduct)
 
 
 router.get('/admin/order',auth.authMiddleware,adminController.getOrders)

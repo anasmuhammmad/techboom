@@ -102,17 +102,9 @@
     }
   }
   async function downloadInvoice(orderId) {
-<<<<<<< HEAD
-  try {
-    const response = await fetch(`/download-invoice/${orderId}`, {
-      method: 'GET',
-    });
-
-    if (!response.ok) {
-      throw new Error(`Failed to download invoice. Status: ${response.status}`);
-    }
-=======
                   try {
+                    console.log('Downloading invoice for orderId:', orderId); 
+                 
                     const response = await fetch('/download-invoice', {
                       method: 'POST',
                       headers: {
@@ -122,6 +114,7 @@
                     })
                     console.log(orderId,"orderId")
                     if (response.ok) {
+                      console.log('Invoice download successful. Redirecting...');
                      
                       console.log("response inside", response)
                       window.location.href = `/download-invoice/${orderId}`;
@@ -130,31 +123,13 @@
                       console.error('Error in downloadInvoice:', response.status, response.statusText);
                     }
                   } catch (err) {
+                  console.error('Error in downloadInvoice:', err);
                     console.error("error in order History", err)
                   } finally {
                     // loadingSpinner.style.display = 'none';
+                    console.log('Download invoice function completed.');
                   }
                 }
->>>>>>> d9b017da630c960f5518bce6061b0dd6428af459
-
-    const blob = await response.blob();
-
-    // Create a download link
-    const downloadLink = document.createElement('a');
-    downloadLink.href = window.URL.createObjectURL(blob);
-    downloadLink.download = `${orderId}_invoice.pdf`;
-
-    // Append the link to the body and trigger the download
-    document.body.appendChild(downloadLink);
-    downloadLink.click();
-
-    // Remove the link from the DOM
-    document.body.removeChild(downloadLink);
-  } catch (error) {
-    console.error('Error downloading invoice:', error);
-    // Handle error, e.g., show an error message to the user
-  }
-}
   // function submitReturnReason(orderId){
   //   let reason = document.getElementById('returnReason').value;
   //   console.log("onsideeee",reason);

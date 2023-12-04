@@ -97,7 +97,7 @@ router.post('/order/return/:_id',auth.userauthMiddleware,userController.returnOr
 
 
 // router.post('/download-invoice',auth.userauthMiddleware,userController.downloadInvoice)
-router.get('/download-invoice/:orderId',auth.userauthMiddleware,userController.downloadInvoice)
+
 
 router.post('/download-invoice',auth.userauthMiddleware,userController.downloadInvoice)
 router.get('/download-invoice/:orderId',auth.userauthMiddleware,userController.downloadfile)
