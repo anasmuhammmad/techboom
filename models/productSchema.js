@@ -9,9 +9,17 @@ const ObjectId = Schema.Types.ObjectId;
           description: {
             type:String,
           },
-          specifications: {
-              type : Array,
-              required : true,  
+          Specification1: {
+            type: String
+          },
+          Specification2: {
+            type: String
+          },
+          Specification3: {
+            type: String
+          },
+          Specification4: {
+            type: String
           },
 
           type: [{

@@ -41,7 +41,7 @@ router.get("/admin/product",auth.authMiddleware, productController.getProduct)
 router.get("/admin/product/:_id",auth.authMiddleware,productController.blockProduct)
 
 router.get('/admin/editproduct/:_id',auth.authMiddleware, productController.getEditProduct)
-    router.post('/admin/editproduct/:_id',auth.authMiddleware,upload.array('image',3),productController.postEditProduct)
+router.post('/admin/editproduct/:_id',auth.authMiddleware,upload.fields([{ name: 'image', maxCount: 1 }, { name: 'image2', maxCount: 1 }, { name: 'image3', maxCount: 1 }]),productController.postEditProduct)
 
 
 router.get('/admin/userslist',auth.authMiddleware,adminController.getUser)
@@ -52,7 +52,7 @@ router.get('/admin/categoriesandbrands',auth.authMiddleware,adminController.getC
 router.get('/admin/addcategory',auth.authMiddleware,adminController.getAddCategory)
 router.post('/admin/addcategory',auth.authMiddleware,upload.single('image'),adminController.postAddCategory)
 router.get('/admin/edit/:id',auth.authMiddleware,adminController.getEditCategory)
-router.post('/admin/edit/:id',upload.single('image'),adminController.postEditCategory)
+router.post('/admin/edit/:id',auth.authMiddleware,upload.single('image'),adminController.postEditCategory)
 router.get('/admin/addbrand',auth.authMiddleware,adminController.getAddBrand)
 router.post('/admin/addbrand',auth.authMiddleware,adminController.postAddBrand)
 
@@ -87,8 +87,8 @@ router.post('/admin/addBanner',auth.authMiddleware,upload.fields([{ name: 'Image
 { name: 'carouselImage3', maxCount: 1 },
 ]),bannerController.postAddBanner);
 
-router.post('/admin/activate-banner/:_id',auth.authMiddleware,bannerController.activateBanner);
+router.post('/admin/activate-banner/:id',auth.authMiddleware,bannerController.activateBanner);
 
-router.post('/admin/delete-banner/:_id',auth.authMiddleware,bannerController.activateBanner);
+router.post('/admin/delete-banner/:id',auth.authMiddleware,bannerController.deleteBanner);
 
 module.exports = router;    

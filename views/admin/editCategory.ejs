@@ -1,6 +1,11 @@
 <%- include('../layouts/header')%>
 <%- include('../partials/admin-header')%>
 <%- include('../layouts/layout')%>
+<style>
+    #categoryImage {
+      visibility: hidden;
+    }
+  </style>
 <div class="header" style="margin-top: 80px;">
     <h1>Edit Category</h1>
   </div>
@@ -11,7 +16,7 @@
             <div class="row d-flex justify-content-between">
                 <div class="col-md-8 text-center">
                     <h1 class="mt-5">EDIT CATEGORY</h1>
-                    <form action="/admin/edit/<%=category._id%>" method="post" enctype="multipart/form-data" class="bg-white">
+                    <form action="/admin/edit/<%= category._id%>" method="post" enctype="multipart/form-data" class="bg-white" onsubmit="return validateForm()" >
                         <div class="form-group">
                             <label for="categoryname">Category Name:</label>
                             <input
@@ -37,8 +42,8 @@
                                 id="categoryImage"
                                 accept="image/*"
                                 style="display: none;"
+                                hidden
                                 multiple
-                                required
                                 
                             />
                             </div>
@@ -60,6 +65,35 @@
         </main>
     </div>
 </div>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        console.log("JavaScript executed!");
+        document.getElementById("categoryImage").style.display = "block";
+    });
+
+    
+    function validateForm() {
+        const categoryName = document.getElementById('categoryName').value;
+        const categoryImage = document.getElementById('categoryImage').value;
+        const currentImage = "<%= category.image %>"; // Get the current image value from your server-side code
+
+        // Check if the category name is empty or contains only white spaces
+        if (!categoryName.trim()) {
+            alert('Category Name is required.');
+            return false;
+        }
+
+        // Check if a new image is being uploaded when there is no current image
+        if (!currentImage && !categoryImage.trim()) {
+            alert('Image is required.');
+            return false;
+        }
+
+        return true;
+    }
+
+
+  </script>
 
 
 

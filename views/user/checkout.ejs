@@ -18,7 +18,7 @@
         ></button>
       </div>
       <div class="modal-body">
-        <form action="/addAddress-Checkout" method="post">
+        <form action="/addAddress-Checkout" method="post" id="addressForm" onsubmit="return validateForm()">
           <div class="mb-3">
             <label for="fullName" class="form-label">Full Name</label>
             <input
@@ -83,6 +83,8 @@
               name="Mobile"
               placeholder="Enter your mobile number"
               required
+              pattern="^[6-9]\d{9}$"
+              title="Enter a valid 10-digit mobile number starting with 6, 7, 8, or 9"
             />
           </div>
           <button type="submit" class="btn btn-primary">Submit</button>
@@ -309,6 +311,45 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
 <script>
+    function validateForm() {
+    // Check if the form fields contain only whitespace
+    const form = document.getElementById('addressForm');
+    const inputs = form.querySelectorAll('input[required]');
+    for (const input of inputs) {
+      if (input.value.trim() === '') {
+        alert('Input fields cannot be empty or contain only blank spaces.');
+        return false;
+      }
+    }
+
+    const pincodeRegex = /^\d{6}$/;
+
+// Get the pin code value from the form
+const pincode = document.getElementById('pincode').value;
+
+// Check if the pin code matches the regular expression
+if (!pincodeRegex.test(pincode)) {
+  alert('Please enter a valid 6-digit pin code.');
+  return false; // Prevent form submission
+}
+
+// Continue with form submission if pin code is valid
+return true;
+
+
+    // Additional validation for mobile number pattern
+    const mobileNumberInput = document.getElementById('mobileNumber');
+    const mobileNumberPattern = /^[6-9]\d{9}$/;
+    if (!mobileNumberPattern.test(mobileNumberInput.value)) {
+      alert('Enter a valid 10-digit mobile number starting with 6, 7, 8, or 9.');
+      return false;
+    }
+
+    // If all validations pass, submit the form
+    return true;
+
+
+  }
   $("#form-checkout").submit((e) => {
     e.preventDefault()
     const selectedAddress = $("input[name='Address']:checked").val();

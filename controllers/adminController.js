@@ -343,11 +343,6 @@ module.exports = {
 
   },
 
-      getAddProduct: async (req, res) => {
-    const categories = await Category.find()
-    const brand = await Brand.find()
-    res.render("admin/addProduct", { categories, brand });
-  },
 
   // postAddProduct: async (req, res) => {
   //   console.log(req.body);
@@ -696,10 +691,10 @@ postAddProduct: async (req, res) => {
       category: category._id,
       
       Status: "Active",
-      specifications: req.body.Specification1,
-      specifications: req.body.Specification2,
-      specifications: req.body.Specification3,
-      specifications: req.body.Specification4,
+      Specification1: req.body.Specification1,
+      Specification2: req.body.Specification2,
+      Specification3: req.body.Specification3,
+      Specification4: req.body.Specification4,
       discountPrice: req.body.DiscountAmount,
       // Variation: variations[0].value,
       // ProductType: req.body.ProductType,
@@ -891,7 +886,7 @@ postAddProduct: async (req, res) => {
   },
 
   getAddCategory: async (req, res) => {
-    res.render("admin/addcategory",{error: req.flash('error'),success: req.flash('success')});
+    res.render("admin/addCategory",{error: req.flash('error'),success: req.flash('success')});
   },
 
 
@@ -900,6 +895,7 @@ postAddProduct: async (req, res) => {
       console.log(req.file);
       req.body.image = req.file.filename;
       const uploaded = await Category.create(req.body);
+      
       res.redirect("/admin/categoriesandbrands");
     } catch (error) {
       console.log(error);
@@ -913,7 +909,6 @@ postAddProduct: async (req, res) => {
       }
     }
   },
-
 
 
 
@@ -954,59 +949,96 @@ postAddProduct: async (req, res) => {
   // },
 
 
-  getEditCategory: async (req, res) => {
-    try {
-      const _id = req.params.id;
-      const image = req.session.idd ;
-      const errorMessages = req.flash('error');
-      console.log(_id);
-      const category = await Category.findById(_id);
-      if (!category) {
-        return res.status(404).send('Category not found'); // Handle not found case
-      }
-      res.render('admin/editCategory', { category, errorMessages});
-    } catch (error) {
-      console.error(error);
-      res.status(500).send('Server Error'); // Handle server error
-    }
-  },
-
-    postEditCategory: async (req, res) => {
+    getEditCategory: async (req, res) => {
       try {
-      const _id = req.params.id  ;
-      const imagee = req.session.idd ;
+        console.log("sdfsd")
+        const _id = req.params.id;
+        const image = req.session.idd ;
+        const errorMessages = req.flash('error');
         console.log(_id);
-        const {Name} = req.body;
-       
-        const image = req.file;        // Create an object to represent the updated category data
-        
-        console.log(Name);
-        console.log(image); // Log the image details
-        const updatedCategoryData = {};
-        if (Name) {
-          updatedCategoryData.Name = Name;
+        const category = await Category.findById(_id);
+        if (!category) {
+          return res.status(404).send('Category not found'); // Handle not found case
         }
-    
-        if (image) {
-          updatedCategoryData.image = image.filename  ;
-        }else {
-          // If image is empty, 
-          req.flash('error','Image is required for category update.')
-          return res.redirect('/admin/edit/${_id}')
-        }
-        // Update the category in your database with the new data
-        const updatedCategory = await Category.findByIdAndUpdate(_id, updatedCategoryData, {new: true});
-        if (!updatedCategory) {
-          return res.status(404).send('Category not found');
-        }   
-
-        // Redirect to the category list or wherever you prefer
-        res.redirect('/admin/categoriesandbrands');
-      }catch (error) {
+        res.render('admin/editCategory', { categories,  error: req.flash('error'),success: req.flash('success'),errorMessages});
+      } catch (error) {
         console.error(error);
         res.status(500).send('Server Error'); // Handle server error
       }
     },
+
+    // postEditCategory: async (req, res) => {
+
+
+
+      postEditCategory: async (req, res) => {
+       
+        try {
+          const id = req.params.id
+          console.log('sadfasdfgasdfas',id)
+            if(req.file){
+              req.body.image = req.file.filename
+            }
+    
+
+            let category = await Category.findOneAndUpdate(
+              { _id: id },
+              { $set: req.body },
+              { new: true } 
+          );
+      
+         
+          if (!category) {
+              return res.status(404).send('Category not found');
+          }
+      
+            res.redirect('/admin/categoriesandbrands') 
+        } catch (error) {
+            if (error.code === 11000) {
+                req.flash("error", "Category already exist");
+                res.redirect(`/admin/editCategory/${id}`);
+            } else {
+              req.flash("error", "Error Adding the Category");
+              res.redirect(`/admin/editCategory/${id}`);
+
+            }
+        }
+      },
+      // try {
+      // const _id = req.params.id  ;
+      // const imagee = req.session.idd ;
+      //   console.log(_id);
+      //   const {Name} = req.body;
+       
+      //   const image = req.file;        // Create an object to represent the updated category data
+        
+      //   console.log(Name);
+      //   console.log(image); // Log the image details
+      //   const updatedCategoryData = {};
+      //   if (Name) {
+      //     updatedCategoryData.Name = Name;
+      //   }
+    
+      //   if (image) {
+      //     updatedCategoryData.image = image.filename  ;
+      //   }else {
+      //     // If image is empty, 
+      //     req.flash('error','Image is required for category update.')
+      //     return res.redirect('/admin/edit/${_id}')
+      //   }
+      //   // Update the category in your database with the new data
+      //   const updatedCategory = await Category.findByIdAndUpdate(_id, updatedCategoryData, {new: true});
+      //   if (!updatedCategory) {
+      //     return res.status(404).send('Category not found');
+      //   }   
+
+      //   // Redirect to the category list or wherever you prefer
+      //   res.redirect('/admin/categoriesandbrands');
+      // }catch (error) {
+      //   console.error(error);
+      //   res.status(500).send('Server Error'); // Handle server error
+      // }
+    
 
 
 

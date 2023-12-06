@@ -134,6 +134,7 @@
                                     class="form-control bg-light"
                                     id="basePrice"
                                     placeholder="Enter base price"
+                                    min="0"
                                     required
                                 />
                             </div>
@@ -147,8 +148,11 @@
                                     class="form-control bg-light"
                                     id="discountAmount"
                                     placeholder="Enter discount amount"
-                                    required
+                                    min="0"
+                                
                                 />
+                                <span id="discountPrice-validation-message"
+                                                class="validation-message"></span>
                             </div>
                         </div>
 
@@ -197,24 +201,30 @@
                 <div class="col-md-4 my-5">
                     <div class="bg-white p-3">
                         <div class="form-group">
+                            <br>
                             <label for="category">Category:</label>
-                            <select class="form-control bg-light" id="category" name="Category" required>
-                                <option value="GRAPHICS CARD" <%= product.category === "GRAPHICS CARD" ? 'selected' : '' %>>GRAPHICS CARD</option>
-                                <option value="PROCESSORS" <%= product.category === "PROCESSORS" ? 'selected' : '' %>>PROCESSORS</option>
-                                <option value="CPU COOLERS" <%= product.category === "CPU COOLERS" ? 'selected' : '' %>>CPU COOLERS</option>
-                                <option value="STORAGE DEVICES" <%= product.category === "STORAGE DEVICES" ? 'selected' : '' %>>SSD</option>
-                               
+                            <select class="form-select bg-light" id="category" name="Category" required>
+                                <option value="" selected disabled>Select a category</option>
+                                <% categories.forEach(function(category) { %>
+                                    <option value="<%=category.Name%>">
+                                        <%=category.Name%>
+                                    </option>
+                                    <% }); %>
                             </select>
-                        </div><br>
+                        </div>
+                        <br>
                         <div class="form-group">
                             <br>
                             <label for="brandName">Brand Name:</label>
-                            <select name="BrandName" class="form-select bg-light" id="brand" required>
-                                <option value="NVIDIA" <%= product.brandName === "NVIDIA" ? 'selected' : '' %>>NVIDIA</option>
-                                <option value="AMD" <%= product.brandName === "AMD" ? 'selected' : '' %>>AMD</option>
-                                <option value="INTEL" <%= product.brandName === "INTEL" ? 'selected' : '' %>>INTEL</option>
-                                <option value="ADATA"<%= product.brandName === "ADATA" ? 'selected' : '' %>>ADATA</option>
+                            <select name="BrandName" class="form-select bg-light" id="brand">
+                                <option value="" selected disabled>Select a Brand</option>
+                                <% brand.forEach(function(brand) { %>
+                                    <option value="<%=brand.Name%>">
+                                        <%=brand.Name%>
+                                    </option>
+                                    <% }); %>
                             </select>
+                          
                         </div><br>
                         <div class="form-group">
                             <label for="tags">Tags:</label>
@@ -236,6 +246,7 @@
         </main>
     </div>
 </div>
+<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
 <script>
 
 const basePriceInput = document.getElementById("basePrice");
@@ -266,7 +277,7 @@ const basePriceInput = document.getElementById("basePrice");
 
 
                 form.addEventListener('submit', function (event) {
-      // Get all input elements with the "form-control bg-light" class
+   
       const inputs = document.querySelectorAll('.form-control.bg-light');
 
       // Check each input value for only blank spaces
@@ -275,17 +286,10 @@ const basePriceInput = document.getElementById("basePrice");
           // If an input contains only blank spaces, prevent form submission
           event.preventDefault();
           alert('Input fields cannot be empty or contain only blank spaces.');
-          return; // Stop further checking once a blank space is found
+          return; 
         }
       }
 
-    //      // Check if the discount amount is greater than or equal to the base price
-    //      if (parseFloat(discountPriceInput.value) >= parseFloat(basePriceInput.value)) {
-    //     // If the discount amount is not less than the base price, prevent form submission
-    //     event.preventDefault();
-    //     alert('Discount amount must be less than the base price.');
-    //     return;
-    //   }
     });
 
 

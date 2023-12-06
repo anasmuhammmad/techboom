@@ -437,71 +437,170 @@ const renderHomePage = async(req,res)=>{
   }
 }
 
-  const getShop =async (req, res) => {
-    const page = parseInt(req.query.page) || 1;
-    const perPage = 16;
-    const skip = (page - 1) * perPage;
+  // const getShop =async (req, res) => {
+  //   const page = parseInt(req.query.page) || 1;
+  //   const perPage = 16;
+  //   const skip = (page - 1) * perPage;
     
-    // Fetch user and other necessary data
-    const userId = req.session.userId;
-    const user = await User.findById(userId);
-    const categories = await Category.find();
-    const id = req.params._id;
+  //   // Fetch user and other necessary data
+  //   const userId = req.session.userId;
+  //   const user = await User.findById(userId);
+  //   // const categories = await Category.find();
+  //   const id = req.params._id;
     
-    // Fetch products based on local storage data if available
-    const localStorageData = req.query.localStorageData; // You need to define how local storage data is passed in the query
+  //   // Fetch products based on local storage data if available
+  //   const localStorageData = req.query.localStorageData; // You need to define how local storage data is passed in the query
 
-    console.log('Local storage data:', localStorageData);  
-    let products;
+  //   console.log('Local storage data:', localStorageData);  
+  //   let products;
     
-    if (localStorageData) {
-        // Parse and process local storage data (modify as per your local storage data structure)
-        const localStorageParsedData = JSON.parse(localStorageData);
-        console.log('Parsed Local Storage Data:', localStorageParsedData);
-        const categoryIds = localStorageParsedData.selectedCategories;
+  //   if (localStorageData) {
+  //       // Parse and process local storage data (modify as per your local storage data structure)
+  //       const localStorageParsedData = JSON.parse(localStorageData);
+  //       console.log('Parsed Local Storage Data:', localStorageParsedData);
+  //       const categoryIds = localStorageParsedData.selectedCategories;
 
-        // Fetch products based on local storage data
-        products = await Product.find({ category: { $in: categoryIds } });
-        console.log('Query filter:', { category: { $in: categoryIds } });
-        console.log('Query result:', { products });
-    } else {
-        // Fetch all products if no local storage data is present
-        products = await Product.find().skip(skip).limit(perPage);
-    }
+  //       // Fetch products based on local storage data
+  //       products = await Product.find({ category: { $in: categoryIds } });
+  //       console.log('Query filter:', { category: { $in: categoryIds } });
+  //       console.log('Query result:', { products });
+  //   } else {
+  //       // Fetch all products if no local storage data is present
+  //       products = await Product.find().skip(skip).limit(perPage);
+  //   }
 
-    const totalCount = await Product.countDocuments();
+  //   const totalCount = await Product.countDocuments();
 
-    if (req.xhr || req.headers.accept.indexOf('json') > -1) {
-      return res.json({
-        user,
-        categories,
-        products,
-        currentPage: page,
-        perPage,
-        totalCount,
-        totalPages: Math.ceil(totalCount / perPage)
-      });
-    }
+  //   if (req.xhr || req.headers.accept.indexOf('json') > -1) {
+  //     return res.json({
+  //       user,
+  //       // categories,
+  //       products,
+  //       currentPage: page,
+  //       perPage,
+  //       totalCount,
+  //       totalPages: Math.ceil(totalCount / perPage)
+  //     });
+  //   }
   
-    // Otherwise, render HTML
-    res.render('user/shop', {
-      user,
-      categories,
+  //   // Otherwise, render HTML
+  //   res.render('user/shop', {
+  //     user,
+  //     // categories,
+  //     products,
+  //     currentPage: page,
+  //     perPage,
+  //     totalCount,
+  //     totalPages: Math.ceil(totalCount / perPage)
+  //   });
+  //   // Render the view with the fetched products
+
+
+  // };
+
+
+
+//   const getShop = async (req, res) => {
+//     try {
+//         const page = parseInt(req.query.page) || 1;
+//         const perPage = 16;
+//         const skip = (page - 1) * perPage;
+
+//         // Fetch user and other necessary data
+//         const userId = req.session.userId;
+//         const user = await User.findById(userId);
+
+//         // Fetch products based on local storage data if available
+//         const localStorageData = req.query.localStorageData; // You need to define how local storage data is passed in the query
+
+//         console.log('Local storage data:', localStorageData);
+//         let products;
+
+//         if (localStorageData) {
+//             // Parse and process local storage data (modify as per your local storage data structure)
+//             const localStorageParsedData = JSON.parse(localStorageData);
+//             console.log('Parsed Local Storage Data:', localStorageParsedData);
+//             // For simplicity, skipping category filtering in this example
+//         } else {
+//             // Fetch all products if no local storage data is present
+//             products = await Product.find().skip(skip).limit(perPage);
+//         }
+
+//         const totalCount = await Product.countDocuments();
+
+//         if (req.xhr || req.headers.accept.indexOf('json') > -1) {
+//             return res.json({
+//                 user,
+//                 products,
+//                 currentPage: page,
+//                 perPage,
+//                 totalCount,
+//                 totalPages: Math.ceil(totalCount / perPage)
+//             });
+//         }
+
+//         // Otherwise, render HTML
+//         res.render('user/shop', {
+//             user,
+//             products,
+//             currentPage: page,
+//             perPage,
+//             totalCount,
+//             totalPages: Math.ceil(totalCount / perPage)
+//         });
+//     } catch (error) {
+//         console.error('Error fetching products:', error);
+//         res.status(500).send('Internal Server Error');
+//     }
+// };
+
+const getShop = async(req,res)=>{
+try {
+  const page = parseInt(req.query.page) || 1;
+  const perPage = 16;
+  const skip = (page - 1) * perPage;
+
+  const minPrice = req.query.minPrice;
+  const maxPrice = req.query.maxPrice;
+
+  const userId = req.session.userId;
+          const user = await User.findById(userId);
+
+  // Build the price filter object
+  const priceFilter = {};
+  if (minPrice) priceFilter.$gte = parseFloat(minPrice);
+  if (maxPrice) priceFilter.$lte = parseFloat(maxPrice);
+  console.log('Price Filter:', priceFilter);
+  // Fetch products based on the price filter
+  const products = await Product.find(priceFilter).skip(skip).limit(perPage);
+
+  const totalCount = await Product.countDocuments();
+
+  if (req.xhr || req.headers.accept.indexOf('json') > -1) {
+      return res.json({
+          products,
+          currentPage: page,
+          perPage,
+          totalCount,
+          totalPages: Math.ceil(totalCount / perPage)
+      });
+  }
+
+  // Otherwise, render HTML
+  res.render('user/shop', {
+    user,
       products,
       currentPage: page,
       perPage,
       totalCount,
       totalPages: Math.ceil(totalCount / perPage)
-    });
-    // Render the view with the fetched products
+  });
+} catch (error) {
+  console.error('Error fetching products:', error);
+  res.status(500).send('Internal Server Error');
+}
 
-
-  };
-
-  
-
-
-
+}
 
   const getSearch =  async (req, res) => {
     const searchQuery = req.body.query;
@@ -565,33 +664,23 @@ const downloadInvoice = async (req, res) => {
 
 
     const orderId = req.body.orderId || req.params.orderId;
-
+    console.log(orderId,"dfsa");
     const orderData = await Order.findOne({
       _id: req.body.orderId,
-    })
-      .populate("Address")
-      .populate("Items.ProductId");
+    }).populate("Address").populate("Items.ProductId");
     console.log("order data ====", orderData);
+    
     const filePath = await invoice.order(orderData);
-    try {
-      const filePathForSampleOrder = await invoice.order(sampleOrderData);
-      console.log('Invoice generation successful. File Path:', filePathForSampleOrder);
-    } catch (error) {
-      console.error('Error in invoice.order:', error);
-    }
-    console.log('Code after invoice generation');
+   
+   
+      console.log('Invoice generation successful. File Path:', filePath);
+      console.log('Code after invoice generation');
 
     console.log('helloooooooooo',orderId)
+  
     res.json({ orderId });
+   
 
- 
-    
-
-    
-
-  res.json({ orderId });
-
-  // Send the generated invoice file for download
 
 
   } catch (error) {

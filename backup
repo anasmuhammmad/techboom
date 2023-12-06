@@ -497,6 +497,26 @@ const postCheckout = async(req,res)=>{
 
 
 
+  const name = document.getElementById('Name').value; // Replace 'Name' with the actual ID of your name input
+  const image = document.getElementById('Image').value; // Replace 'Image' with the actual ID of your image input
+
+  if (!name || !image) {
+    alert('Both Name and Image are required for category update.');
+    return false; // Prevent form submission
+  }
+
+  return true; // Allow form submission if validation passes
+}
+const errorBox = document.querySelector('.error-message');
+      const successBox = document.querySelector('.success-message');
+  
+      if ("<%= error %>") {
+        errorBox.style.display = 'block';
+      }
+  
+      if ("<%= success %>") {
+        successBox.style.display = 'block';
+      }
 
 
 

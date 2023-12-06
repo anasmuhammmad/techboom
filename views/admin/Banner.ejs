@@ -24,12 +24,14 @@
 
     <h2 class="mb-4">Current Banner</h2>
     <div class="mb-4">
-        <% if (currentBanner?.Video) { %>
+        <% if (currentBanner && currentBanner.Video) { %>
             <video autoplay muted loop class="img-fluid" style=" height: 200px;">
                 <source src="/uploads/<%= currentBanner.Video%>" type="video/mp4">
             </video>
-        <% } else if (currentBanner?.Image) { %>
+        <% } else if (currentBanner && currentBanner.Image) { %>
             <img src="/uploads/<%= currentBanner.Image %>" alt="Current Banner" class="img-fluid" style="max-height: 200px;">
+        <% }  else { %>
+            <p>No Image or Video</p>
         <% } %>
     </div>
 
@@ -58,7 +60,11 @@
             
                         <td style="color: azure;"><%= banner.BannerName %></td>
                         <td style="color: azure;"><%= banner.Status %></td>
-                        <td style="color: azure;"><%= banner.Carosel.length %></td>
+                        <td style="color: azure;"><% if (banner.Carosel && Array.isArray(banner.Carosel)) { %>
+                            <%= banner.Carosel.length %>
+                        <% } else { %>
+                            0
+                        <% } %></td>
                         <td style="color: azure;">
                             <form action="/admin/activate-banner/<%= banner._id %>" method="post" style="display: inline;">
                                 <button type="submit" class="btn btn-primary">Activate</button>

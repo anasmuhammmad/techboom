@@ -26,7 +26,11 @@
             <button type="button" class="btn btn-danger mt-2" id="deleteImageButton" style="display: none" onclick="deleteImage()">Delete Image</button>
         </div>
 
-       
+        <div class="form-group">
+            <label for="bannerVideo">Banner Video:</label>
+            <input type="file" class="form-control-file" id="bannerVideo" name="Video" accept="video/*" onchange="previewVideo(this)">
+        </div>
+
         <!-- Video Preview -->
         <div class="form-group">
             <label for="videoPreview">Video Preview:</label>

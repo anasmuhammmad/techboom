@@ -51,19 +51,12 @@ module.exports = {
                 "date": order.OrderedDate,
                 "due-date": order.OrderedDate
             },
-            "products": order.Items.map((product) => ({
-                "quantity": product.Quantity,
-
-                "description": product.ProductId.ProductName, // You might want to use product description here
-                "tax-rate": 0,
-                "price": product.ProductId.DiscountAmount,
-
-                "description": product.ProductId.name, // You might want to use product description here
-                "tax-rate": 0,
-                "price": product.ProductId.discountPrice, // You might want to use product price here
-
-            })),
-
+            // "products": order.Items.map((product) => ({
+            //     "quantity": product.Quantity,
+            //     "description": product.ProductId.ProductName, // You might want to use product description here
+            //     "tax-rate": 0,
+            //     "price": product.ProductId.DiscountAmount
+            // })),
             "bottom-notice": "Thank You For Your Purchase",
             "settings": {
                 "currency": "USD",
@@ -93,11 +86,12 @@ module.exports = {
     }
 
     //Create your invoice! Easy!
-
+    console.log("adsfasdsadfaf",order.Items); 
       // Create a Promise to handle the asynchronous file writing
       return new Promise(async (resolve, reject) => {
         try {
             console.log("Creating invoice...");
+            console.log('Order Items:', order.items);
             // console.log("Data object:", data);
             const result = await easyinvoice.createInvoice(data);
 

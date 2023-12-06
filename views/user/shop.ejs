@@ -31,28 +31,18 @@
         <div class="container-fluid">
 
             <div class="checkbox-container">
-              <h3>Category</h3>
-              <% categories.forEach(function(category) { %>
-              <div class="checkbox-group mt-2">
-                <label><input type="checkbox" name="category" value="<%= category._id %>"> <%= category.Name %></label>
-                <!-- Add more categories as needed -->
-              </div>
-              <% }) %>
+              <h3>Price Filter</h3>
+              <label for="minPrice">Min Price:</label>
+<input type="number" id="minPrice" />
+<label for="maxPrice">Max Price:</label>
+<input type="number" id="maxPrice" />
             </div>
             
 
             
-            <div class="mt-3">
-              <h3>Price Range</h3>
-              <div class="radio-group">
-                <label><input type="radio" name="price" value="0-1000"> $0 - $1000</label><br>
-                <label><input type="radio" name="price" value="1001-5000"> $1001 - $5000</label><br>
-                <label><input type="radio" name="price" value="5001-10000"> $5001 - $10000</label><br>
-                <label><input type="radio" name="price" value="10001-and-above"> $10001 and above</label>
-            </div>
-            </div>  
+        
         </div>
-        <button onclick="applyFilters(); $('#staticBackdrop').offcanvas('hide');" class="btn btn-primary">Apply Filters</button>
+        <button onclick="getStoredFilters()">Filter</button>
       </div>
 </div>
    
@@ -167,113 +157,86 @@
     display: none;
   }
 </style>
-<script>
 
-function getStoredFilters() {
-    const storedCategories = localStorage.getItem("selectedCategories");
- 
-    const storedPrice = localStorage.getItem("selectedPrice");
+        <script>
+    // Wrap your entire script in a function to prevent scope issues
+    function getStoredFilters() {
+        const storedMinPrice = localStorage.getItem("minPrice");
+        const storedMaxPrice = localStorage.getItem("maxPrice");
 
-    return {
-      selectedCategories: storedCategories ? storedCategories.split(",") : [],
-   
-      selectedPrice: storedPrice || null,
-    };
-  }
-  const storedFilters = getStoredFilters();
-console.log('Stored Filters:', storedFilters);
-  function applyFilters() {
-        
-        const selectedCategories = getCheckedValues ("category");
+        return {
+            minPrice: storedMinPrice || null,
+            maxPrice: storedMaxPrice || null,
+        };
+    }
 
-    
-        const selectedPrices = getSelectedValues("price");
+    // Wrap your entire script in a function to prevent scope issues
+    document.addEventListener('DOMContentLoaded', () => {
+        async function fetchProducts(page) {
+            try {
+                const storedFilters = getStoredFilters();
 
-        localStorage.setItem("selectedCategories", selectedCategories.join(","));
-     
-        localStorage.setItem("selectedPrice", selectedPrices || "");
+                // Include other filter parameters if needed
+                const filterParams = {
+                    minPrice: storedFilters.minPrice,
+                    maxPrice: storedFilters.maxPrice,
+                };
 
-        console.log('Stored Categories:', localStorage.getItem("selectedCategories"));
-console.log('Stored Price:', localStorage.getItem("selectedPrice"));
-        const filtersURL = `/shop?categories=${selectedCategories.join(",")}&prices=${selectedPrices}&localStorageData=${JSON.stringify(storedFilters)}`;
+                console.log('Filter parameters:', filterParams);
 
-        $.ajax({
-          url: filtersURL,
-          type: "GET",
-          dataType: 'json',
-          success: (response)=>{
-            if (response.products && Array.isArray(response.products)){
-            const productsContainer = $("#productsContainer");
+                const queryString = Object.keys(filterParams)
+                    .map(key => key + '=' + encodeURIComponent(filterParams[key]))
+                    .join('&');
 
-            // Clear previous products
-            productsContainer.empty();
+                console.log('Query string:', queryString);
 
-            // Append new products
-            response.products.forEach ((product) => {
-                const productCard = `
-                    <div class="col-md-6 col-lg-3 col-sm-6 mb-4 equal-width">
-                        <div class="card tickerTimes">
-                            <img src="/uploads/${product.images[0]}" class="card-img-top" style="height: 40vh" alt="" />
-                            <div class="card-body d-flex flex-column justify-content-between" style="height: 30vh">
-                                <h6 class="card-title text-center product-name">${product.name}</h6>
-                                <div class="d-flex flex-column justify-content-center">
-                                    ${product.stock === 0 ? 
-                                        `<div style="background-color: red">
-                                            <p class="card-text text-center text-light">Out of Stock</p>
-                                        </div>` : 
-                                        `<p class="card-text text-center">Price ₹${product.price}</p>
-                                        <a href="/product/${product._id}" class="btn btn-primary text-center">View Details</a>`}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
+                const response = await fetch(`/shop?page=${page}&${queryString}`);
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch products. Status: ${response.status}`);
+                }
 
-                // Append the product card to the container
-                productsContainer.append(productCard);
+                const data = await response.json();
+                // Implement your logic to update the UI with the fetched products
+                console.log('Fetched products:', data.products);
+            } catch (error) {
+                console.error('Error fetching products:', error);
+            }
+        }
+
+        // Example: Trigger fetch on filter form submit (adjust as needed)
+        const filterForm = document.getElementById('filterForm'); // Adjust the ID accordingly
+        if (filterForm) {
+            filterForm.addEventListener('submit', (event) => {
+                event.preventDefault();
+
+                // Update localStorage with selected filters
+                const minPriceElement = document.getElementById('minPrice');
+                const maxPriceElement = document.getElementById('maxPrice');
+
+                // Log the values of minPrice and maxPrice
+                const minPrice = minPriceElement?.value;
+                const maxPrice = maxPriceElement?.value;
+
+                console.log('Selected minPrice:', minPrice);
+                console.log('Selected maxPrice:', maxPrice);
+
+                localStorage.setItem('minPrice', minPrice);
+                localStorage.setItem('maxPrice', maxPrice);
+
+                // Trigger product fetch with the updated filters
+                fetchProducts(1);
             });
-          
-          }
-          else {
-        console.error("Invalid or missing 'products' array in the response");
-        }
         }
 
-    
-        })
-        console.log(filtersURL);
-    }
-
-    function setCheckedValues() {
-    const storedFilters = getStoredFilters();
-
-    storedFilters.selectedCategories.forEach((category) => {
-      $(`input[name="category"][value="${category}"]`).prop("checked", true);
+        // Example: Trigger fetch on pagination click (adjust as needed)
+        document.addEventListener('click', (event) => {
+            if (event.target.classList.contains('pagination-link')) {
+                const page = parseInt(event.target.dataset.page);
+                fetchProducts(page);
+            }
+        });
     });
+</script>  
 
-    
-
-    if (storedFilters.selectedPrice) {
-      $(`input[name="price"][value="${storedFilters.selectedPrice}"]`).prop("checked", true);
-    }
-  }
-
-  // Call setCheckedValues on page load
-  $(document).ready(setCheckedValues);
-
-
-    function getCheckedValues(checkboxName) {
-        const checkboxes = document.querySelectorAll(`input[name="${checkboxName}"]:checked`);
-        const values = Array.from(checkboxes).map(checkbox => checkbox.value);
-        return values;
-    }
-
-    function getSelectedValues(name) {
-    const selectedRadio = document.querySelector(`input[name="${name}"]:checked`);
-    return selectedRadio ? selectedRadio.value : null;
-    }
-    console.log(localStorage.getItem("selectedCategories"));
-console.log(localStorage.getItem("selectedPrice"));
-</script>
 
 <%- include('../layouts/footer') %>

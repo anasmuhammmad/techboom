@@ -1,6 +1,6 @@
 <%- include('../layouts/header')%>
 <%- include('../partials/user-header')%>
-<%- include('../layouts/layout') %>
+
 <div class="modal fade" id="addAddressModal" tabindex="-1" aria-labelledby="addAddressModalLabel" aria-hidden="true">
   <div class="modal-dialog">
       <div class="modal-content">
@@ -9,7 +9,7 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-            <form action="/addAddress" method="post">
+            <form action="/addAddress" method="post" id="addressForm">
                 <div class="mb-3">
                     <label for="fullName" class="form-label">Full Name</label>
                     <input type="text" class="form-control" name="Name"  id="fullName" placeholder="Enter your full name" required>
@@ -32,7 +32,8 @@
                   </div>
                   <div class="mb-3">
                     <label for="mobileNumber" class="form-label">Mobile Number</label>
-                    <input type="tel" class="form-control" id="mobileNumber" name="Mobile" placeholder="Enter your mobile number" required>
+                    <input type="tel" class="form-control" id="mobileNumber" name="Mobile" placeholder="Enter your mobile number"   pattern="^[6-9]\d{9}$"
+                    title="Enter a valid 10-digit mobile number starting with 6, 7, 8, or 9" required>
                   </div>
                 <button type="submit" class="btn btn-primary" data-bs-dismiss="modal" aria-label="Close" >Submit</button>
               </form>
@@ -54,7 +55,7 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-            <form action="/editAddress/<%=Address._id%>" method="post">
+            <form action="/editAddress/<%=Address._id%>" method="post" id="editAddressForm">
                 <div class="mb-3">
                     <label for="fullName" class="form-label">Full Name</label>
                     <input type="text" class="form-control" name="Name" value="<%=Address.Name%>"  id="fullName" placeholder="Enter your full name" required>
@@ -132,5 +133,49 @@
        </button>
 </div>
 
+
+<script>
+ document.addEventListener('DOMContentLoaded', function () {
+    function validateForm(formId) {
+      console.log(`Validating form: ${formId}`);
+
+      var form = document.getElementById(formId);
+      var fullName = form.querySelector('[name="Name"]').value.trim();
+      var address = form.querySelector('[name="AddressLane"]').value.trim();
+      var city = form.querySelector('[name="City"]').value.trim();
+      var state = form.querySelector('[name="State"]').value.trim();
+
+      // Your validation logic
+      if (containsWhiteSpace(fullName) || containsWhiteSpace(address) || containsWhiteSpace(city) || containsWhiteSpace(state)) {
+        console.log('Validation failed: Whitespace not allowed.');
+        alert('Whitespace is not allowed in any field.');
+        return false; // Prevent form submission
+      }
+
+      // Add more validations as needed...
+
+      console.log('Validation passed.');
+      return true; // Form is valid, continue with submission
+    }
+
+    function containsWhiteSpace(str) {
+      return /\s/.test(str);
+    }
+
+    document.getElementById('addressForm').addEventListener('submit', function (event) {
+      if (!validateForm('addressForm')) {
+        console.log('Form submission prevented due to validation failure.');
+        event.preventDefault(); // Prevent form submission
+      }
+    });
+
+    document.getElementById('editAddressForm').addEventListener('submit', function (event) {
+      if (!validateForm('editAddressForm')) {
+        console.log('Form submission prevented due to validation failure.');
+        event.preventDefault(); // Prevent form submission
+      }
+    });
+  });
+  </script>
 
 <%- include('../layouts/footer') %>

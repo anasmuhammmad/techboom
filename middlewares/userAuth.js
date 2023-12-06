@@ -1,48 +1,21 @@
-// const jwt = require('jsonwebtoken')
-// require('dotenv').config()
 
-// module.exports = {
-//     userTokenAuth: async (req, res, next) => {
-//         const token = req.cookies.userJwt 
-//         if (token) {
-//             jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
-//                 if (err) {
-//                     res.redirect("/signup")
-//                 }
-//                 req.session.user = user;
-//                 next()
-//             })
-//         }else{
-//             req.session.user = false
-//             res.render("user/sign-up")
-//         }
-//     },
-    
-//     userExist: (req, res, next) => {
-//         const token = req.cookies.userJwt;
-//         if (token) {
-//             jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
-//                 if (err) {
-//                     next();
-//                 }
-//                 else {
-//                     res.redirect('/homepage')
-//                 }
-//             })
-//         }
-//         else {
-//             next();
-//         }
-//     },
-// }
 const userauthMiddleware = (req, res, next) => {
-    if ( req.session.userAuth) {
+  const user = req.session.userAuth;
+
+  if (user) {
       // User is authenticated
-      next();
-    } else {
+      if (user.Status !== "Blocked") {
+          // User is authenticated and not blocked, allow them to proceed
+          res.locals.user = user; // Make user information available to templates
+          next();
+      } else {
+          // User is authenticated but blocked, redirect to blocked page
+          res.redirect('/blocked');
+      }
+  } else {
       // User is not authenticated, redirect to login page
       res.redirect('/login');
-    }
+  }
   };
   
 module.exports = {userauthMiddleware};

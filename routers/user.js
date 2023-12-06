@@ -17,6 +17,7 @@ const razorpay = require("../utility/razorpay");
 const Order = require('../models/orderSchema');
 const Coupon = require('../models/couponSchema');
 const couponController = require('../controllers/couponController');
+const checkUserStatus = require('../middlewares/userStatus');
 const Transaction = require('../models/transactionSchema'); 
 const moment = require('moment');
 const userAuth = require('../middlewares/userAuth')
@@ -92,35 +93,35 @@ router.get('/order/cancel/:_id',auth.userauthMiddleware,userController.orderCanc
     //   console.log('Cannot Cancel Order. Status:', order.Status); // Add this line for debugging
     //   return res.status(400).send('Order cannot be cancelled');
     // }
-router.get('/order/details/:_id',auth.userauthMiddleware,userController.orderDetails)
-router.post('/order/return/:_id',auth.userauthMiddleware,userController.returnOrder)
+router.get('/order/details/:_id',auth.userauthMiddleware,checkUserStatus,userController.orderDetails)
+router.post('/order/return/:_id',auth.userauthMiddleware,checkUserStatus,userController.returnOrder)
 
 
 // router.post('/download-invoice',auth.userauthMiddleware,userController.downloadInvoice)
 
 
-router.post('/download-invoice',auth.userauthMiddleware,userController.downloadInvoice)
-router.get('/download-invoice/:orderId',auth.userauthMiddleware,userController.downloadfile)
+router.post('/download-invoice',auth.userauthMiddleware,checkUserStatus,userController.downloadInvoice)
+router.get('/download-invoice/:orderId',auth.userauthMiddleware,checkUserStatus,userController.downloadfile)
 
 
-router.get('/editAddress',auth.userauthMiddleware,userController.getEditAddress);
-router.post('/editAddress/:_id',auth.userauthMiddleware,userController.postEditAddress)
-router.post('/changePassword',auth.userauthMiddleware, userController.changePassword)
-
-
-
-router.post('/addAddress',auth.userauthMiddleware,userController.addAddress)
-
-
-router.post('/updateQuantity',auth.userauthMiddleware,userController.updateQuantity)
-
-router.get('/removefromcart/:_id',auth.userauthMiddleware,userController.removeCart)
+router.get('/editAddress',auth.userauthMiddleware,checkUserStatus,userController.getEditAddress);
+router.post('/editAddress/:_id',auth.userauthMiddleware,checkUserStatus,userController.postEditAddress)
+router.post('/changePassword',auth.userauthMiddleware,checkUserStatus,userController.changePassword)
 
 
 
-router.get('/checkout',auth.userauthMiddleware,userController.getCheckout)
+router.post('/addAddress',auth.userauthMiddleware,checkUserStatus,userController.addAddress)
 
-router.post('/checkout',auth.userauthMiddleware,userController.postCheckout)
+
+router.post('/updateQuantity',auth.userauthMiddleware,checkUserStatus,userController.updateQuantity)
+
+router.get('/removefromcart/:_id',auth.userauthMiddleware,checkUserStatus,userController.removeCart)
+
+
+
+router.get('/checkout',auth.userauthMiddleware,checkUserStatus,userController.getCheckout)
+
+router.post('/checkout',auth.userauthMiddleware,checkUserStatus,userController.postCheckout)
 
 router.post('/verify-payment',auth.userauthMiddleware,userController.verifyPayment)
 router.post('/addAddress-Checkout',auth.userauthMiddleware,userController.addAddressCheckout)
@@ -137,13 +138,13 @@ router.get('/orderSuccess', auth.userauthMiddleware,userController.orderSuccess)
   router.get('/forgotPassword', userController.renderForgotPasswordPage);
   router.post('/forgotPassword',userController.postForgotPassword);
 
-  router.get('/forgot-otp', userController.renderForgotOtpPage);
-  router.post('/forgot-otp', userController.postForgotOtpVerification);
-  router.get('/forgot-resend-otp', userController.resendForgotOtp);
+  router.get('/forgot-otp', auth.userauthMiddleware,checkUserStatus,userController.renderForgotOtpPage);
+  router.post('/forgot-otp', auth.userauthMiddleware,checkUserStatus,userController.postForgotOtpVerification);
+  router.get('/forgot-resend-otp',auth.userauthMiddleware,checkUserStatus, userController.resendForgotOtp);
 
-  router.get('/wishlist', userController.getWishlist);
-  router.get('/addToWishlist/:_id',userController.addToWishlist);
-  router.get('/removeFromWishlist/:_id',userController.removeFromWishlist);
+  router.get('/wishlist',auth.userauthMiddleware,checkUserStatus, userController.getWishlist);
+  router.get('/addToWishlist/:_id',auth.userauthMiddleware,checkUserStatus,userController.addToWishlist);
+  router.get('/removeFromWishlist/:_id',auth.userauthMiddleware,checkUserStatus,userController.removeFromWishlist);
   
 
 

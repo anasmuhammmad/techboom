@@ -10,7 +10,7 @@
             <div class="row d-flex justify-content-between">
                 <div class="col-md-8">
                     <h1 class="mt-5">ADD BRAND</h1>
-                    <form action="/admin/addbrand" method="post" class="bg-white">
+                    <form action="/admin/addbrand" method="post" class="bg-white" onsubmit="return validateForm()>
                         <div class="form-group">
                             <label for="brandname">Brand Name:</label>
                             <input
@@ -28,8 +28,19 @@
             </div>
         </main>
     </div>
-</div> -->
+</div> 
 
+<script>
+    function validateForm() {
+        const brandName = document.getElementById('categoryName').value.trim();
 
+        if (brandName === "") {
+            alert('Brand Name cannot be empty or contain only whitespace.');
+            return false; // Prevent form submission
+        }
+
+        return true; // Allow form submission if validation passes
+    }
+</script>
 
 <%- include('../layouts/footer') %>

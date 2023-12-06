@@ -41,7 +41,7 @@
                           <%= success %>
                         </div>
                       <% } %>
-                    <form action="/admin/addcategory" method="post" enctype="multipart/form-data" class="bg-white" onsubmit="return validateForm()">
+                    <form action="/admin/addCategory" method="post" enctype="multipart/form-data" class="bg-white" onsubmit="return validateForm()">
                         <div class="form-group">
                             <label for="categoryname">Category Name:</label>
                             <input
@@ -114,26 +114,33 @@
     }
 
     function validateForm() {
-    const name = document.getElementById('Name').value; // Replace 'Name' with the actual ID of your name input
-    const image = document.getElementById('Image').value; // Replace 'Image' with the actual ID of your image input
+      const name = document.getElementById('categoryName').value; // Replace 'Name' with the actual ID of your name input
+  const image = document.getElementById('categoryImage').value; // Replace '
+      var categoryName = document.getElementById("categoryName").value;
 
-    if (!name || !image) {
-      alert('Both Name and Image are required for category update.');
-      return false; // Prevent form submission
-    }
+// Trim leading and trailing spaces
+var trimmedName = categoryName.trim();
 
-    return true; // Allow form submission if validation passes
+// Check if the trimmed name is empty
+if (trimmedName === "") {
+  alert("Category name cannot be empty");
+  return false; // Prevent form submission
+}
+
+// Update the category name field with the trimmed value
+document.getElementById("categoryName").value = trimmedName;
+
+if (!name || !image) {
+    alert('Both Name and Image are required for category update.');
+    return false; // Prevent form submission
   }
-  const errorBox = document.querySelector('.error-message');
-        const successBox = document.querySelector('.success-message');
-    
-        if ("<%= error %>") {
-          errorBox.style.display = 'block';
-        }
-    
-        if ("<%= success %>") {
-          successBox.style.display = 'block';
-        }
+
+
+// Allow form submission
+return true;
+
+
+    }
 
     </script>
 
