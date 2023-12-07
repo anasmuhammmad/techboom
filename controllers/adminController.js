@@ -14,19 +14,7 @@ const Order = require("../models/orderSchema");
 const moment = require("moment");
 const Coupon = require("../models/couponSchema");
 module.exports = {
-  // admin:async (req,res)=>{
-  //   const Email = "anasmuhammed444@gmail"
-  //   const Password = "123"
-  //   const hashedPassword = await bcrypt.hash(Password,10)
-  //   const adminData = await Admin.create({Email:Email,Password:hashedPassword})
-  //   console.log("created");
-  // },
 
-
-
-  // initial: (req, res) => {
-  //     res.redirect("/admin/login");
-  //   },
   getCoupon: async (req, res) => {
     try {
       const coupons = await Coupon.find();
@@ -342,93 +330,6 @@ module.exports = {
     }
 
   },
-
-
-  // postAddProduct: async (req, res) => {
-  //   console.log(req.body);
-  //   console.log(req.files);
-  //   try {
-  //     const productType = req.body.productType;
-
-  //     const variations = [];
-      
-  //     if (productType === "watches") {
-  //       const watchColors = req.body.watches;
-  //       variations.push({ value: watchColors });
-  //     } else if (productType === "perfumes") {
-  //       const perfumeQuantity = req.body.perfumes;
-  //       variations.push({ value: perfumeQuantity });
-  //     }
-  //     req.body.Variation = variations[0].value;
-  //     req.body.images = req.files.map((val) => val.filename);
-  //     req.body.status = "In stock";
-  //     req.body.display = "Active";
-  //     req.body.updatedOn = new Date();
-  //     const uploaded = await Product.create(req.body);
-  //     res.redirect("/admin/product");
-  //   } catch (error) {
-  //     console.log(`An error happened ${error}`);
-  //   }
-  // },
-
-
-
-  // postAddProduct: async(req,res)=>{
-  //   try {
-
-  //     console.log(req.files);
-  //     // Extract product details from the form data
-  //     const {
-  //       ProductName,
-  //       Description,
-  //       Specification1,
-  //       Specification2,
-  //       Specification3,
-  //       Specification4,
-  //       image,
-  //       Price,
-  //       DiscountAmount,
-  //       productType,
-  //       storagesize, // Update the name to match the form input
-  //       graphicscard, // Update the name to match the form input  
-  //       AvailableQuantity,
-  //       Category,
-  //       BrandName,
-  //       Tags,
-  //     } = req.body;
-  
-  //        // Extract image file names from req.files
-  //        const imageFileNames = req.files.map((file) => file.filename);
-
-  //     // Create a new Product instance based on your model structure
-  //     const newProduct = new Product({
-  //         name: ProductName,
-  //         description: Description,
-  //         specifications: [Specification1, Specification2, Specification3, Specification4],
-  //         images: imageFileNames,
-  //         price: Price,
-  //         discountPrice: DiscountAmount,
-  //         type: productType,
-  //         storageWanted: storagesize,
-  //         gpuModel: graphicscard,
-  //         stock: AvailableQuantity,
-  //         category: Category,
-  //         brand: BrandName,
-  //         tags: Tags.split(',').map((tag) => tag.trim()),
-  //         // Add additional properties here based on your model structure
-  //       });
-  
-  //     // Save the new product to the database
-  //     await newProduct.save();
-  
-  //     // Redirect to a success page or the product listing page
-  //     res.redirect('/admin/product');
-  //   } catch (error) {
-  //     // Handle errors, e.g., show an error page
-  //     console.error(error);
-  //     res.status(500).send('Internal Server Error');
-  //   }
-  // },
 
 getOrders: async (req,res)=>{
   const page = parseInt(req.query.page) || 1;
@@ -755,7 +656,11 @@ postAddProduct: async (req, res) => {
         const updatedProduct = {
           name: ProductName,
           description: Description,
-          specifications: [Specification1, Specification2, Specification3, Specification4],
+          Specification1: Specification1, 
+          Specification2: Specification2,
+          Specification3 : Specification3,
+          Specification4: Specification4,
+
           image: imageFileNames,
           price: Price,
           discountPrice: DiscountAmount,
@@ -805,35 +710,13 @@ postAddProduct: async (req, res) => {
     }
   },
 
-  //   try {
-  //     const productType = req.body.productType;
-      
-  //     const variations = [];
-  //     console.log('kitnnundo');
-  //     if (productType === "storagesize") {
-  //       const watchColors = req.body.watches;
-  //       variations.push({ value: watchColors });
-  //     } else if (productType === "gpumodel") {
-  //       const perfumeQuantity = req.body.perfumes;
-  //       variations.push({ value: perfumeQuantity });
-  //     }
-  //     req.body.Variation = variations[0].value;
-  //     req.body.images = req.files.map((val) => val.filename);
-  //     req.body.Status = "In stock";
-  //     req.body.Display = "Active";
-  //     req.body.UpdatedOn = new Date();
-  //     const uploaded = await Product.findByIdAndUpdate(_id, req.body);
-  //     res.redirect("/admin/product");
-  //   } catch (error) {
-  //     console.log(`An error happened ${error}`);
-  //   }
-  
+
 
 
   getUser: async (req, res) => {
     try {
-      const page = parseInt(req.query.page) || 1; // Get the page number from query parameters
-      const perPage = 10; // Number of items per page
+      const page = parseInt(req.query.page) || 1; 
+      const perPage = 10;
       const skip = (page - 1) * perPage;
 
       const users = await User.find().skip(skip).limit(perPage).lean();
@@ -912,42 +795,6 @@ postAddProduct: async (req, res) => {
 
 
 
-  // try {
-    //   // const imageBuffer = req.file.buffer; // Get the image data from multer
-    //   const imageFileName = req.file.filename;
-
-    //   const newCategory = new Category({
-    //     Name: req.body.Name,
-    //     image : imageFileName
-    //   });
-
-
-    //   // Save the newCategory to the database
-    //   let data = await newCategory.save();
-    //   req.session.idd = data;
-
-    //   req.flash('success', 'Category added successfully');
-    //   // Redirect or send a success response
-    //  return res.redirect('/admin/categoriesandbrands');
-    // } catch (error) {
-      
-    //   req.flash('error','Error Adding the Category,try to add both fields properly');
-    //   return res.redirect('/admin/addcategory');
-    // }
-
-
-
-
-
-
-
-  // getEditCategory: async (req, res) => {
-  //   const _id = req.params._id;
-  //   const category = await Category.findById(_id);
-  //   console.log(_id);
-  //   res.render("admin/editCategory", { category });
-  // },
-
 
     getEditCategory: async (req, res) => {
       try {
@@ -966,8 +813,6 @@ postAddProduct: async (req, res) => {
         res.status(500).send('Server Error'); // Handle server error
       }
     },
-
-    // postEditCategory: async (req, res) => {
 
 
 
@@ -1004,46 +849,11 @@ postAddProduct: async (req, res) => {
             }
         }
       },
-      // try {
-      // const _id = req.params.id  ;
-      // const imagee = req.session.idd ;
-      //   console.log(_id);
-      //   const {Name} = req.body;
-       
-      //   const image = req.file;        // Create an object to represent the updated category data
-        
-      //   console.log(Name);
-      //   console.log(image); // Log the image details
-      //   const updatedCategoryData = {};
-      //   if (Name) {
-      //     updatedCategoryData.Name = Name;
-      //   }
-    
-      //   if (image) {
-      //     updatedCategoryData.image = image.filename  ;
-      //   }else {
-      //     // If image is empty, 
-      //     req.flash('error','Image is required for category update.')
-      //     return res.redirect('/admin/edit/${_id}')
-      //   }
-      //   // Update the category in your database with the new data
-      //   const updatedCategory = await Category.findByIdAndUpdate(_id, updatedCategoryData, {new: true});
-      //   if (!updatedCategory) {
-      //     return res.status(404).send('Category not found');
-      //   }   
-
-      //   // Redirect to the category list or wherever you prefer
-      //   res.redirect('/admin/categoriesandbrands');
-      // }catch (error) {
-      //   console.error(error);
-      //   res.status(500).send('Server Error'); // Handle server error
-      // }
-    
-
+  
 
 
   getAddBrand: (req, res) => {
-    res.render("admin/addbrand")
+    res.render("admin/addBrand")
   },
 
   postAddBrand: async (req, res) => {

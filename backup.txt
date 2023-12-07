@@ -1797,3 +1797,177 @@ console.log('Stored Price:', localStorage.getItem("selectedPrice"));
     }
     console.log(localStorage.getItem("selectedCategories"));
 console.log(localStorage.getItem("selectedPrice"));
+
+
+
+
+
+
+
+
+
+
+<script>
+  
+function getStoredFilters() {
+    const storedCategories = localStorage.getItem("selectedCategories");
+    const storedPrice = localStorage.getItem("selectedPrice");
+
+    return {
+      selectedCategories: storedCategories ? storedCategories.split(",") : [],     
+      selectedPrice: storedPrice || null,
+    };
+  }
+
+  function applyFilters() {
+        
+        const selectedCategories = getCheckedValues ("category");
+
+
+        const selectedPrices = getSelectedValues("price");
+
+        localStorage.setItem("selectedCategories", selectedCategories.join(","));
+       
+        localStorage.setItem("selectedPrice", selectedPrices || "");
+
+
+        const filtersURL = `/shop?categories=${selectedCategories.join(",")}&prices=${selectedPrices}`;
+
+        $.ajax({
+          url: filtersURL,
+          type: "GET",
+          success: (response)=>{
+            const productsContainer = $("#productsContainer");
+
+            // Clear previous products
+            productsContainer.empty();
+
+            // Append new products
+            response.products.forEach ((product) => {
+                const productCard = `
+                    <div class="col-md-6 col-lg-3 col-sm-6 mb-4 equal-width">
+                        <div class="card tickerTimes">
+                            <img src="/uploads/${product.images[0]}" class="card-img-top" style="height: 40vh" alt="" />
+                            <div class="card-body d-flex flex-column justify-content-between" style="height: 30vh">
+                                <h6 class="card-title text-center product-name">${product.ProductName}</h6>
+                                <div class="d-flex flex-column justify-content-center">
+                                    ${product.AvailableQuantity === 0 ? 
+                                        `<div style="background-color: red">
+                                            <p class="card-text text-center text-light">Out of Stock</p>
+                                        </div>` : 
+                                        `<p class="card-text text-center">Price ₹${product.Price}</p>
+                                        <a href="/product/${product._id}" class="btn btn-primary text-center">View Details</a>`}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                // Append the product card to the container
+                productsContainer.append(productCard);
+            });
+          }
+        })
+        console.log(filtersURL);
+    }
+
+    function setCheckedValues() {
+    const storedFilters = getStoredFilters();
+
+    storedFilters.selectedCategories.forEach((category) => {
+      $(`input[name="category"][value="${category}"]`).prop("checked", true);
+    });
+
+
+    if (storedFilters.selectedPrice) {
+      $(`input[name="price"][value="${storedFilters.selectedPrice}"]`).prop("checked", true);
+    }
+  }
+
+  // Call setCheckedValues on page load
+  $(document).ready(setCheckedValues);
+
+
+    function getCheckedValues(checkboxName) {
+        const checkboxes = document.querySelectorAll(`input[name="${checkboxName}"]:checked`);
+        const values = Array.from(checkboxes).map(checkbox => checkbox.value);
+        return values;
+    }
+
+    function getSelectedValues(name) {
+    const selectedRadio = document.querySelector(`input[name="${name}"]:checked`);
+    return selectedRadio ? selectedRadio.value : null;
+    }
+
+
+
+
+     const getShop= async (req, res) => {
+    const page = parseInt(req.query.page) || 1;
+    const perPage = 16;
+    const skip = (page - 1) * perPage;
+    
+    // Fetch user and other necessary data
+    const userId = req.session.userId;
+    const user = await User.findById(userId);
+    const categories = await Category.find();
+    const brands = await Brand.find();
+    const id = req.params._id;
+    
+    // Fetch products based on local storage data if available
+    const localStorageData = req.query.localStorageData; // You need to define how local storage data is passed in the query
+
+    let products;
+    
+    if (localStorageData) {
+        // Parse and process local storage data (modify as per your local storage data structure)
+        const localStorageParsedData = JSON.parse(localStorageData);
+        const categoryIds = localStorageParsedData.categories;
+
+        // Fetch products based on local storage data
+        products = await Product.find({ Category: { $in: categoryIds } });
+    } else {
+        // Fetch all products if no local storage data is present
+        products = await Product.find().skip(skip).limit(perPage);
+    }
+
+    const totalCount = await Product.countDocuments();
+
+    // Render the view with the fetched products
+    res.render('user/shop', {
+        user,
+        categories,
+        brands,
+        products,
+        currentPage: page,
+        perPage,
+        totalCount,
+        totalPages: Math.ceil(totalCount / perPage)
+    })
+};
+
+
+const getSearch = async (req, res) => {
+  try {
+    const searchQuery = req.body.query;
+
+    const categoryResults = await Category.find({ Name: { $regex: searchQuery, $options: "i" } });
+
+    const productCriteria = {
+      $or: [{ ProductName: { $regex: searchQuery, $options: "i" } }],
+    };
+
+    const productResults = await Product.find(productCriteria);
+
+    const results = {
+      products: productResults,
+      categories: categoryResults,
+      // No brandResults in this version
+    };
+
+    res.json(results);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "An error occurred" });
+  }
+};

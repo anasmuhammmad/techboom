@@ -30,7 +30,7 @@ const ObjectId = Schema.Types.ObjectId;
 
           },
           brandName:{
-            type: String,
+         type: String,
           },
         storageWanted:{
           typeof: String,

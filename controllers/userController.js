@@ -30,6 +30,7 @@ const razorpay = require("../utility/razorpay");
 const crypto = require('crypto');
 const Offer = require('../models/offerSchema');
 const path = require('path');
+const getFilteredProducts = require('../utility/getFilteredProducts');
 
 // const generateAndSendOTP = async (email) => {
 //   try {
@@ -426,7 +427,7 @@ const renderHomePage = async(req,res)=>{
     const categories = await Category.find();
     const products = await Product.find({status:'Active'});
     const banner = await Banner.find({Status:'Enabled'});
-
+   
     // Now you can use the retrieved categories in your response
     res.render('user/homepage', { banner,user: user, categories: categories , products ,   error: req.flash('error'), success: req.flash('success')});
   } 
@@ -437,209 +438,215 @@ const renderHomePage = async(req,res)=>{
   }
 }
 
-  // const getShop =async (req, res) => {
-  //   const page = parseInt(req.query.page) || 1;
-  //   const perPage = 16;
-  //   const skip = (page - 1) * perPage;
-    
-  //   // Fetch user and other necessary data
-  //   const userId = req.session.userId;
-  //   const user = await User.findById(userId);
-  //   // const categories = await Category.find();
-  //   const id = req.params._id;
-    
-  //   // Fetch products based on local storage data if available
-  //   const localStorageData = req.query.localStorageData; // You need to define how local storage data is passed in the query
 
-  //   console.log('Local storage data:', localStorageData);  
-  //   let products;
-    
-  //   if (localStorageData) {
-  //       // Parse and process local storage data (modify as per your local storage data structure)
-  //       const localStorageParsedData = JSON.parse(localStorageData);
-  //       console.log('Parsed Local Storage Data:', localStorageParsedData);
-  //       const categoryIds = localStorageParsedData.selectedCategories;
-
-  //       // Fetch products based on local storage data
-  //       products = await Product.find({ category: { $in: categoryIds } });
-  //       console.log('Query filter:', { category: { $in: categoryIds } });
-  //       console.log('Query result:', { products });
-  //   } else {
-  //       // Fetch all products if no local storage data is present
-  //       products = await Product.find().skip(skip).limit(perPage);
-  //   }
-
-  //   const totalCount = await Product.countDocuments();
-
-  //   if (req.xhr || req.headers.accept.indexOf('json') > -1) {
-  //     return res.json({
-  //       user,
-  //       // categories,
-  //       products,
-  //       currentPage: page,
-  //       perPage,
-  //       totalCount,
-  //       totalPages: Math.ceil(totalCount / perPage)
-  //     });
-  //   }
+const getShop = async (req, res) => {
   
-  //   // Otherwise, render HTML
-  //   res.render('user/shop', {
-  //     user,
-  //     // categories,
-  //     products,
-  //     currentPage: page,
-  //     perPage,
-  //     totalCount,
-  //     totalPages: Math.ceil(totalCount / perPage)
-  //   });
-  //   // Render the view with the fetched products
-
-
-  // };
-
-
-
-//   const getShop = async (req, res) => {
-//     try {
-//         const page = parseInt(req.query.page) || 1;
-//         const perPage = 16;
-//         const skip = (page - 1) * perPage;
-
-//         // Fetch user and other necessary data
-//         const userId = req.session.userId;
-//         const user = await User.findById(userId);
-
-//         // Fetch products based on local storage data if available
-//         const localStorageData = req.query.localStorageData; // You need to define how local storage data is passed in the query
-
-//         console.log('Local storage data:', localStorageData);
-//         let products;
-
-//         if (localStorageData) {
-//             // Parse and process local storage data (modify as per your local storage data structure)
-//             const localStorageParsedData = JSON.parse(localStorageData);
-//             console.log('Parsed Local Storage Data:', localStorageParsedData);
-//             // For simplicity, skipping category filtering in this example
-//         } else {
-//             // Fetch all products if no local storage data is present
-//             products = await Product.find().skip(skip).limit(perPage);
-//         }
-
-//         const totalCount = await Product.countDocuments();
-
-//         if (req.xhr || req.headers.accept.indexOf('json') > -1) {
-//             return res.json({
-//                 user,
-//                 products,
-//                 currentPage: page,
-//                 perPage,
-//                 totalCount,
-//                 totalPages: Math.ceil(totalCount / perPage)
-//             });
-//         }
-
-//         // Otherwise, render HTML
-//         res.render('user/shop', {
-//             user,
-//             products,
-//             currentPage: page,
-//             perPage,
-//             totalCount,
-//             totalPages: Math.ceil(totalCount / perPage)
-//         });
-//     } catch (error) {
-//         console.error('Error fetching products:', error);
-//         res.status(500).send('Internal Server Error');
-//     }
-// };
-
-const getShop = async(req,res)=>{
-try {
   const page = parseInt(req.query.page) || 1;
   const perPage = 16;
   const skip = (page - 1) * perPage;
-
-  const minPrice = req.query.minPrice;
-  const maxPrice = req.query.maxPrice;
-
+  // Fetch user and other necessary data
   const userId = req.session.userId;
-          const user = await User.findById(userId);
+  const user = await User.findById(userId);
+  const categories = await Category.find();
+  const brands = await Brand.find();
 
-  // Build the price filter object
-  const priceFilter = {};
-  if (minPrice) priceFilter.$gte = parseFloat(minPrice);
-  if (maxPrice) priceFilter.$lte = parseFloat(maxPrice);
-  console.log('Price Filter:', priceFilter);
-  // Fetch products based on the price filter
-  const products = await Product.find(priceFilter).skip(skip).limit(perPage);
+  // Fetch products based on selected categories
+  const selectedCategories = req.query.categories ? req.query.categories.split(',') : [];
+  console.log('MongoDB Query:', { category: { $in: selectedCategories } });
+  console.log('Selected Categories:', selectedCategories);
+  let products;
 
-  const totalCount = await Product.countDocuments();
-
-  if (req.xhr || req.headers.accept.indexOf('json') > -1) {
-      return res.json({
+  if (selectedCategories.length > 0) {
+      // Filter products based on selected categories
+      products = await Product.find({ category: { $in: selectedCategories } });
+      const totalCount = await Product.countDocuments({ category: { $in: selectedCategories } });
+   
+      // Send JSON response if the request includes '?json=true'
+       
+      if (req.query.json || req.xhr) { // Check if it's an AJAX request
+        return res.json({ products: products || [], totalCount });
+    }
+    
+      // Render the view with the fetched products
+      return res.render('user/shop', {
+          user,
+          categories,
+          brands,
           products,
           currentPage: page,
           perPage,
           totalCount,
           totalPages: Math.ceil(totalCount / perPage)
       });
+  } else {
+      // Fetch all products if no categories are selected
+      products = await Product.find();
   }
 
-  // Otherwise, render HTML
+  console.log('Fetched Products:', products);
+
+  const totalCount = await Product.countDocuments();
+
+  // Render the view with the fetched products
   res.render('user/shop', {
-    user,
+      user,
+      categories,
+      brands,
       products,
       currentPage: page,
       perPage,
       totalCount,
       totalPages: Math.ceil(totalCount / perPage)
   });
-} catch (error) {
-  console.error('Error fetching products:', error);
-  res.status(500).send('Internal Server Error');
-}
+};
 
-}
+const getHomeCat = async (req, res) => {
+  const category = req.params.id || null;
+ 
+  const page = parseInt(req.query.page) || 1;
+  const perPage = 16;
 
-  const getSearch =  async (req, res) => {
-    const searchQuery = req.body.query;
-    const productCriteria = {
-      $or: [{ ProductName: { $regex: searchQuery, $options: "i" } }],
-    };
-    console.log("products", productCriteria);
+  const skip = (page - 1) * perPage;
+ 
+  // console.log(category,"sadfasfgreyrweyt")
+  // Fetch user and other necessary data
+  const userId = req.session.userId;
+  const user = await User.findById(userId);
+  const categories = await Category.find();
+  const brands = await Brand.find();
 
-    Category.find({ Name: { $regex: searchQuery, $options: "i" } })
-      .then((categoryResults) => {
-        Brand.find({ Name: { $regex: searchQuery, $options: "i" } })
-          .then((brandResults) => {
-            Product.find(productCriteria)
-              .then((productResults) => {
-                const results = {
-                  products: productResults,
-                  categories: categoryResults,
-                  brands: brandResults,
-                };
-                res.json(results);
-              })
-              .catch((error) => {
-                console.error(error);
-                res.status(500).json({ error: "An error occurred" });
-              });
-          })
-          .catch((error) => {
-            console.error(error);
-            res.status(500).json({ error: "An error occurred" });
-          });
-      })
-      .catch((error) => {
-        console.error(error);
-        res.status(500).json({ error: "An error occurred" });
+  // Fetch products based on selected categories
+  const selectedCategories = category 
+  console.log('MongoDB Query:', { category: { $in: selectedCategories } });
+  console.log('Selected Categories:', selectedCategories);
+  let products;
+
+  if (selectedCategories.length > 0) {
+      // Filter products based on selected categories
+      products = await Product.find({ category: { $in: selectedCategories } });
+      const totalCount = await Product.countDocuments({ category: { $in: selectedCategories } });
+   
+      // Send JSON response if the request includes '?json=true'
+       
+      if (req.query.json || req.xhr) { // Check if it's an AJAX request
+        return res.json({ products: products || [], totalCount });
+    }
+    
+      // Render the view with the fetched products
+      return res.render('user/shop', {
+          user,
+          categories,
+          brands,
+          products,
+          currentPage: page,
+          perPage,
+          totalCount,
+          totalPages: Math.ceil(totalCount / perPage)
       });
-    console.log("search Query", searchQuery);
-  };
+  } else {
+      // Fetch all products if no categories are selected
+      products = await Product.find();
+  }
 
+  console.log('Fetched Products:', products);
 
+  const totalCount = await Product.countDocuments();
+
+  // Render the view with the fetched products
+  res.render('user/shop', {
+      user,
+      categories,
+      brands,
+      products,
+      currentPage: page,
+      perPage,
+      totalCount,
+      totalPages: Math.ceil(totalCount / perPage)
+  });
+}
+
+//   const getShop = async (req, res) => {
+//     const page = parseInt(req.query.page) || 1;
+//     const perPage = 16;
+//     const skip = (page - 1) * perPage;
+
+//     // Fetch user and other necessary data
+//     const userId = req.session.userId;
+//     const user = await User.findById(userId);
+//     const categories = await Category.find();
+//     const brands = await Brand.find();
+
+//     // Fetch products based on selected categories
+//     const selectedCategories = req.query.categories ? req.query.categories.split(',') : [];
+//     console.log('MongoDB Query:', { category: { $in: selectedCategories } });
+//     console.log('Selected Categories:', selectedCategories);
+//     let products;
+
+//     if (selectedCategories.length > 0) {
+//         // Filter products based on selected categories
+//         products = await Product.find({ category: { $in: selectedCategories } });
+//         res.json({ products, otherData });
+//     } else {
+//         // Fetch all products if no categories are selected
+//         products = await Product.find();
+//     }
+    
+//     console.log('Fetched Products:', products);
+ 
+//     const totalCount = await Product.countDocuments();
+
+//     // Render the view with the fetched products
+//     res.render('user/shop', {
+//         user,
+//         categories,
+//         brands,
+//         products,
+//         currentPage: page,
+//         perPage,
+//         totalCount,
+//         totalPages: Math.ceil(totalCount / perPage)
+//     });
+// };
+const getSearch = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const perPage = 16;
+    const skip = (page - 1) * perPage;
+    const user = await User.find()
+    const searchQuery = req.body.search;
+    const categories = await Category.find();
+    const brands = await Brand.find();
+    const products = await Product.find({ name: { $regex: searchQuery, $options: "i" } });
+    console.log(user,"user");
+    // const productCriteria = {
+    //   $or: [{ ProductName: { $regex: searchQuery, $options: "i" } }],
+    // };
+    const totalCount = await Product.countDocuments({ name: { $in: products } });
+
+ 
+    console.log(products,"these products")
+    // const results = {
+    //   products: productResults,
+    //   categories: categoryResults,
+    //   // No brandResults in this version
+    // };
+
+    res.render('user/shop', {
+      user,
+      categories,
+      brands,
+      products,
+      currentPage: page,
+      perPage,
+      totalCount,
+      totalPages: Math.ceil(totalCount / perPage)
+  });
+  } 
+  catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "An error occurred" });
+  }
+};
 const returnOrder =   async (req, res) => {
   const orderId = req.params._id;
   try {
@@ -1761,8 +1768,8 @@ catch (error) {
 module.exports = {
   initial,home,productdetails, renderOtpPage,getProfile, renderSignupPage, returnOrder,postSignup, postOtpVerification, resendOtp, renderLoginPage,
   postUserLogin, renderHomePage,renderForgotPasswordPage, postForgotPassword,getUserSignupWithReferralCode, renderForgotOtpPage,postForgotOtpVerification,resendForgotOtp,
-  getCart,postCart,getAddToCart,addAddressCheckout,trackOrder,orderList,orderCancel,orderDetails, getEditAddress, postEditAddress , changePassword,addAddress
-  ,updateQuantity,getSearch,removeCart, downloadfile,downloadInvoice,getCheckout,verifyPayment, postCheckout,checkCoupon,orderSuccess,products,getShop,getWishlist,removeFromWishlist,addToWishlist,logout
+  getCart,postCart,getAddToCart,getHomeCat,addAddressCheckout,trackOrder,orderList,orderCancel,orderDetails, getEditAddress, postEditAddress , changePassword,addAddress
+  ,updateQuantity ,removeCart, downloadfile,downloadInvoice,getCheckout,verifyPayment,getSearch, postCheckout,checkCoupon,orderSuccess,products,getShop,getWishlist,removeFromWishlist,addToWishlist,logout
 };
 
 

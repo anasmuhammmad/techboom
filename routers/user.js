@@ -24,14 +24,7 @@ const userAuth = require('../middlewares/userAuth')
 const cron = require('../utility/cron');
 const Offer = require('../models/offerSchema');
 
-// product list
 
-// router.get('/homep',async(req,res)=>{
-//   const user = { Username: 'YourUsername' }; 
-//   const categories = [name  : 'Category'];
-//   res.render('user/homepage',{user : user,categories : categories});
-// })
-// Routes
 const mongoose = require('mongoose');
 
 
@@ -51,7 +44,8 @@ router.get('/productdetails/:productId', auth.userauthMiddleware,userController.
 
 router.get('/shop', auth.userauthMiddleware,userController.getShop)
 router.post('/search-product', auth.userauthMiddleware,userController.getSearch)
-router.get('/category/:_id',auth.userauthMiddleware,userController.getShop)
+router.get('/category/:id',auth.userauthMiddleware,userController.getShop)
+router.get('/categoryHome/:id',auth.userauthMiddleware,userController.getHomeCat)
 
 // Route for handling AJAX/JSON requests
 

@@ -206,11 +206,11 @@ getProduct: async (req, res) => {
         const updatedProduct = {
           name: req.body.ProductName,
           description: req.body.Description,
-          specifications: req.body.Specification1, 
+          Specification1: req.body.Specification1, 
           
-          specifications:req.body.Specification2, 
-          specifications:req.body.Specification3, 
-          specifications:req.body.Specification4,
+          Specification2:req.body.Specification2, 
+          Specification3:req.body.Specification3, 
+          Specification4:req.body.Specification4,
           images: image,
           price: req.body.Price,
           discountPrice: req.body.DiscountAmount,

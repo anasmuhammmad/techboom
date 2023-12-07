@@ -41,7 +41,7 @@ router.get("/admin/product",auth.authMiddleware, productController.getProduct)
 router.get("/admin/product/:_id",auth.authMiddleware,productController.blockProduct)
 
 router.get('/admin/editproduct/:_id',auth.authMiddleware, productController.getEditProduct)
-router.post('/admin/editproduct/:_id',auth.authMiddleware,upload.fields([{ name: 'image', maxCount: 1 }, { name: 'image2', maxCount: 1 }, { name: 'image3', maxCount: 1 }]),productController.postEditProduct)
+router.post('/admin/editproduct/:_id',auth.authMiddleware,upload.fields([{ name: 'image1', maxCount: 1 }, { name: 'image2', maxCount: 1 }, { name: 'image3', maxCount: 1 }]),productController.postEditProduct)
 
 
 router.get('/admin/userslist',auth.authMiddleware,adminController.getUser)

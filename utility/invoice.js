@@ -28,11 +28,11 @@ module.exports = {
           
             "sender": {
 
-                "company": "TICKER",
-                "address": "ASHOKAPURAM",
+                "company": "TECHBOOM",
+                "address": "Gurgaon",
                 "zip": "673001",
-                "city": "Calicut",
-                "country": "Kerala"
+                "city": "Haryana",
+                "country": "India"
 
      
             },
@@ -53,10 +53,19 @@ module.exports = {
             },
             // "products": order.Items.map((product) => ({
             //     "quantity": product.Quantity,
-            //     "description": product.ProductId.ProductName, // You might want to use product description here
+            //     "description": product.ProductId.name, // You might want to use product description here
             //     "tax-rate": 0,
-            //     "price": product.ProductId.DiscountAmount
+            //     "price": product.ProductId.discountPrice,
             // })),
+
+            "products": Array.isArray(order.Items)
+  ? order.Items.map((product) => ({
+      "quantity": product.Quantity || 0,
+      "description": (product.ProductId && product.ProductId.name) || "N/A",
+      "tax-rate": 0,
+      "price": (product.ProductId && product.ProductId.discountPrice) || 0,
+    }))
+  : [],
             "bottom-notice": "Thank You For Your Purchase",
             "settings": {
                 "currency": "USD",
@@ -71,7 +80,7 @@ module.exports = {
 
         // Translate your invoice to your preferred language
         // "translate": {
-        //     "invoice":,  // Default to 'INVOICE'
+        //     "invoice":"invoice",  // Default to 'INVOICE'
         //     "number": "Nummer", // Defaults to 'Number'
         //     "date": "Datum", // Default to 'Date'
         //     "due-date": "Verloopdatum", // Defaults to 'Due Date'

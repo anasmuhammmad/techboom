@@ -31,7 +31,7 @@
         <div class="row">
             <% categories.forEach(function(category) { %>
             <div class="col-6 col-md-4 col-lg-2 icons">
-                <a href="/category/<%= category._id %>"><img class="img-fluid equal-width" src="/uploads/<%=category.image %>" alt="Image 1"></a>
+                <a href="/categoryHome/<%= category._id %>"><img class="img-fluid equal-width" src="/uploads/<%=category.image %>" alt="Image 1"></a>
                 <p class="text-truncate"><%=category.Name%></p>
             </div>
             <% }); %>

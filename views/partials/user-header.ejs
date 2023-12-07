@@ -7,10 +7,10 @@
           </a>
         </div>
         <!-- Move the search bar outside of the collapse button -->
-        <form id="searchForm">
+        <form id="searchForm"  action = "/search-product" method="post">
         <div class="d-flex">
-          <input class="form-control me-2" id="searchInput" type="text" placeholder="Search" aria-label="Search">
-          <button class="btn btn-outline-success" id="searchButton" type="button">Search</button>
+          <input class="form-control me-2" id="searchInput" type="text" placeholder="Search" aria-label="Search" name="search">
+          <button class="btn btn-outline-success" id="searchButton" type="submit" >Search</button>
       </div>
         </form>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
