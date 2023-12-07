@@ -11,7 +11,7 @@
                 <div class="col-md-8">
                     <h1 class="mt-5">EDIT PRODUCT</h1>
                     <br>
-                    <form action="/admin/editproduct/<%=product._id%>" method="post" enctype="multipart/form-data" class="bg-white" id="myForm">
+                    <form action="/admin/editproduct/<%=product._id%>" method="post" enctype="multipart/form-data" class="bg-white" id="myForm" onsubmit="return validateForm()">
                         <div class="form-group">
                             <label for="productName">Product Name:</label>
                             <input
@@ -292,6 +292,16 @@ const basePriceInput = document.getElementById("basePrice");
 
     });
 
+    function validateForm() {
+        // Check if the image file input is empty
+        var imageInput = document.getElementById("image");
+        if (!imageInput.files.length) {
+            // Display an error message or handle it as needed
+            alert("Please select an image");
+            return false; // Prevent form submission
+        }
+        return true; // Continue with form submission
+    }
 
 </script>
 <%- include('../layouts/footer') %>

@@ -12,8 +12,8 @@
                             <div class="col-md-8">
                                 <h1 class="mt-5">Add Product</h1>
                                 <br>
-                                <form action="/admin/addproduct" method="post" enctype="multipart/form-data"
-                                    class="bg-white" id="myForm">
+                                <form action="/admin/addproduct" method="post" enctype="multipart/form-data" 
+                                    class="bg-white" id="myForm" onsubmit="return validateForm()">
                                     <div class="form-group">
                                         <label for="productName">Product Name:</label>
                                         <input type="text" name="ProductName" class="form-control bg-light"
@@ -247,6 +247,16 @@ function handleImagePreview(event) {
         reader.readAsDataURL(file);
     });
 }
+function validateForm() {
+        // Check if the image file input is empty
+        var imageInput = document.getElementById("image");
+        if (!imageInput.files.length) {
+            // Display an error message or handle it as needed
+            alert("Please select an image");
+            return false; // Prevent form submission
+        }
+        return true; // Continue with form submission
+    }
 
             </script>
 

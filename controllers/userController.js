@@ -449,38 +449,57 @@ const getShop = async (req, res) => {
   const user = await User.findById(userId);
   const categories = await Category.find();
   const brands = await Brand.find();
-
+ 
   // Fetch products based on selected categories
   const selectedCategories = req.query.categories ? req.query.categories.split(',') : [];
+  const selectedPrice = req.query.price;
   console.log('MongoDB Query:', { category: { $in: selectedCategories } });
   console.log('Selected Categories:', selectedCategories);
+  console.log('selected price: ',selectedPrice);
   let products;
+  if (selectedCategories.length > 0 || selectedPrice) {
+    // Use an object to build the query conditions
+    const queryConditions = {};
 
-  if (selectedCategories.length > 0) {
-      // Filter products based on selected categories
-      products = await Product.find({ category: { $in: selectedCategories } });
-      const totalCount = await Product.countDocuments({ category: { $in: selectedCategories } });
-   
-      // Send JSON response if the request includes '?json=true'
-       
-      if (req.query.json || req.xhr) { // Check if it's an AJAX request
-        return res.json({ products: products || [], totalCount });
+    // Add selected categories to the query
+    if (selectedCategories.length > 0) {
+      queryConditions.category = { $in: selectedCategories };
     }
-    
-      // Render the view with the fetched products
-      return res.render('user/shop', {
-          user,
-          categories,
-          brands,
-          products,
-          currentPage: page,
-          perPage,
-          totalCount,
-          totalPages: Math.ceil(totalCount / perPage)
-      });
-  } else {
+
+    // Add selected price range to the query
+    if (selectedPrice) {
+      queryConditions.price = parsePriceFilter(selectedPrice);
+    }
+
+    // Fetch products based on the query conditions
+    products = await Product.find(queryConditions)
+      .skip(skip)
+      .limit(perPage);
+
+    const totalCount = await Product.countDocuments(queryConditions);
+
+    // Send JSON response if it's an AJAX request
+    if (req.query.json || req.xhr) {
+      return res.json({ products: products || [], totalCount });
+    }
+
+    // Render the view with the fetched products
+    return res.render('user/shop', {
+      user,
+      categories,
+      brands,
+      products,
+      currentPage: page,
+      perPage,
+      totalCount,
+      totalPages: Math.ceil(totalCount / perPage),
+    });
+  }
+
+
+  else {
       // Fetch all products if no categories are selected
-      products = await Product.find();
+      products = await Product.find().skip(skip).limit(perPage);
   }
 
   console.log('Fetched Products:', products);
@@ -499,6 +518,26 @@ const getShop = async (req, res) => {
       totalPages: Math.ceil(totalCount / perPage)
   });
 };
+
+function parsePriceFilter(price) {
+const priceRange = price.split('-').map(Number);
+
+  if (priceRange.length !== 2 || priceRange.some(isNaN)) {
+    // Check if the value is "and above"
+    if (price.endsWith("10000-and-above")) {
+      const minPrice = parseInt(price, 10);
+      if (!isNaN(minPrice)) {
+        return { $gte: minPrice };
+      }
+    }
+
+    throw new Error('Invalid price filter format');
+  }
+
+  const [minPrice, maxPrice] = priceRange;
+
+  return { $gte: minPrice, $lte: maxPrice };
+}
 
 const getHomeCat = async (req, res) => {
   const category = req.params.id || null;

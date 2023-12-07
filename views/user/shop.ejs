@@ -68,6 +68,7 @@
                   </ul>
               </div>
           </div> -->
+         
           <div class="checkbox-container">
               <h3>Category</h3>
               <% categories.forEach(function(category) { %>
@@ -82,15 +83,15 @@
     
             </div>
             
-            <!-- <div class="mt-3">
+            <div class="mt-3">
               <h3>Price Range</h3>
-              <div class="radio-group">
-                <label><input type="radio" name="price" value="0-1000"> $0 - $1000</label><br>
-                <label><input type="radio" name="price" value="1001-5000"> $1001 - $5000</label><br>
-                <label><input type="radio" name="price" value="5001-10000"> $5001 - $10000</label><br>
-                <label><input type="radio" name="price" value="10001-and-above"> $10001 and above</label>
+              <div class="radio-group" >
+                <label><input type="radio" name="price" value="0-1000" data-price="0-1000"> $0 - $1000</label><br>
+                <label><input type="radio" name="price" value="1001-5000" data-price="1000-5000"> $1001 - $5000</label><br>
+                <label><input type="radio" name="price" value="5001-10000" data-price="5000-10000"> $5001 - $10000</label><br>
+                <label><input type="radio" name="price" value="10001-and-above" data-price="10000-and-above"> $10001 and above</label>
             </div>
-            </div> -->
+            </div>
         </div>
         <button onclick="applyFilters(); $('#staticBackdrop').offcanvas('hide');" class="btn btn-primary">Apply Filters</button>
     </div>
@@ -216,7 +217,11 @@
     console.log('Selected Categories:', selectedCategories);
     localStorage.setItem("selectedCategories", selectedCategories.join(","));
 
-    const filtersURL = `/shop?categories=${selectedCategories.join(",")}`;
+
+    const selectedPrice = $('input[name="price"]:checked').data('price');
+    localStorage.setItem("selectedPrice", selectedPrice);
+
+    const filtersURL = `/shop?categories=${selectedCategories.join(",")}&price=${selectedPrice}`;
     // $('#productsContainer').addClass('loading');
     $.ajax({
         url: filtersURL,
@@ -283,9 +288,10 @@ function getCheckedValues(checkboxName) {
 
 function getStoredFilters() {
     const storedCategories = localStorage.getItem("selectedCategories");
-
+    const storedPrice = localStorage.getItem("selectedPrice");
     return {
         selectedCategories: storedCategories ? storedCategories.split(",") : [],
+        selectedPrice: storedPrice || null,
     };
 }
 
@@ -298,7 +304,10 @@ $(document).ready(function () {
     });
 });
  
-
+if (storedFilters.selectedPrice) {
+      $(`input[name="price"][value="${storedFilters.selectedPrice}"]`).prop("checked", true);
+    }
+    console.log('Stored Filters:', storedFilters);
 </script>  
 
 

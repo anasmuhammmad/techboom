@@ -1971,3 +1971,35 @@ const getSearch = async (req, res) => {
     res.status(500).json({ error: "An error occurred" });
   }
 };
+
+
+
+ if (selectedCategories.length > 0) {
+      // Filter products based on selected categories
+      products = await Product.find({ category: { $in: selectedCategories } , price: selectedPrice}).skip(skip).limit(perPage);
+      const totalCount = await Product.countDocuments({ category: { $in: selectedCategories } });
+      if (selectedPrice) {
+        query.price = selectedPrice;
+      }
+      // Send JSON response if the request includes '?json=true'
+       
+      if (req.query.json || req.xhr) { // Check if it's an AJAX request
+        return res.json({ products: products || [], totalCount });
+    }
+
+    if (selectedPrice) {
+      query.price = parsePriceFilter(selectedPrice);  
+    }  
+    
+      // Render the view with the fetched products
+      return res.render('user/shop', {
+          user,
+          categories,
+          brands,
+          products,
+          currentPage: page,
+          perPage,
+          totalCount,
+          totalPages: Math.ceil(totalCount / perPage)
+      });
+  }
