@@ -5,12 +5,12 @@ const adminController = require('../controllers/adminController');
 const userController = require('../controllers/userController');
 const productController = require('../controllers/productController');
 const offerController = require('../controllers/offerController');
-const orderController = require('../controllers/orderController');
+// const orderController = require('../controllers/orderController');
 const Admin = require('../models/adminSchema');
 const Category = require('../models/categorySchema');
 const Brand = require('../models/brandSchema');
 const Product = require("../models/productSchema");
-const jwt = require("jsonwebtoken");
+
 const flash = require("express-flash");
 const bcrypt = require("bcrypt");
 const auth  = require("../middlewares/adminAuth");

@@ -1,3 +1,4 @@
+
 <%- include('../layouts/header')%>
 <%- include('../partials/user-header')%>
 
@@ -6,11 +7,10 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="addAddressModalLabel">Add Address</h5>
- 
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <div id="flashMessage" class="alert alert-danger" style="display: none;"></div>
         <div class="modal-body">
-            <form action="/addAddress" method="post" id="addressForm">
+            <form action="/addAddress" method="post" id="addAddressForm" onsubmit="return validateForm(addAddressForm)">
                 <div class="mb-3">
                     <label for="fullName" class="form-label">Full Name</label>
                     <input type="text" class="form-control" name="Name"  id="fullName" placeholder="Enter your full name" required>
@@ -33,33 +33,29 @@
                   </div>
                   <div class="mb-3">
                     <label for="mobileNumber" class="form-label">Mobile Number</label>
-                    <input type="tel" class="form-control" id="mobileNumber" name="Mobile" placeholder="Enter your mobile number"   pattern="^[6-9]\d{9}$"
-                    title="Enter a valid 10-digit mobile number starting with 6, 7, 8, or 9" required>
+                    <input type="tel" class="form-control" id="mobileNumber" name="Mobile" placeholder="Enter your mobile number" required>
                   </div>
                 <button type="submit" class="btn btn-primary" data-bs-dismiss="modal" aria-label="Close" >Submit</button>
-              
-            </div> 
-          </form> 
+              </form>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
         </div>
-     
       </div>
     </div>
   </div>
   
   <!-- edit address -->
-<% user.Address.forEach(function(Address) { %>
+  <% user.Address.forEach(function(Address) { %>
   <div class="modal fade" id="editAddressModal<%=Address._id%>" tabindex="-1" aria-labelledby="editAddressModalLabel<%=Address._id%>" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="editAddressModalLabel<%=Address._id%>">Edit Address</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>  
+        </div>
         <div class="modal-body">
-            <form action="/editAddress/<%=Address._id%>" method="post" id="editAddressForm">
+            <form action="/editAddress/<%=Address._id%>" method="post" onsubmit="return validateForm('editAddressForm<%=Address._id%>')">
                 <div class="mb-3">
                     <label for="fullName" class="form-label">Full Name</label>
                     <input type="text" class="form-control" name="Name" value="<%=Address.Name%>"  id="fullName" placeholder="Enter your full name" required>
@@ -84,13 +80,12 @@
                     <label for="mobileNumber" class="form-label">Mobile Number</label>
                     <input type="tel" class="form-control" id="mobileNumber" name="Mobile" value="<%=Address.Mobile%>" placeholder="Enter your mobile number" required>
                   </div>
-                <button type="submit" class="btn btn-primary"  onclick="return validateForm('editAddressForm')" data-bs-dismiss="modal" aria-label="Close">Submit</button>
-              
+                <button type="submit" class="btn btn-primary" data-bs-dismiss="modal" aria-label="Close" >Submit</button>
+              </form>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
         </div>
-      </form>
       </div>
     </div>
   </div>
@@ -138,29 +133,38 @@
        </button>
 </div>
 
-
 <script>
-  function validateForm(formId) {
-    const form = document.getElementById(formId);
+ function validateForm() {
+    // Get form elements
+    const fullName = document.getElementById('fullName').value.trim();
+    const address = document.getElementById('address').value.trim();
+    const city = document.getElementById('city').value.trim();
+    const pincode = document.getElementById('pincode').value.trim();
+    const state = document.getElementById('state').value.trim();
+    const mobileNumber = document.getElementById('mobileNumber').value.trim();
 
-// Iterate through form elements and check for empty spaces
-for (let i = 0; i < form.elements.length; i++) {
-  const element = form.elements[i];
-
-  if (element.type !== 'submit' && element.type !== 'button') {
-    // Trim the value to remove leading and trailing spaces
-    const value = element.value.trim();
-
-    if (value === '') {
-      // Display an error message and prevent form submission
-      alert(`${element.name} cannot be empty.`);
+    // Check for empty spaces
+    if (!fullName || !address || !city || !pincode || !state || !mobileNumber) {
+      alert('All fields are required');
       return false;
     }
-  }
-}
 
-// If all checks pass, allow the form to be submitted
-return true;
+    // Check for valid pin code (you can adjust the pattern as needed)
+    const pincodePattern = /^\d{6}$/;
+    if (!pincodePattern.test(pincode)) {
+      alert('Enter a valid 6-digit pin code');
+      return false;
+    }
+
+    // Check for valid mobile number
+    const mobilePattern = /^[6-9]\d{9}$/;
+    if (!mobilePattern.test(mobileNumber)) {
+      alert('Enter a valid 10-digit mobile number starting with 6, 7, 8, or 9');
+      return false;
+    }
+
+    // If all checks pass, allow the form to be submitted
+    return true;
   }
   </script>
 
