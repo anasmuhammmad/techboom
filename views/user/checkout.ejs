@@ -382,19 +382,27 @@ return true;
         return;
         }
       }
+      console.log('Inside AJAX success callback');
       $.ajax({
       url:'/checkout',
       method: 'post',
       data: $('#form-checkout').serialize(),
       success: (response) => {
-        if (response.codSuccess) {
-          window.location = '/orderSuccess'
-        } else if(response.onlineSuccess) {
-          handlePayNowClick(response)
-          
-        }else if(response.walletSuccess){
-          window.location = '/orderSuccess'
-        }
+        console.log('AJAX success callback', response);
+        console.log('Before userBlocked check');  
+        if (response.userBlocked) {
+          console.log('User is blocked. Redirecting...');
+      // Redirect the user to the homepage with an error message
+      setTimeout(() => {
+            window.location.replace('/homepage');
+          }, 100);
+    } else if (response.codSuccess) {
+      window.location = '/orderSuccess';
+    } else if (response.onlineSuccess) {
+      handlePayNowClick(response);
+    } else if (response.walletSuccess) {
+      window.location = '/orderSuccess';
+    }
       }
     })
   })

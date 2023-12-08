@@ -30,7 +30,7 @@ const razorpay = require("../utility/razorpay");
 const crypto = require('crypto');
 const Offer = require('../models/offerSchema');
 const path = require('path');
-const getFilteredProducts = require('../utility/getFilteredProducts');
+const parsePriceFilter = require('../helpers/parsePriceFilter');
 
 // const generateAndSendOTP = async (email) => {
 //   try {
@@ -457,7 +457,7 @@ const getShop = async (req, res) => {
   console.log('Selected Categories:', selectedCategories);
   console.log('selected price: ',selectedPrice);
   let products;
-  if (selectedCategories.length > 0 || selectedPrice) {
+  if (selectedCategories.length > 0 || selectedPrice !== undefined) {
     // Use an object to build the query conditions
     const queryConditions = {};
 
@@ -467,8 +467,15 @@ const getShop = async (req, res) => {
     }
 
     // Add selected price range to the query
-    if (selectedPrice) {
+    if (selectedPrice !== undefined) {
+      try{
       queryConditions.price = parsePriceFilter(selectedPrice);
+      }
+      catch(error){
+        console.error('Error parsing price filter:', error.message);
+      // Handle the error, e.g., send a response to the client indicating an invalid filter
+      return res.status(400).json({ error: 'Invalid price filter format' });
+      }
     }
 
     // Fetch products based on the query conditions
@@ -519,25 +526,28 @@ const getShop = async (req, res) => {
   });
 };
 
-function parsePriceFilter(price) {
-const priceRange = price.split('-').map(Number);
+// function parsePriceFilter(price) {
+//   if (!price) {
+//     return {}; // Return an empty object if no price is selected
+//   }
+// const priceRange = price.split('-').map(Number);
 
-  if (priceRange.length !== 2 || priceRange.some(isNaN)) {
-    // Check if the value is "and above"
-    if (price.endsWith("10000-and-above")) {
-      const minPrice = parseInt(price, 10);
-      if (!isNaN(minPrice)) {
-        return { $gte: minPrice };
-      }
-    }
+//   if (priceRange.length !== 2 || priceRange.some(isNaN)) {
+//     // Check if the value is "and above"
+//     if (price.endsWith("10000-and-above")) {
+//       const minPrice = parseInt(price, 10);
+//       if (!isNaN(minPrice)) {
+//         return { $gte: minPrice };
+//       }
+//     }
 
-    throw new Error('Invalid price filter format');
-  }
+//     throw new Error('Invalid price filter format');
+//   }
 
-  const [minPrice, maxPrice] = priceRange;
+//   const [minPrice, maxPrice] = priceRange;
 
-  return { $gte: minPrice, $lte: maxPrice };
-}
+//   return { $gte: minPrice, $lte: maxPrice };
+// }
 
 const getHomeCat = async (req, res) => {
   const category = req.params.id || null;
@@ -886,12 +896,12 @@ const   resendForgotOtp = async(req, res) => {
   const postCart = async(req,res)=>{
     const userId = req.session.userId
     const user = await User.findById(userId);
-    if(user&&user.Status=="Blocked"){
+    // if(user&&user.Status=="Blocked"){
       
-      req.flash('error', 'Your account is blocked. You cannot make purchases.');
-      return res.redirect('/homepage'); // Redirect to a suitable page.
-    }
-    else{
+    //   req.flash('error', 'Your account is blocked. You cannot make purchases.');
+    //   return res.redirect('/homepage'); // Redirect to a suitable page.
+    // }
+    // else{
     req.session.totalPrice = req.body.totalPrice;
       const cart = await Cart.findOneAndUpdate(
       { UserId: userId },
@@ -900,7 +910,7 @@ const   resendForgotOtp = async(req, res) => {
     // );
     res.redirect('/checkout'));
     
-  }
+  // }
 }
 const getAddToCart =  async (req, res) => {
 
@@ -927,54 +937,6 @@ const getAddToCart =  async (req, res) => {
       await newCart.save();
     }
     res.redirect("/cart");
-    // const userId = req.session.userId;
-
-    // console.log('userId:', userId); // Log the userId
-    // // Find the user's cart or create a new one if it doesn't exist
-    // const cart = await Cart.findOne({ UserId: userId }).populate({
-    //   path: 'Items.ProductId',
-    //   model: 'Product', // Change 'Product' to your actual model name
-    // });
-    // console.log('cart:', cart); // Log the cart
-
-    // if (!cart) {
-    //   const newCart = new Cart({ UserId: userId, Items: [] });
-    //   await newCart.save();
-    // }
-
-    // // Find the product to add to the cart
-    // const productToAdd = await Product.findById(productId);
-
-    // console.log('productToAdd:', productToAdd); // Log the productToAdd
-
-    // if (!productToAdd) {
-    //   return res.status(404).json({ error: "Product not found" });
-    // }
-
-
-    // const existingCartItem = cart.Items.find((item) =>
-    //   item.ProductId.equals(productId)
-    // );
-
-    // if (existingCartItem) {
-    //   // If the product is already in the cart, increase the quantity
-    //   existingCartItem.Quantity += 1;
-    // } else {
-    //   // If the product is not in the cart, add it with a quantity of 1
-    //   cart.Items.push({
-    //     ProductId: productId,
-    //     Quantity: 1,
-    //   });
-    // }
-
-    // await cart.save();
-
-    // res.redirect('/cart'); // Redirect to the cart page or another appropriate page
-  // } catch (err) {
-  //   console.log(err);
-  //   // Handle the error appropriately (e.g., send an error response)
-  //   res.status(500).json({ error: "Internal Server Error" });
-  // }
 }
 const trackOrder = async (req, res) => {
   const userId = req.session.userId;
@@ -1141,14 +1103,22 @@ const postEditAddress = async(req,res) =>
   
 }
 const changePassword = async (req, res) => {
+  
   const userId = req.session.userId;
   console.log("inside change password");
   const user = await User.findById(userId);
   try {
     const dbPassword = user.password;
+    console.log('Entered Current Password:', req.body.currentPassword);
+    console.log('Trimmed Entered Current Password:', req.body.currentPassword.trim());
+console.log('DB Hashed Password:', dbPassword);
     console.log(req.body);
-    let passwordIsValid = bcrypt.compare(req.body.currentPassword, dbPassword);
+    let passwordIsValid = await bcrypt.compare(req.body.currentPassword.trim(), dbPassword);
+ 
     if (passwordIsValid) {
+      if (req.body.newPassword.length < 8) {
+        return res.json({ error: 'New password must be at least 8 characters long.' });
+      }
       if (req.body.newPassword === req.body.confirmPassword) {
         let passwordHashed = bcrypt.hashSync(req.body.newPassword, 8);
         const result = await User.updateOne(
@@ -1161,10 +1131,10 @@ const changePassword = async (req, res) => {
           message: "Password changed successfully",
         });
       } else {
-        res.json({ error: "Current Password is incorrect" });
+        res.json({ error: "New Password and Confirm Password do not match"  });
       }
     } else {
-      res.json({ error: "Please fill all fields correctly" });
+      res.json({ error: "Current Password is incorrect" });
     }
   } catch (err) {
     console.log(err);
@@ -1180,6 +1150,13 @@ const addAddress = async (req, res) => {
 }
 const updateQuantity =  async(req, res) => {
   try {
+    const userId = req.session.userId;
+    const user = await User.findById(userId);
+    if (user && user.Status === "Blocked") {
+      console.log('User is blocked. Sending response...');
+      res.json({ userBlocked: true });
+    }
+    else{
     const { productId, change } = req.body;
   
     const userId = req.session.userId;
@@ -1215,12 +1192,21 @@ const updateQuantity =  async(req, res) => {
 
     await userCart.save();
     res.json({ message: "Quantity updated successfully", newQuantity });
-  } catch (error) {
+  }
+}
+   catch (error) {
     console.error("Error updating quantity:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 }
 const removeCart = async(req,res)=>{
+  const userId = req.session.userId;
+  const user = await User.findById(userId);
+  if (user && user.Status === "Blocked") {
+    console.log('User is blocked. Sending response...');
+    res.json({ userBlocked: true });
+  }
+  else{
   const userId = req.session.userId;
   const user = await User.findById(userId);
   const productId = req.params._id;
@@ -1232,6 +1218,7 @@ const removeCart = async(req,res)=>{
   );
   console.log("delete : ", updatedCart);
   res.redirect("/cart");
+}
 }
 const addAddressCheckout = async (req, res) => {
   const userId = req.session.userId;
@@ -1257,7 +1244,13 @@ const getCheckout = async(req,res)=>{
 
 
 const postCheckout = async(req,res)=>{
-  
+  const userId = req.session.userId;
+  const user = await User.findById(userId);
+  if (user && user.Status === "Blocked") {
+    console.log('User is blocked. Sending response...');
+    res.json({ userBlocked: true });
+  }
+  else{
     console.log("inside body", req.body);
     const PaymentMethod = req.body.paymentMethod;
     const Address = req.body.Address;
@@ -1393,7 +1386,9 @@ const postCheckout = async(req,res)=>{
         await Cart.findByIdAndDelete(cart._id);
         res.json({ walletSuccess: true });
       }
-  }
+
+    } 
+}
 
   // const userId = req.session.userId
   // const user = await User.findById(userId);

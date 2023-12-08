@@ -40,12 +40,12 @@ router.get('/profile',userController.getProfile)
 
 // router.get('/', userController.renderHomePage);
 // router.get('/shop',userController.renderShopPage);
-router.get('/productdetails/:productId', auth.userauthMiddleware,userController.productdetails)
+router.get('/productdetails/:productId', auth.userauthMiddleware,checkUserStatus,userController.productdetails)
 
-router.get('/shop', auth.userauthMiddleware,userController.getShop)
-router.post('/search-product', auth.userauthMiddleware,userController.getSearch)
-router.get('/category/:id',auth.userauthMiddleware,userController.getShop)
-router.get('/categoryHome/:id',auth.userauthMiddleware,userController.getHomeCat)
+router.get('/shop', auth.userauthMiddleware,checkUserStatus,userController.getShop)
+router.post('/search-product', auth.userauthMiddleware,checkUserStatus,userController.getSearch)
+router.get('/category/:id',auth.userauthMiddleware,checkUserStatus,userController.getShop)
+router.get('/categoryHome/:id',auth.userauthMiddleware,checkUserStatus,userController.getHomeCat)
 
 // Route for handling AJAX/JSON requests
 
@@ -68,21 +68,21 @@ router.get('/resend-otp', userController.resendOtp)
   router.get('/login', userController.renderLoginPage)
   router.post('/login',userController.postUserLogin)
   router.get('/logout',userController.logout);
-  router.get('/homepage',userController.renderHomePage)
+  router.get('/homepage',auth.userauthMiddleware,checkUserStatus,userController.renderHomePage)
   
 
-  router.get('/product/:productId',auth.userauthMiddleware, userController.products);
+  router.get('/product/:productId',auth.userauthMiddleware,checkUserStatus, userController.products);
 
-  router.get('/cart',auth.userauthMiddleware, userController.getCart);
-router.post('/cart',auth.userauthMiddleware,userController.postCart);
+  router.get('/cart',auth.userauthMiddleware,checkUserStatus, userController.getCart);
+router.post('/cart',auth.userauthMiddleware,checkUserStatus,userController.postCart);
 
 
-router.get('/addtocart/:_id',auth.userauthMiddleware,userController.getAddToCart);
-router.get('/trackOrder', auth.userauthMiddleware,userController.trackOrder);
+router.get('/addtocart/:_id',auth.userauthMiddleware,checkUserStatus,userController.getAddToCart);
+router.get('/trackOrder', auth.userauthMiddleware,checkUserStatus,userController.trackOrder);
 
-router.get('/orderList',auth.userauthMiddleware, userController.orderList)
+router.get('/orderList',auth.userauthMiddleware,checkUserStatus, userController.orderList)
 
-router.get('/order/cancel/:_id',auth.userauthMiddleware,userController.orderCancel)
+router.get('/order/cancel/:_id',auth.userauthMiddleware,checkUserStatus,userController.orderCancel)
     // } else {
     //   console.log('Cannot Cancel Order. Status:', order.Status); // Add this line for debugging
     //   return res.status(400).send('Order cannot be cancelled');
@@ -107,25 +107,25 @@ router.post('/changePassword',auth.userauthMiddleware,checkUserStatus,userContro
 router.post('/addAddress',auth.userauthMiddleware,checkUserStatus,userController.addAddress)
 
 
-router.post('/updateQuantity',auth.userauthMiddleware,checkUserStatus,userController.updateQuantity)
+router.post('/updateQuantity',checkUserStatus,auth.userauthMiddleware,userController.updateQuantity)
 
-router.get('/removefromcart/:_id',auth.userauthMiddleware,checkUserStatus,userController.removeCart)
-
-
-
-router.get('/checkout',auth.userauthMiddleware,checkUserStatus,userController.getCheckout)
-
-router.post('/checkout',auth.userauthMiddleware,checkUserStatus,userController.postCheckout)
-
-router.post('/verify-payment',auth.userauthMiddleware,userController.verifyPayment)
-router.post('/addAddress-Checkout',auth.userauthMiddleware,userController.addAddressCheckout)
+router.get('/removefromcart/:_id',checkUserStatus,auth.userauthMiddleware,userController.removeCart)
 
 
-router.post('/checkCoupon',auth.userauthMiddleware,couponController.checkCoupon)
 
-router.get('/coupons',auth.userauthMiddleware,couponController.getCoupons)
+router.get('/checkout',checkUserStatus,auth.userauthMiddleware,userController.getCheckout)
 
-router.get('/orderSuccess', auth.userauthMiddleware,userController.orderSuccess);
+router.post('/checkout',checkUserStatus,auth.userauthMiddleware,userController.postCheckout)
+
+router.post('/verify-payment',checkUserStatus,auth.userauthMiddleware,checkUserStatus,userController.verifyPayment)
+router.post('/addAddress-Checkout',checkUserStatus,auth.userauthMiddleware,checkUserStatus,userController.addAddressCheckout)
+
+
+router.post('/checkCoupon',auth.userauthMiddleware,checkUserStatus,couponController.checkCoupon)
+
+router.get('/coupons',auth.userauthMiddleware,checkUserStatus,couponController.getCoupons)
+
+router.get('/orderSuccess', auth.userauthMiddleware,checkUserStatus,userController.orderSuccess);
 
   
 

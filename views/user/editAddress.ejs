@@ -6,8 +6,9 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="addAddressModalLabel">Add Address</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+ 
         </div>
+        <div id="flashMessage" class="alert alert-danger" style="display: none;"></div>
         <div class="modal-body">
             <form action="/addAddress" method="post" id="addressForm">
                 <div class="mb-3">
@@ -36,24 +37,27 @@
                     title="Enter a valid 10-digit mobile number starting with 6, 7, 8, or 9" required>
                   </div>
                 <button type="submit" class="btn btn-primary" data-bs-dismiss="modal" aria-label="Close" >Submit</button>
-              </form>
+              
+            </div> 
+          </form> 
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
         </div>
+     
       </div>
     </div>
   </div>
   
   <!-- edit address -->
-  <% user.Address.forEach(function(Address) { %>
+<% user.Address.forEach(function(Address) { %>
   <div class="modal fade" id="editAddressModal<%=Address._id%>" tabindex="-1" aria-labelledby="editAddressModalLabel<%=Address._id%>" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="editAddressModalLabel<%=Address._id%>">Edit Address</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
+        </div>  
         <div class="modal-body">
             <form action="/editAddress/<%=Address._id%>" method="post" id="editAddressForm">
                 <div class="mb-3">
@@ -80,12 +84,13 @@
                     <label for="mobileNumber" class="form-label">Mobile Number</label>
                     <input type="tel" class="form-control" id="mobileNumber" name="Mobile" value="<%=Address.Mobile%>" placeholder="Enter your mobile number" required>
                   </div>
-                <button type="submit" class="btn btn-primary" data-bs-dismiss="modal" aria-label="Close">Submit</button>
-              </form>
+                <button type="submit" class="btn btn-primary"  onclick="return validateForm('editAddressForm')" data-bs-dismiss="modal" aria-label="Close">Submit</button>
+              
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
         </div>
+      </form>
       </div>
     </div>
   </div>
@@ -135,47 +140,28 @@
 
 
 <script>
- document.addEventListener('DOMContentLoaded', function () {
-    function validateForm(formId) {
-      console.log(`Validating form: ${formId}`);
+  function validateForm(formId) {
+    const form = document.getElementById(formId);
 
-      var form = document.getElementById(formId);
-      var fullName = form.querySelector('[name="Name"]').value.trim();
-      var address = form.querySelector('[name="AddressLane"]').value.trim();
-      var city = form.querySelector('[name="City"]').value.trim();
-      var state = form.querySelector('[name="State"]').value.trim();
+// Iterate through form elements and check for empty spaces
+for (let i = 0; i < form.elements.length; i++) {
+  const element = form.elements[i];
 
-      // Your validation logic
-      if (containsWhiteSpace(fullName) || containsWhiteSpace(address) || containsWhiteSpace(city) || containsWhiteSpace(state)) {
-        console.log('Validation failed: Whitespace not allowed.');
-        alert('Whitespace is not allowed in any field.');
-        return false; // Prevent form submission
-      }
+  if (element.type !== 'submit' && element.type !== 'button') {
+    // Trim the value to remove leading and trailing spaces
+    const value = element.value.trim();
 
-      // Add more validations as needed...
-
-      console.log('Validation passed.');
-      return true; // Form is valid, continue with submission
+    if (value === '') {
+      // Display an error message and prevent form submission
+      alert(`${element.name} cannot be empty.`);
+      return false;
     }
+  }
+}
 
-    function containsWhiteSpace(str) {
-      return /\s/.test(str);
-    }
-
-    document.getElementById('addressForm').addEventListener('submit', function (event) {
-      if (!validateForm('addressForm')) {
-        console.log('Form submission prevented due to validation failure.');
-        event.preventDefault(); // Prevent form submission
-      }
-    });
-
-    document.getElementById('editAddressForm').addEventListener('submit', function (event) {
-      if (!validateForm('editAddressForm')) {
-        console.log('Form submission prevented due to validation failure.');
-        event.preventDefault(); // Prevent form submission
-      }
-    });
-  });
+// If all checks pass, allow the form to be submitted
+return true;
+  }
   </script>
 
 <%- include('../layouts/footer') %>

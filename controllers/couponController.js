@@ -56,6 +56,15 @@ module.exports = {
 
  checkCoupon : async(req,res)=>{
     try {
+      const userId = req.session.userId
+      const user = await User.findById(userId);
+      if(user&&user.Status=="Blocked"){
+        
+        req.flash('error', 'Your account is blocked. You cannot make purchases.');
+        return res.redirect('/homepage'); // Redirect to a suitable page.
+      }
+      else
+  {
       console.log("inside try");
       const userId = req.session.userId;
       let code = req.body.code;
@@ -167,6 +176,7 @@ module.exports = {
       } else {
         return res.json({ error: "COUPON doesn't exist" });
       }
+    }
     } catch (error) {
       console.log(error);
       res.json({ error: "Some error Occurred" });

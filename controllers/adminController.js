@@ -769,6 +769,7 @@ postAddProduct: async (req, res) => {
   },
 
   getAddCategory: async (req, res) => {
+    console.log('Flash messages:', req.flash());
     res.render("admin/addCategory",{error: req.flash('error'),success: req.flash('success')});
   },
 
@@ -807,7 +808,7 @@ postAddProduct: async (req, res) => {
         if (!category) {
           return res.status(404).send('Category not found'); // Handle not found case
         }
-        res.render('admin/editCategory', { categories,  error: req.flash('error'),success: req.flash('success'),errorMessages});
+        res.render('admin/editCategory', { category,  error: req.flash('error'),success: req.flash('success'),errorMessages});
       } catch (error) {
         console.error(error);
         res.status(500).send('Server Error'); // Handle server error

@@ -36,7 +36,7 @@
                               <div class="input-group-prepend">
                                 <button class="btn btn-dark decrease-quantity"
                                   data-product-id="<%= cartItem.ProductId._id %>" type="button">
-                            
+                                  -
                                 </button>
                               </div>
                               <input type="text" class="form-control text-center quantity-input"
@@ -243,6 +243,11 @@
 
                 if (response.ok) {
                   const data = await response.json();
+                  if (data.userBlocked) {
+        console.log("User is blocked. Redirecting to homepage...");
+        window.location.href = '/homepage';
+        return; // Exit the function to prevent further execution
+      }
                   console.log("Received new quantity from server:", data.newQuantity);
 
                   const quantityInput = document.getElementById(`count_${productId}`);

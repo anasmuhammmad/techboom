@@ -10,7 +10,7 @@
         </div>
         <div id="flashMessage" class="alert alert-danger" style="display: none;"></div>
           <div class="modal-body">
-            <form id="passwordChangeForm">
+            <form id="passwordChangeForm" onsubmit="return validateForm()">
                 <div class="form-group">
                     <label for="currentPassword">Current Password:</label>
                     <input type="password" class="form-control" id="currentPassword" name="currentPassword" required>
@@ -55,11 +55,11 @@
     <div class="wallet-balance">₹<%=user.WalletAmount%></div>
     <a class="btn text-dark d-flex-column  border-0">
       <div class="wallet-header"> 
-        Refer to your friends and earn Rs:100  in each.
+        Refer to your friends and earn Rs:100.
       </div>
         <div>
         <h6>Your referral link : </h6>
-        <h6 class="text-primary" id="referral-link">localhost:5000/signup/<%=user._id%> </h6>
+        <h6 class="text-primary" id="referral-link">techboomsite.shop/signup/<%=user._id%> </h6>
         </div>
         <div class="p-4">
         <button id="copyButton" class="fa fa-copy fa-xl  border-0"></button>
@@ -131,7 +131,7 @@
             </div>
         </a>
     </div>
-    <div class="col-lg-6 col-md-6 col-sm-6  col-12">
+    <!-- <div class="col-lg-6 col-md-6 col-sm-6  col-12">
         <a class="text-decoration-none" href="">
             <div class="card text-center mb-3" style="background: linear-gradient(215deg, rgb(212, 102, 255), rgb(240, 220, 131)); height: 30vh;">
                 <div class="card-header">
@@ -146,7 +146,7 @@
                 </div>
             </div>
         </a>
-    </div>
+    </div> -->
     
 
     <div class="col-lg-6 col-md-6 col-sm-6  col-12">
