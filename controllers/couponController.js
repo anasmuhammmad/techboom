@@ -39,12 +39,30 @@ module.exports = {
           if (req.body.couponName.trim() === '' || req.body.couponCode.trim() === '') {
             return res.json({ error: "Name and code cannot have empty spaces" });
           }
-          if (req.body.limit <= 0 || req.body.minAmountFixed <= 0) {
+          if (req.body.limit <= 0 || req.body.minAmountFixed <= 0 || req.body.minAmount <= 0 || req.body.maxAmount <= 0) {
             return res.json({ error: "Usage limit and minimum amount cannot be 0 or negative" });
           }
           if(req.body.amount <= 0 ){
             return res.json({ error: "COUPON amount cannot be 0 or negative" })
           }
+
+          const startDate = new Date(req.body.startDate);
+    const endDate = new Date(req.body.endDate);
+
+    // Check if start date is today's date or in the past
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (startDate < today) {
+      return res.json({ error: "Start date must be today's date or in the future" });
+    }
+
+    // Check if end date is after the start date
+    if (endDate <= startDate) {
+      return res.json({ error: "End date must be after the start date" });
+    }
+
+
+
           const existingCoupon = await Coupon.findOne({ $or: [{ coupoName: req.body.couponName }, { couponCode: req.body.couponCode }] });
     if (existingCoupon) {
       return res.json({ error: "Coupon with the same name or code already exists" });
