@@ -2007,4 +2007,15 @@ const getSearch = async (req, res) => {
 
 
 
-  
+           <% if (error && error.length > 0) { %>
+                        <div class="error-message">
+                          <%= error.join('<br>') %>
+                        </div>
+                      <% } %>
+                      
+                      <!-- Display success message -->
+                      <% if (success && success.length > 0) { %>
+                        <div class="success-message">
+                          <%= success.join('<br>') %>
+                        </div>
+                      <% } %>  

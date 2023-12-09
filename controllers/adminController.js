@@ -779,7 +779,7 @@ postAddProduct: async (req, res) => {
       console.log(req.file);
       req.body.image = req.file.filename;
       const uploaded = await Category.create(req.body);
-      
+      req.flash('success', 'Category added successfully');
       res.redirect("/admin/categoriesandbrands");
     } catch (error) {
       console.log(error);

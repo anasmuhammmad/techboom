@@ -36,9 +36,20 @@ module.exports = {
           } else if (req.body.discountType === "percentage") {
             req.body.amount = req.body.amount[0];
           }
+          if (req.body.couponName.trim() === '' || req.body.couponCode.trim() === '') {
+            return res.json({ error: "Name and code cannot have empty spaces" });
+          }
+          if (req.body.limit <= 0 || req.body.minAmountFixed <= 0) {
+            return res.json({ error: "Usage limit and minimum amount cannot be 0 or negative" });
+          }
           if(req.body.amount <= 0 ){
             return res.json({ error: "COUPON amount cannot be 0 or negative" })
           }
+          const existingCoupon = await Coupon.findOne({ $or: [{ coupoName: req.body.couponName }, { couponCode: req.body.couponCode }] });
+    if (existingCoupon) {
+      return res.json({ error: "Coupon with the same name or code already exists" });
+    }
+
           const coupon = await Coupon.create(req.body);
           if (coupon) {
             console.log("added to collection");

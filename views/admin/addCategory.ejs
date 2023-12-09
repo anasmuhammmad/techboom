@@ -1,5 +1,5 @@
 <%- include('../layouts/header')%>
-<%- include('../layouts/layout')%>
+
 <%- include('../partials/admin-header')%>
 
 <style>
@@ -24,26 +24,17 @@
     <h1>Add Category</h1>
   </div>
   <%- include('../partials/admin-canvas')%>
+  <%- include('../layouts/layout')%>
 <div class="container-fluid">
     <div class="row  border-start">
         <main class="px-md-4 icons " style="margin-left: 18%;width: 80%; margin-top: 6%;">
             <div class="row d-flex justify-content-between">
                 <div class="col-md-8">
                     <h1 class="mt-5">ADD CATEGORY</h1>
-                    <% if (error && error.length > 0) { %>
-                        <div class="error-message">
-                          <%= error.join('<br>') %>
-                        </div>
-                      <% } %>
-                      
-                      <!-- Display success message -->
-                      <% if (success && success.length > 0) { %>
-                        <div class="success-message">
-                          <%= success.join('<br>') %>
-                        </div>
-                      <% } %>
+               
                     <form action="/admin/addCategory" method="post" enctype="multipart/form-data" class="bg-white" onsubmit="return validateForm()">
-                        <div class="form-group">
+                     
+                      <div class="form-group">
                             <label for="categoryname">Category Name:</label>
                             <input
                                 type="text"
