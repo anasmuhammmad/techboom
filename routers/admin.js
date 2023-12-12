@@ -41,7 +41,7 @@ router.get("/admin/product",auth.authMiddleware, productController.getProduct)
 router.get("/admin/product/:_id",auth.authMiddleware,productController.blockProduct)
 
 router.get('/admin/editproduct/:_id',auth.authMiddleware, productController.getEditProduct)
-router.post('/admin/editproduct/:_id',auth.authMiddleware,upload.fields([{ name: 'image1', maxCount: 1 }, { name: 'image2', maxCount: 1 }, { name: 'image3', maxCount: 1 }]),productController.postEditProduct)
+router.post('/admin/editproduct/:_id',auth.authMiddleware,upload.fields([{ name: 'image', maxCount: 1 }, { name: 'image2', maxCount: 1 }, { name: 'image3', maxCount: 1 }]),productController.postEditProduct)
 
 
 router.get('/admin/userslist',auth.authMiddleware,adminController.getUser)
@@ -82,9 +82,7 @@ router.post('/admin/order/handleRequest',adminController.getHandleRequest);
 router.get('/admin/banners',auth.authMiddleware,bannerController.getBanners);
 router.get('/admin/addBanner',auth.authMiddleware,bannerController.getAddBanners);
 router.post('/admin/addBanner',auth.authMiddleware,upload.fields([{ name: 'Image', maxCount: 1 },
-{ name: 'carouselImage1', maxCount: 1 },
-{ name: 'carouselImage2', maxCount: 1 },
-{ name: 'carouselImage3', maxCount: 1 },
+
 ]),bannerController.postAddBanner);
 
 router.post('/admin/activate-banner/:id',auth.authMiddleware,bannerController.activateBanner);

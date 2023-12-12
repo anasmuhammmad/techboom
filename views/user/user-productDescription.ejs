@@ -1,6 +1,7 @@
 <%-include('../layouts/header')%> <%- include('../partials/user-header')%>
 <div class="container">
   <div class="row tickerTimes">
+    <title>Error</title>
     <% if (product){%>
     <div class="col-sm-12 col-md-6 col-xl-4">
       <div class="product-cover mt-4 col-sm-12" id="img-container">
@@ -31,7 +32,7 @@
           <p class="card-text mt-3 tickerDescription">
             Rating: 4.5 (100 reviews)
           </p>
-          <% if (product.Price === product.discountPrice ){%>
+          <% if (product.price === product.discountPrice ){%>
             <p class="card-text mt-3">
               Price: <%= product.price %>/-
             </p>
@@ -76,109 +77,9 @@
       </div>
     </div>
 
-    <!-- New Section: Cards -->
-    <div class="col-sm-12 mt-4">
-      <div class="text-center">
-        <h1>Reviews</h1>
-      </div>
-      <div class="row tickerDescription">
-        <!-- Card 1 -->
-        <div class="col-sm-6 mb-3">
-          <div class="card">
-            <div class="card-body">
-              <!-- Star Rating -->
-              <div class="d-flex align-items-center">
-                <i class="fas fa-star text-warning"></i>
-                <i class="fas fa-star text-warning"></i>
-                <i class="fas fa-star text-warning"></i>
-                <i class="fas fa-star text-warning"></i>
-                <i class="fas fa-star text-warning"></i>
-              </div>
-
-              <!-- Dummy Review -->
-              <p class="card-text">
-                nice experience with this product
+  
               </p>
 
-              <!-- Name (Bold Text) -->
-              <p class="card-text"><strong>Harvey</strong></p>
-            </div>
-            <!-- Card content here -->
-          </div>
-        </div>
-
-        <!-- Card 2 -->
-        <div class="col-sm-6 mb-3">
-          <div class="card">
-            <div class="card-body">
-              <!-- Star Rating -->
-              <div class="d-flex align-items-center">
-                <i class="fas fa-star text-warning"></i>
-                <i class="fas fa-star text-warning"></i>
-                <i class="fas fa-star text-warning"></i>
-                <i class="fas fa-star text-warning"></i>
-                <i class="fas fa-star text-warning"></i>
-              </div>
-
-              <!-- Dummy Review -->
-              <p class="card-text">
-                A great product with excellent features and quality.
-              </p>
-
-              <!-- Name (Bold Text) -->
-              <p class="card-text"><strong>John</strong></p>
-            </div>
-            <!-- Card content here -->
-          </div>
-        </div>
-        <div class="col-sm-6 mb-3">
-          <div class="card">
-            <div class="card-body">
-              <!-- Star Rating -->
-              <div class="d-flex align-items-center">
-                <i class="fas fa-star text-warning"></i>
-                <i class="fas fa-star text-warning"></i>
-                <i class="fas fa-star text-warning"></i>
-                <i class="far fa-star text-warning"></i>
-                <i class="far fa-star text-warning"></i>
-              </div>
-
-              <!-- Dummy Review -->
-              <p class="card-text">
-                Worthy for Price
-              </p>
-
-              <!-- Name (Bold Text) -->
-              <p class="card-text"><strong>Joseph</strong></p>
-            </div>
-            <!-- Card content here -->
-          </div>
-        </div>
-        <div class="col-sm-6 mb-3">
-          <div class="card">
-            <div class="card-body">
-              <!-- Star Rating -->
-              <div class="d-flex align-items-center">
-                <i class="fas fa-star text-warning"></i>
-                <i class="fas fa-star text-warning"></i>
-                <i class="fas fa-star text-warning"></i>
-                <i class="fas fa-star text-warning"></i>
-                <i class="far fa-star text-warning"></i>
-              </div>
-
-              <!-- Dummy Review -->
-              <p class="card-text">
-                A great product with excellent features.
-              </p>
-
-              <!-- Name (Bold Text) -->
-              <p class="card-text"><strong>Jain</strong></p>
-            </div>
-            <!-- Card content here -->
-          </div>
-        </div>
-
-        <!-- Add more cards as needed -->
       </div>
     </div>
     <%}%>

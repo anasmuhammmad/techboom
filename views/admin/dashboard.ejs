@@ -358,7 +358,38 @@ async function fetchSalesData(timeInterval) {
         statusCell.textContent = seller.productDetails.status; 
         salesCell.textContent = seller.totalCount;
     });
+
+
 }
+document.addEventListener("DOMContentLoaded", function () {
+    // Get the form element
+    var salesReportForm = document.getElementById("salesReport");
+
+    // Add a submit event listener to the form
+    salesReportForm.addEventListener("submit", function (event) {
+      // Get the values of start date and end date
+      var startDate = new Date(document.getElementById("startDate").value);
+      var endDate = new Date(document.getElementById("endDate").value);
+      var today = new Date();
+
+      // Validate start date
+      if (startDate > today) {
+        alert("Start date cannot be greater than today.");
+        event.preventDefault(); // Prevent form submission
+        return false;
+      }
+
+      // Validate end date
+      if (endDate <= startDate || endDate > today) {
+        alert("End date must be greater than start date and less than or equal to today.");
+        event.preventDefault(); // Prevent form submission
+        return false;
+      }
+
+      // Form is valid, continue with submission
+      return true;
+    });
+  });
 
 updateSalesGraph();
 updateLatestOrdersAndBestSellers();

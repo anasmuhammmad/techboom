@@ -1,7 +1,7 @@
 const User = require("../models/userSchema");
 const Product = require("../models/productSchema");
 const Category = require("../models/categorySchema");
-const cropImage = require("../utility/imageCrop")
+const cropImage = require("../utility/bannerCrop")
 const Brand = require("../models/brandSchema");
 const Order = require("../models/orderSchema");
 const flash = require("express-flash");
@@ -9,6 +9,7 @@ const Admin = require("../models/adminSchema");
 const Banner = require("../models/bannerSchema")
 const moment = require("moment");
 const mongoose = require("mongoose");
+const sharp = require('sharp');
 const bcrypt = require("bcrypt");
 
 
@@ -27,44 +28,32 @@ const bcrypt = require("bcrypt");
         postAddBanner: async (req,res)=>{
             try {
                 console.log(req.files);
-                if(req.files['carouselImage1'] &&
-                req.files['carouselImage2'] &&
-                req.files['carouselImage3']){
-                const carosal = [
-                    req.files['carouselImage1'][0].filename,
-                    req.files['carouselImage2'][0].filename,
-                    req.files['carouselImage3'][0].filename,
-                ];
-                const newBanner = new Banner({
-                    BannerName: req.body.bannerName,
-                 
-                    Image: req.files['Image'][0].filename,
-                    Carosel: carosal,
-                    Date: new Date(),
-                })
-              
-                await newBanner.save();
-                res.redirect('/admin/banners')
-            }else if(req.files['Image']){
+        if(req.files['Image']){
+        //    cropImage(req.files['Image'][0].path);
+        const imagePath = req.files['Image'][0].path;
+        const files = '';
+        const croppedImagePath = `public/uploads/cropped_banners/${files}${req.files['Image'][0].filename}`;
+
+        await sharp(imagePath)
+        .resize(1200, 460) // Set your desired width and height
+        .toFile(croppedImagePath);
+
                 const newBanner = new Banner({
                     BannerName: req.body.bannerName,
                     Image: req.files['Image'][0].filename,
-                  
+                    // CroppedImage: croppedImagePath,
+
                     Date: new Date(),
                 })
                 await newBanner.save();
                 res.redirect('/admin/banners')
             }
             else{
-                const carosal = [
-                    req.files['carouselImage1'] ? req.files['carouselImage1'][0].filename : null,
-                    req.files['carouselImage2'] ? req.files['carouselImage2'][0].filename : null,
-                    req.files['carouselImage3'] ? req.files['carouselImage3'][0].filename : null,
-                  ];
+
                 const newBanner = new Banner({
                     BannerName: req.body.bannerName,
                     Image: req.files['Image'] ? req.files['Image'][0].filename : null,
-                    Carosel: carosal.filter(Boolean), 
+                    // Carosel: carosal.filter(Boolean), 
                     Date: new Date(),
                 })
                 await newBanner.save();

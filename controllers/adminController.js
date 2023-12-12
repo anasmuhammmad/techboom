@@ -238,7 +238,7 @@ module.exports = {
 
   getOrdersAndSellers: async (req, res) => {
     try {
-      const latestOrders = await Order.find().sort({ _id: -1 });
+      const latestOrders = await Order.find().sort({ _id: -1 }).limit(15);
       const bestSeller = await Order.aggregate([
         {
           $match: {
@@ -265,8 +265,8 @@ module.exports = {
         {
           $lookup: {
             from: "products",
-            localField: "_id",
-            foreignField: "_id",
+            localField: "_id.ProductId",
+            foreignField: "id",
             as: "productDetails",
           },
         },
@@ -560,7 +560,7 @@ postAddProduct: async (req, res) => {
       const gpumodel = req.body.gpumodel;
       variations.push({ value: gpumodel });
     }
-    console.log(variations[0]);
+
     
     for (let i = 1; i <= 3; i++) {
       const fieldName = `image${i}`;
@@ -575,23 +575,25 @@ postAddProduct: async (req, res) => {
     }
     console.log('Image Paths:', image);
 
-    let Status;
-    // cropImage(images)
+    let status;
+    console.log('Original Image Paths:', image);
+    cropImage(image)
     // if (req.body.AvailableQuantity <= 0) {
-    //   Status = "Out of Stock";
+    //   status = "Out of Stock";
     // } else {
-    //   Status = "In Stock";
+    //   status = "In Stock";
     // }
+    console.log('Cropped Image Paths:', image);
     const newProduct = new Product({
       name: req.body.ProductName,
       price: req.body.Price,
       description: req.body.Description,
-      BrandName: BrandName._id,
+      // BrandName: BrandName._id,
       Tags: req.body.Tags,
       stock: req.body.AvailableQuantity,
       category: category._id,
       
-      Status: "Active",
+      status: "Active",
       Specification1: req.body.Specification1,
       Specification2: req.body.Specification2,
       Specification3: req.body.Specification3,
@@ -631,7 +633,7 @@ postAddProduct: async (req, res) => {
        // console.log(req.files);
       try {
         const _id  = req.params._id;
-        const { ProductName, Description, Specification1, Specification2, Specification3, Specification4, Price, DiscountAmount, storagesize, graphicscard, AvailableQuantity, Category, BrandName, Tags } = req.body;
+        const { ProductName, Description, Specification1, Specification2, Specification3, Specification4, Price, DiscountAmount, storagesize, graphicscard, AvailableQuantity, Category,  Tags } = req.body;
         console.log(req.body);
         const Tagss = req.body.Tags ? req.body.Tags : '';
         
@@ -639,7 +641,7 @@ postAddProduct: async (req, res) => {
         const productType = req.body.productType;
     
         // Create an object to hold variations based on the product type
-        const variations = [];
+        // const variations = [];
     
 
         if (productType === 'Storage Devices') {
@@ -667,9 +669,9 @@ postAddProduct: async (req, res) => {
           type: productType,
           stock: AvailableQuantity,
           category: Category,
-          brand: BrandName,
+          // brand: BrandName,
           tags: Tagss.split(',').map((tag) => tag.trim()),
-          variation:variations,
+          // variation:variations,
           // variation: variations[0] ? variations[0].value : '',
         };
     

@@ -99,7 +99,7 @@ getProduct: async (req, res) => {
       
       console.log('Destructured ProductName:', ProductName);
     
-      const imageFileNames = req.files.map((file) => file.filename);
+      const imageFileNames = req.files.filter(file => file.mimetype.startsWith('image/')) .map((file) => file.filename);
   
       const productType = req.body.productType;
    
@@ -169,12 +169,15 @@ getProduct: async (req, res) => {
         const image = [];
         
         console.log(req.body);
-     
+        const existingProduct = await Product.findById(_id);
+        if (existingProduct) {
+          image.push(...existingProduct.images); 
+      }
         
       
         const productType = req.body.productType;
-        const category = await Category.findOne({ Name: req.body.Category });
-        const BrandName = await Brand.findOne({ Name: req.body.BrandName });
+
+
      
         const variations = [];
     
@@ -186,13 +189,13 @@ getProduct: async (req, res) => {
           const graphicscardValue = req.body.graphicscard;
           variations.push({ name: 'GPU Model', value: graphicscardValue });
         }
-        for (let i = 1; i <= 3; i++) {
-          const fieldName = `image${i}`;
+        for (let i = 0; i < 3; i++) {
+          const fieldName = `image${i+1}`;
           if (req.files[fieldName] && req.files[fieldName][0]) {
-            image.push(req.files[fieldName][0].filename);
+              image[i] = req.files[fieldName][0].filename;
           }
-        }
-       
+      }
+      const category = await Category.findOne({ Name: req.body.Category });
        
 
         const fieldName = 'image';
@@ -222,9 +225,15 @@ getProduct: async (req, res) => {
           variation:req.body.variations,
          
         };
-    
+        cropImage(image)
       
-        const result = await Product.findByIdAndUpdate(_id, updatedProduct, { new: true });
+        if (req.body.AvailableQuantity <= 0) {
+          req.body.Status = "Out of Stock";
+        }else{
+          req.body.Status = "In Stock"
+        }
+      
+        const result = await Product.findByIdAndUpdate(_id, updatedProduct,{$set: req.body}, { new: true });
     
         if (result) {
   
@@ -239,6 +248,54 @@ getProduct: async (req, res) => {
     
 
     },
+    // postEditProduct: async (req, res) => {
+    //   const _id = req.params._id;
+    //   console.log(_id);
+    //   try {
+    //     let images = [];
+    //     const productType = req.body.ProductType;
+    //     const existingProduct = await Product.findById(_id);
+    //     if (existingProduct) {
+    //       images.push(...existingProduct.images); 
+    //   }
+      
+    //   const variations = [];
+      
+    //   for (let i = 0; i < 3; i++) {
+    //       const fieldName = `image${i+1}`;
+    //       if (req.files[fieldName] && req.files[fieldName][0]) {
+    //           images[i] = req.files[fieldName][0].filename;
+    //       }
+    //   }
+    //   const category = await Category.findOne({ Name: req.body.Category });
+    //   const BrandName = await Brand.findOne({ Name: req.body.BrandName });
+      
+    //   if (productType === "watches") {
+    //     const watchColors = req.body.watches;
+    //     variations.push({ value: watchColors });
+    //   } else if (productType === "perfumes") {
+    //     const perfumeQuantity = req.body.perfumes;
+    //     variations.push({ value: perfumeQuantity });
+    //   }
+      
+    //   console.log(variations);
+    //   req.body.Variation = variations[0].value;
+    //   req.body.Category = category._id;
+    //   req.body.BrandName = BrandName._id;
+    //   req.body.images = images;
+    //   cropImage(images)
+      
+    //     if (req.body.AvailableQuantity <= 0) {
+    //       req.body.Status = "Out of Stock";
+    //     }else{
+    //       req.body.Status = "In Stock"
+    //     }
+    //     const updatedProduct = await Product.updateOne({_id: _id}, {$set: req.body});
+    //     res.redirect("/admin/product");
+    //   } catch (error) {
+    //     console.log(`An error happened ${error}`);
+    //   }
+    // },
 
 
 

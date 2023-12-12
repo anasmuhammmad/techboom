@@ -7,7 +7,7 @@ const BannerSchema = new Schema({
   Image: { type: String },
   Video:{type: String},
   Status :{type :String,default:"Disabled"},
-  Carosel :{type:Array},
+  CroppedImage: {type: String},
   Date: { type: Date },
 });
 

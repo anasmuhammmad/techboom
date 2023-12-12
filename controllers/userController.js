@@ -423,6 +423,7 @@ const renderHomePage = async(req,res)=>{
   try {
 
   
+    
     // Use the Mongoose model to find all categories in your database
     const categories = await Category.find();
     const products = await Product.find({status:'Active'});

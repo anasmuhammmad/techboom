@@ -20,7 +20,7 @@
                             <tr>
                                 <th>Product</th>
                                 <th>Id</th>
-                                <th>Item</th>
+                                <!-- <th>Item</th> -->
                                 <th>Quantity</th>
                                 <th>Price</th>
                             </tr>
@@ -30,9 +30,9 @@
                                 <tr>
                                     <td><img style="max-width: 50px;" src="/uploads/<%= item.ProductId.images[0] %>" alt=""></td>
                                     <td><%= item._id %></td>
-                                    <td><%= item.ProductId.ProductName%></td>
+                                    <td><%= item.ProductId.name%></td>
                                     <td><%= item.Quantity %></td>
-                                    <td>₹<%= item.ProductId.DiscountAmount %>/-</td>
+                                    <td>₹<%= item.ProductId.discountPrice%>/-</td>
                                 </tr>
                             <% }); %>
                         

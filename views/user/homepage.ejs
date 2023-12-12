@@ -13,7 +13,7 @@
     <% if (banner && banner.length > 0) { %>
         <% banner.forEach(bannerItem => { %>
             <div class="banner banner-1 container-fluid">
-                <img style="width: 100%; height: 100%;" alt="" src="/uploads/<%= bannerItem.Image %>" />
+                <img style="width: 100%; height: 100%;" alt="<%= bannerItem.AltText %>" src="/uploads/cropped_banners/<%= bannerItem.Image %>" />
             </div>
         <% }); %>
     <% } else { %>

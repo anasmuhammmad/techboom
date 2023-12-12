@@ -6,7 +6,7 @@
   <%- include('../partials/admin-canvas')%>
 
   <div class="container-fluid">
-    <form action="/admin/addBanner" method="post" enctype="multipart/form-data">
+    <form action="/admin/addBanner" method="post" enctype="multipart/form-data" onsubmit="return validateForm()">
         <!-- Banner Name Input -->
         <div class="form-group">
             <label for="bannerName">Banner Name:</label>
@@ -22,28 +22,28 @@
         <!-- Image Preview -->
         <div class="form-group">
             <label for="imagePreview">Image Preview:</label>
-            <img id="imagePreview" class="img-fluid" alt="Image Preview" style="max-height: 200px;">
+            <img id="imagePreview" class="img-fluid" alt="Image Preview" style="max-height: 200px;" >
             <button type="button" class="btn btn-danger mt-2" id="deleteImageButton" style="display: none" onclick="deleteImage()">Delete Image</button>
         </div>
 
-        <div class="form-group">
+        <!-- <div class="form-group">
             <label for="bannerVideo">Banner Video:</label>
             <input type="file" class="form-control-file" id="bannerVideo" name="Video" accept="video/*" onchange="previewVideo(this)">
-        </div>
+        </div> -->
 
         <!-- Video Preview -->
-        <div class="form-group">
+        <!-- <div class="form-group">
             <label for="videoPreview">Video Preview:</label>
             <video id="videoPreview" class="img-fluid" controls style="max-height: 200px;"></video>
             <button type="button" class="btn btn-danger mt-2" id="deleteVideoButton" style="display: none" onclick="deleteVideo()">Delete Video</button>
-        </div>
+        </div> -->
         <!-- //carouselE -->
-        <div class="form-group">
+        <!-- <div class="form-group">
             <label for="carouselImage1">Carousel Image 1:</label>
             <input type="file" class="form-control-file" id="carouselImage1" name="carouselImage1" accept="image/*" onchange="previewImage(this)">
-        </div>
+        </div> -->
 
-        <div class="form-group">
+        <!-- <div class="form-group">
             <label for="carouselImage2">Carousel Image 2:</label>
             <input type="file" class="form-control-file" id="carouselImage2" name="carouselImage2" accept="image/*" onchange="previewImage(this)">
         </div>
@@ -51,8 +51,11 @@
         <div class="form-group">
             <label for="carouselImage3">Carousel Image 3:</label>
             <input type="file" class="form-control-file" id="carouselImage3" name="carouselImage3" accept="image/*" onchange="previewImage(this)">
-        </div>
+        </div> -->
         <!-- Submit Button -->
+        <span id="imageError" style="color: red; display: none;">Please select an image.</span>
+        <span id="nameError" style="color: red; display: none;">Banner name cannot contain only spaces.</span>
+
         <button type="submit" class="btn btn-primary">Add Banner</button>
     </form>
 </div>
@@ -114,6 +117,31 @@
         deleteButton.style.display = 'none'; // Hide the delete button
     }
 
+    function validateForm() {
+        var input = document.getElementById('bannerName');
+            var imageInput = document.getElementById('bannerImages');
+            var nameErrorText = document.getElementById('nameError');
+            var imageErrorText = document.getElementById('imageError');
+
+            // Validate banner name
+            if (input.value.trim() === '') {
+                // Banner name contains only spaces, show error message
+                nameErrorText.style.display = 'block';
+                return false; // Prevent form submission
+            }
+
+            // Validate image
+            if (!imageInput.files || imageInput.files.length === 0) {
+                // No file selected, show error message
+                imageErrorText.style.display = 'block';
+                return false; // Prevent form submission
+            }
+
+            // If you reach this point, the form is valid
+            nameErrorText.style.display = 'none';
+            imageErrorText.style.display = 'none';
+            return true;
+        }
 </script>
 
 

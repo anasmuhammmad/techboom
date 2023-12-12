@@ -5,16 +5,14 @@
 </div>
 <%- include('../partials/admin-canvas')%>
 <div class="container" >
-    <div class="d-flex justify-content-between align-items-center">
-        <h2>USER LIST</h2>
-    </div>
+
 
     <div class="table-responsive mt-4">
         <div class="d-flex justify-content-end align-items-center">
             <div class="form-group me-2">
                 <input type="text" class="form-control" placeholder="Search" id="searchInput">
             </div>
-            <button class="btn btn-secondary me-2">SEARCH USER</button>
+            <button class="btn btn-secondary me-2"onclick="searchUser()">SEARCH USER</button>
         </div>
 
         <table class="table table-bordered table-shadow mt-3">
@@ -67,18 +65,21 @@
       <% } %>
 </div>
 <script>
-  document.getElementById('searchInput').addEventListener('input', function () {
-      const searchKeyword = this.value.toLowerCase();
-      const rows = document.querySelectorAll('tbody tr');
-      rows.forEach(row => {
-          const product = row.querySelector('td:first-child').textContent.toLowerCase();
-          if (product.includes(searchKeyword)) {
-              row.style.display = '';
-          } else {
-              row.style.display = 'none';
-          }
-      });
-  });
+   function searchUser() {
+        var searchTerm = $('#searchInput').val().toLowerCase();
+
+        // Iterate through each row in the table body
+        $('table tbody tr').each(function () {
+            var rowText = $(this).text().toLowerCase();
+
+            // If the row contains the search term, show the row; otherwise, hide it
+            if (rowText.includes(searchTerm)) {
+                $(this).show();
+            } else {
+                $(this).hide();
+            }
+        });
+    }
 </script>
 <%- include('../layouts/footer') %>
 
